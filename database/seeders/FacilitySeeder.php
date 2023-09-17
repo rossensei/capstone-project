@@ -2,8 +2,9 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
+use App\Models\Facility;
 use Illuminate\Database\Seeder;
+use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 
 class FacilitySeeder extends Seeder
 {
@@ -12,6 +13,6 @@ class FacilitySeeder extends Seeder
      */
     public function run(): void
     {
-        //
+        Facility::factory(20)->create();
     }
 }

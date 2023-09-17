@@ -17,7 +17,7 @@ class ItemFactory extends Factory
     public function definition(): array
     {
         return [
-            'facility_id' => fake()->randomElement(range(1,30)),
+            'facility_id' => fake()->randomElement(range(1,20)),
             'tag_no' => fake()->randomNumber(5, true),
             'serial_no' => fake()->isbn10(),
             'item_name' => fake()->word(),

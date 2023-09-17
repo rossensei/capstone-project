@@ -12,10 +12,10 @@ class FacilityController extends Controller
      */
     public function index()
     {
-        $facilities = Facility::all();
+        // $facilities = Facility::all();
 
         return inertia('Facility/Index', [
-            'facilities' => $facility
+            'facilities' => Facility::with('user')->get()
         ]);
     }
 

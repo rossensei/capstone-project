@@ -1,65 +1,49 @@
 <script setup>
-import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import CreateUserVector from '@/Components/vectors/CreateUserVector.vue';
-import BreadCrumb from '@/Components/Breadcrumb.vue';
-import { Head, Link, useForm } from '@inertiajs/vue3';
-import { computed } from 'vue';
+import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { Head, useForm } from '@inertiajs/vue3';
 
-const props = defineProps({
-    roles: Array,
+defineProps({
+    roles: Array
 })
-
 const form = useForm({
-    user: '',
     fname: '',
     lname: '',
+    user: '',
     email: '',
     password: '',
     password_confirmation: '',
-    role: ''
-});
+    role: '',
+})
 
 const submit = () => {
-    form.post(route('register'), {
-        onFinish: () => form.reset('password', 'password_confirmation'),    
-        onSuccess: () => form.reset()
-    });
-};
+    form.post('/users')
+}
 
-const links = computed(() => {
-    return [
-        {
-            label: 'Users',
-            url: '/users'
-        },
-        {
-            label: 'Add User',
-            url: null
-        }
-    ]
-})
 </script>
 
 <template>
+    <Head title="Create User"/>
+
     <AuthenticatedLayout>
-        <Head title="Register" />
-
         <template #header>
-            <!-- <h2 class="font-semibold text-xl text-gray-800 leading-tight">Create User</h2> -->
-            <BreadCrumb :links="links" />
+            <h1 class="text-2xl text-gray-600 font-semibold">Create New User</h1>
+            <p class="mt-1 text-sm text-gray-600">
+                Add a new user.
+            </p>
+            <hr class="mt-2 border-gray-300">
         </template>
-
-        <div class="py-12">
-            <div class="flex space-x-4 max-w-7xl mx-auto sm:px-6 lg:px-8">
+        <div class="py-6">
+            <div class="flex items-start space-x-4 max-w-7xl mx-auto sm:px-6 lg:px-8">
                 <div class="w-2/3 bg-white overflow-hidden shadow-sm sm:rounded-lg">
-                    <div class="p-6 text-gray-900">
+                    <div class="p-6 text-gray-900 max-w-xl">
                         <form @submit.prevent="submit">
-                            
-
+                            <h2 class="text-xl font-medium text-gray-600 mb-4">User Details</h2>
+                            <!-- <hr class="mt-1 mb-3"> -->
                             <div class="flex w-full space-x-2">
                                 <div class="w-full">
                                     <InputLabel for="fname" value="First Name" />
@@ -104,7 +88,17 @@ const links = computed(() => {
                                 <InputError class="mt-2" :message="form.errors.email" />
                             </div>
 
-                            <hr class="mt-4 mb-3">
+                            <div class="mt-4">
+                                <InputLabel for="role" value="Role" />
+                                <select v-model="form.role" id="role" class="border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
+                                    <option value="">Select role</option>
+                                    <option v-for="role in roles" :key="role.id" :value="role.name">{{ role.name }}</option>
+                                </select>
+                                <InputError class="mt-2" :message="form.errors.role" />
+                            </div>
+
+                            <hr class="mt-6 mb-3">
+                            <h2 class="text-xl font-medium text-gray-600 mt-5 mb-4">Login Credentials</h2>
 
                             <div>
                                 <InputLabel for="username" value="User" />
@@ -147,8 +141,8 @@ const links = computed(() => {
                                 <InputError class="mt-2" :message="form.errors.password_confirmation" />
                             </div>
                 
-                            <div class="flex items-center justify-end mt-4">                
-                                <PrimaryButton class="ml-4" :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
+                            <div class="mt-4">                
+                                <PrimaryButton :class="{ 'opacity-25': form.processing }" :disabled="form.processing">
                                     Register
                                 </PrimaryButton>
                             </div>
@@ -162,7 +156,5 @@ const links = computed(() => {
                 </div>
             </div>
         </div>
-
-        
     </AuthenticatedLayout>
 </template>

@@ -34,7 +34,13 @@ Route::middleware('auth')->group(function () {
     Route::get('/facilities', [FacilityController::class, 'index'])->name('facilities.index');
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
-    // Route::get('/users', [UserController::class, 'search']);
+    Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
+    Route::post('/users', [UserController::class, 'store'])->name('users.store');
+    Route::get('/users/edit/{user}', [UserController::class, 'edit'])->name('users.edit');
+    Route::patch('/users/{user}', [UserController::class, 'update']);
+    Route::post('/users/toggle-active/{user}', [UserController::class, 'toggleActive']);
+    Route::patch('/users/update-role/{user}', [UserController::class, 'updateRole'])->middleware('role:admin');
+    Route::delete('/users/delete/{user}', [UserController::class, 'destroy']);
 });
 
 require __DIR__.'/auth.php';

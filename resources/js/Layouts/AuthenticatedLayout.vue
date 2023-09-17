@@ -10,16 +10,10 @@ const showingNavigationDropdown = ref(false);
 
 let isCollapsed = ref(localStorage.getItem("isCollapsed") === "true");
 
-// onMounted(() => {
-//     console.log(isCollapsed.value);
-// })
-
 const collapseSidebar = () => {
     
     isCollapsed.value = !isCollapsed.value;
     localStorage.setItem("isCollapsed", isCollapsed.value);
-
-    // console.log(isCollapsed.value);
 }
 
 const clearLocalStorage = () => {
@@ -42,13 +36,13 @@ const clearLocalStorage = () => {
                         </Link>
     
                     </div>
-                    <span class="absolute -right-5 top-5 bg-gray-100 hover:bg-gray-200 text-gray-600 rounded-full p-1.5 text-center text-sm cursor-pointer peer" @click="collapseSidebar">
+                    <span class="absolute -right-5 top-5 bg-gray-400 bg-opacity-75 text-gray-600 rounded-full p-1.5 text-center text-sm cursor-pointer peer" @click="collapseSidebar">
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-[15px] h-[15px] duration-75" :class="[ isCollapsed ? 'rotate-180 peer-hover:translate-x-2' : 'rotate-0 peer-hover:-translate-x-2']">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" />
                           </svg>                     
                     </span> 
     
-                    <hr v-show="!isCollapsed" class="mb-2 mt-2 bg-gray-600">
+                    <hr v-show="!isCollapsed" class="mb-2 mt-2 border-gray-300">
     
                     <span class="text-[10px] mb-2 text-gray-200 select-none font-bold uppercase" :class="[ isCollapsed ? 'mt-24 text-center' : '']">Menu</span>
                     <ul class="space-y-2 font-medium" :class="[ isCollapsed ? 'flex flex-col' : '']">
@@ -82,7 +76,7 @@ const clearLocalStorage = () => {
                 </div>
             </nav>
             <div class="flex-1 min-h-screen overflow-hidden">
-                <div class="w-full p-4 bg-white border-b border-gray-50">
+                <div class="w-full p-4">
                     <div class="flex justify-end">
                         <div class="ml-3 relative">
                             <Dropdown align="right" width="48">
@@ -90,22 +84,11 @@ const clearLocalStorage = () => {
                                     <span class="inline-flex rounded-md">
                                         <button
                                             type="button"
-                                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 bg-white hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
+                                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
                                         >
-                                            {{ $page.props.auth.user.name }}
-
-                                            <svg
-                                                class="ml-2 -mr-0.5 h-4 w-4"
-                                                xmlns="http://www.w3.org/2000/svg"
-                                                viewBox="0 0 20 20"
-                                                fill="currentColor"
-                                            >
-                                                <path
-                                                    fill-rule="evenodd"
-                                                    d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                                    clip-rule="evenodd"
-                                                />
-                                            </svg>
+                                            You are logged in as {{ $page.props.auth.user.fname }}
+                                            
+                                            <img :src="$page.props.auth.user.profile_photo_url" class="ml-2 h-7 w-7 rounded-full" alt="">
                                         </button>
                                     </span>
                                 </template>
