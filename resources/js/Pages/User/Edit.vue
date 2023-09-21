@@ -29,7 +29,8 @@ defineProps({
                         <div class="p-4 sm:p-8 bg-white shadow sm:rounded-lg">
                             <h1 class="text-xl font-semibold text-gray-600 text-center">{{ user.fname }} {{ user.lname }}</h1>
         
-                            <img :src="user.profile_photo_url" alt="" class="w-[180px] mx-auto rounded-full mt-3">
+                            <img v-if="user.profile_photo_url" :src="user.profile_photo_url" alt="" class="w-[180px] mx-auto rounded-full mt-3">
+                            <img v-else src="../../Components/images/user-icon.png" alt="" class="w-[180px] mx-auto rounded-full mt-3">
                         </div>
                     </div>
                     

@@ -40,7 +40,10 @@ class FacilityController extends Controller
      */
     public function show(Facility $facility)
     {
-        //
+        // dd(Facility::with('items', 'user')->find($facility->id));
+        return inertia('Facility/Show', [
+            'facility' => Facility::with('items', 'user')->find($facility->id)
+        ]);
     }
 
     /**

@@ -3,6 +3,7 @@ import { ref, onMounted } from 'vue';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
+import GlobalSearchComponent from '@/Components/GlobalSearchComponent.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link, useRemember } from '@inertiajs/vue3';
 
@@ -26,7 +27,7 @@ const clearLocalStorage = () => {
     <div>
         <!-- <div class="sticky top-0 h-22 w-full bg-green-300"> blah blah</div> -->
         <div class="flex items-start min-h-screen bg-gray-100">
-            <nav class="sticky top-0 z-10 bg-[#4e73df] min-h-screen duration-300" :class="[ !isCollapsed ? 'w-64' : 'w-16' ]">
+            <nav class="sticky top-0 z-10 bg-[#4e73df] min-h-screen duration-300 rounded-r-lg" :class="[ !isCollapsed ? 'w-64' : 'w-16' ]">
                 <div class="relative p-4">
                     <div class="flex" :class="[ !isCollapsed ? 'justify-between items-center' : 'justify-center']">
                         <!-- Logo branding -->
@@ -36,13 +37,13 @@ const clearLocalStorage = () => {
                         </Link>
     
                     </div>
-                    <span class="absolute -right-5 top-5 bg-gray-400 bg-opacity-75 text-gray-600 rounded-full p-1.5 text-center text-sm cursor-pointer peer" @click="collapseSidebar">
+                    <span class="absolute -right-8 top-5 bg-gray-400 bg-opacity-75 text-gray-50 rounded-lg p-1.5 text-center text-sm cursor-pointer peer" @click="collapseSidebar">
                           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-[15px] h-[15px] duration-75" :class="[ isCollapsed ? 'rotate-180 peer-hover:translate-x-2' : 'rotate-0 peer-hover:-translate-x-2']">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" />
                           </svg>                     
                     </span> 
     
-                    <hr v-show="!isCollapsed" class="mb-2 mt-2 border-gray-300">
+                    <hr v-show="!isCollapsed" class="mb-2 mt-2 border-[#ffffff9c]">
     
                     <span class="text-[10px] mb-2 text-gray-200 select-none font-bold uppercase" :class="[ isCollapsed ? 'mt-24 text-center' : '']">Menu</span>
                     <ul class="space-y-2 font-medium" :class="[ isCollapsed ? 'flex flex-col' : '']">
@@ -77,7 +78,10 @@ const clearLocalStorage = () => {
             </nav>
             <div class="flex-1 min-h-screen overflow-hidden">
                 <div class="w-full p-4">
-                    <div class="flex justify-end">
+                    <div class="flex justify-between items-center">
+                        <!-- Search -->
+                        <GlobalSearchComponent />
+                        
                         <div class="ml-3 relative">
                             <Dropdown align="right" width="48">
                                 <template #trigger>
@@ -88,7 +92,8 @@ const clearLocalStorage = () => {
                                         >
                                             You are logged in as {{ $page.props.auth.user.fname }}
                                             
-                                            <img :src="$page.props.auth.user.profile_photo_url" class="ml-2 h-7 w-7 rounded-full" alt="">
+                                            <img v-if="$page.props.auth.user.profile_photo_url" :src="$page.props.auth.user.profile_photo_url" class="ml-2 h-7 w-7 rounded-full" alt="">
+                                            <img v-else src="../Components/images/user-icon.png" class="ml-2 h-7 w-7 rounded-full" alt="">
                                         </button>
                                     </span>
                                 </template>
@@ -104,11 +109,11 @@ const clearLocalStorage = () => {
                     </div>
                     
                 </div>
-                <header class="" v-if="$slots.header">
+                <!-- <header class="" v-if="$slots.header">
                     <div class="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
                         <slot name="header" />
                     </div>
-                </header>
+                </header> -->
                 <main>
                     <slot />
                 </main>

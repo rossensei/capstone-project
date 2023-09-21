@@ -21,12 +21,12 @@ defineProps({
                     <Link 
                         v-for="facility in facilities" 
                         :key="facility.id" 
-                        :href="'/facilities/' + facility.id + '/view-items'" 
+                        :href="'/facilities/view/' + facility.id" 
                         class="min-w-[350px] mb-4 mx-2 flex-1 p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100">
 
-                        <h5 class="mb-2 text-2xl font-bold tracking-tight">{{ facility.facility_name }}</h5>
-                        <p class="font-normal text-gray-700">{{ facility.building }}</p>
-                        <p class="font-normal text-gray-700">{{ facility.user.fname }} {{ facility.user.lname }}</p>
+                        <h5 class="text-2xl font-bold tracking-tight">{{ facility.facility_name }}</h5>
+                        <p class="font-normal text-gray-700 mb-2 ">[{{ facility.building}} ]</p>
+                        <p class="font-normal text-gray-700">Head: {{ facility.user.fname }} {{ facility.user.lname }}</p>
                     </Link>
                 </div>
 

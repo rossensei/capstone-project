@@ -52,7 +52,7 @@ class User extends Authenticatable
 
     public function getProfilePhotoUrlAttribute()
     {
-        $url = $this->profile_photo_path ? asset('images/profile_pic/'.$this->profile_photo_path) : 'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png';
+        $url = $this->profile_photo_path ? asset('images/profile_pic/'.$this->profile_photo_path) : null;
 
         return $url;
     }
@@ -60,5 +60,10 @@ class User extends Authenticatable
     public function setPasswordAttribute($value)
     {
         $this->attributes['password'] = Hash::make($value);
+    }
+
+    public function facility()
+    {
+        return $this->hasOne('App\Models\Facility');
     }
 }

@@ -1,10 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
-import TextInput from '@/Components/TextInput.vue';
-import InputLabel from '@/Components/InputLabel.vue';
 import Pagination from '@/Components/Pagination.vue';
-import SecondaryButton from '@/Components/SecondaryButton.vue';
-import Modal from '@/Components/Modal.vue';
+import Table from '@/Components/Table.vue';
 import { Head, router, Link, useForm } from '@inertiajs/vue3';
 import throttle from 'lodash/throttle';
 import { watch, ref } from 'vue';
@@ -51,9 +48,12 @@ const clearSearch = () => {
             <h1 class="text-2xl text-gray-500 font-semibold">List of Users</h1>
         </template>
 
-        <div class="py-6">
-            <div class="max-w-7xl mx-auto sm:px-6 lg:px-8">
-                <div class="relative overflow-x-auto shadow-md sm:rounded-lg">
+        <div class="py-12">
+            <div class="w-full sm:px-6 lg:px-8">
+                <h1 class="text-2xl text-gray-500 font-semibold mb-6">List of Users</h1>
+
+                
+                <div class="relative overflow-x-auto rounded-lg shadow-sm">
                     <div class="flex items-center justify-between p-4 bg-white dark:bg-gray-800">
                         <div class="flex items-center space-x-2">
                             <Link href="/users/create" class="flex items-center space-x-2 px-2 py-2 rounded-md bg-[#4e73df] hover:bg-[#4e72dfc0] text-white">
@@ -83,7 +83,8 @@ const clearSearch = () => {
                                 </span>
                         </div>
                     </div>
-                    <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                    <Table :users="users.data" />
+                    <!-- <table class="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-100 dark:bg-gray-700 dark:text-gray-400">
                             <tr>
                                 <th scope="col" class="px-6 py-3">
@@ -122,7 +123,6 @@ const clearSearch = () => {
                                     </div>
                                 </td>
                                 <td scope="row" class="px-6 py-4">
-                                    <!-- Modal toggle -->
                                     <div class="flex items-center justify-center space-x-2">
 
                                         <Link :href="'/users/edit/' + user.id" class="hover:text-blue-600 text-md">
@@ -140,7 +140,7 @@ const clearSearch = () => {
                                 </td>
                             </tr>
                         </tbody>
-                    </table>
+                    </table> -->
                 </div>
 
 
@@ -150,7 +150,7 @@ const clearSearch = () => {
                 </div>
 
                 <!-- Paginator -->
-                <Pagination v-show="users" :links="users.links" class="mt-6"/>
+                <Pagination v-show="users.data" :links="users.links" class="mt-6"/>
 
             </div>
         </div>
