@@ -6,29 +6,19 @@ import TextInput from '@/Components/TextInput.vue';
 import { useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
-const passwordInput = ref(null);
-const currentPasswordInput = ref(null);
-
 const form = useForm({
-    current_password: '',
     password: '',
     password_confirmation: '',
 });
 
+const props = defineProps({
+    user: Number
+})
+
 const updatePassword = () => {
-    form.put(route('password.update'), {
+    form.patch('/users/update-password/' + props.user , {
         preserveScroll: true,
-        onSuccess: () => form.reset(),
-        onError: () => {
-            if (form.errors.password) {
-                form.reset('password', 'password_confirmation');
-                passwordInput.value.focus();
-            }
-            if (form.errors.current_password) {
-                form.reset('current_password');
-                currentPasswordInput.value.focus();
-            }
-        },
+        onSuccess: () => form.reset()
     });
 };
 </script>
@@ -36,7 +26,7 @@ const updatePassword = () => {
 <template>
     <section>
         <header>
-            <h2 class="text-lg font-medium text-gray-900 flex items-center">Change Password &nbsp;
+            <h2 class="text-lg font-medium text-gray-900 flex items-center">Set New Password &nbsp;
                 <span>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v3.75m0-10.036A11.959 11.959 0 013.598 6 11.99 11.99 0 003 9.75c0 5.592 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.31-.21-2.57-.598-3.75h-.152c-3.196 0-6.1-1.249-8.25-3.286zm0 13.036h.008v.008H12v-.008z" />
@@ -45,28 +35,13 @@ const updatePassword = () => {
             </h2>
 
             <p class="mt-1 text-sm text-gray-600">
-                Ensure your account is using a long, random password to stay secure.
+                Set only a new password when it is forgotten.
             </p>
         </header>
 
-        <form @submit.prevent="updatePassword" class="mt-6 space-y-6">
+        <form @submit.prevent="updatePassword" class="mt-6 space-y-6">  
             <div>
-                <InputLabel for="current_password" value="Current Password" />
-
-                <TextInput
-                    id="current_password"
-                    ref="currentPasswordInput"
-                    v-model="form.current_password"
-                    type="password"
-                    class="mt-1 block w-full"
-                    autocomplete="current-password"
-                />
-
-                <InputError :message="form.errors.current_password" class="mt-2" />
-            </div>
-
-            <div>
-                <InputLabel for="password" value="New Password" />
+                <!-- <InputLabel for="password" value="New Password" /> -->
 
                 <TextInput
                     id="password"
@@ -75,13 +50,14 @@ const updatePassword = () => {
                     type="password"
                     class="mt-1 block w-full"
                     autocomplete="new-password"
+                    placeholder="New Password"
                 />
 
                 <InputError :message="form.errors.password" class="mt-2" />
             </div>
 
             <div>
-                <InputLabel for="password_confirmation" value="Confirm Password" />
+                <!-- <InputLabel for="password_confirmation" value="Confirm Password" /> -->
 
                 <TextInput
                     id="password_confirmation"
@@ -89,12 +65,13 @@ const updatePassword = () => {
                     type="password"
                     class="mt-1 block w-full"
                     autocomplete="new-password"
+                    placeholder="Confirm New Password"
                 />
 
                 <InputError :message="form.errors.password_confirmation" class="mt-2" />
             </div>
 
-            <div class="flex items-center gap-4">
+            <div v-show="form.password || form.password_confirmation" class="flex items-center gap-4">
                 <PrimaryButton :disabled="form.processing">Save</PrimaryButton>
 
                 <Transition

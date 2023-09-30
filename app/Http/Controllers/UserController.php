@@ -13,17 +13,67 @@ class UserController extends Controller
     public function index(Request $request)
     {
         // $users = User::with('roles')->pluck('name')->get();
+        $role = $request->input('role');
+        $search = $request->input('search');
+        $status = $request->input('status');
+
+        // dd($status == 0);
+
+        $userQuery = User::orderBy('fname')->with('roles');
+
+        if($role) {
+            $userQuery->whereHas('roles', function ($query) use ($role) {
+                $query->where('name', $role);
+            });
+        }
+
+        if($search) {
+            $userQuery->where(function ($query) use ($search) {
+                $query->where('fname', 'like', "%{$search}%")
+                ->orWhere('lname', 'like', "%{$search}%")
+                ->orWhere('email', 'like', "%{$search}%");
+            });
+        }
+
+        if($status == 'true') {
+            $userQuery->where('active', true);
+        } else if($status == 'false') {
+            $userQuery->where('active', false);
+        }
+        
+
+        $users = $userQuery->paginate(8)->withQueryString();
 
         return inertia('User/Index', [
-            'users' => User::with('roles')
-                ->when($request->input('search'), function ($query, $search) {
-                    $query->where('fname', 'like', "%{$search}%")
-                        ->orWhere('lname', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%");
-                })
-                ->paginate(5)
-                ->withQueryString(),
-            'filters' => $request->only(['search']),
+            // 'users' => User::orderBy('fname')
+            //     ->with('roles')
+            //     // ->whereHas('roles', function ($query) use ($role) {
+            //     //     $query->where('name', $role);
+            //     // })
+            //     // ->when($search, function ($query) use ($search) {
+            //     //     $query->where('fname', 'like', "%{$search}%")
+            //     //         ->orWhere('lname', 'like', "%{$search}%")
+            //     //         ->orWhere('email', 'like', "%{$search}%");
+            //     // })
+            //     ->where(function ($query) use ($search, $role) {
+
+            //         // dd($query);
+            //         if($role) {
+            //             $query->whereHas('roles', function ($query) use ($role) {
+            //                 $query->where('name', $role);
+            //             });
+            //         }
+                    
+            //         if($search) {
+            //             $query->where('fname', 'like', "%{$search}%")
+            //                 ->orWhere('lname', 'like', "%{$search}%")
+            //                 ->orWhere('email', 'like', "%{$search}%");
+            //         }   
+            //     })
+            //     ->paginate(8)
+            //     ->withQueryString(),
+            'users' => $users,
+            'filters' => $request->only(['search', 'role', 'status']),
             'roles' => Role::all()
         ]);
     }
@@ -110,5 +160,17 @@ class UserController extends Controller
         $user->save();
 
         return redirect('/users');
+    }
+
+    public function updatePassword(Request $request, User $user)
+    {
+        $request->validate([
+            'password' => ['confirmed', 'min:8', 'required']
+        ]);
+
+        $user->password = $request->password;
+        $user->save();
+
+        return back();
     }
 }

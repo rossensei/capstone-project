@@ -43,6 +43,11 @@ class HandleInertiaRequests extends Middleware
                     'profile_photo_url' => $request->user()->profile_photo_url,
                 ] : null,
             ],
+            'flash' => [
+                'error' => $request->session()->get('error'),
+                'success' => $request->session()->get('success'),
+                'message' => $request->session()->get('message'),
+            ],
             // 'ziggy' => function () use ($request) {
             //     return array_merge((new Ziggy)->toArray(), [
             //         'location' => $request->url(),

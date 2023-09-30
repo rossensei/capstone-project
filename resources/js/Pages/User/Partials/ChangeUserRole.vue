@@ -38,15 +38,10 @@ const updateRole = () => {
 
         <form @submit.prevent="updateRole" class="mt-6 space-y-6">
             <div class="flex items-center space-x-3">
-                <!-- <label for="admin">
-                    <input type="radio" v-model="form.role" name="role" id="admin" value="admin"> Administrator
-                </label>
-                <label for="faculty" class="ml-3">
-                    <input type="radio" v-model="form.role" name="role" id="faculty" value="faculty"> Faculty
-                </label> -->
-                <label v-for="role in roles" :key="role.id" :for="role.name">
-                    <input type="radio" v-model="form.role" name="role" :id="role.name" :value="role.name"> {{ role.name }}
-                </label> 
+                <select v-model="form.role" name="role" id="role" class="px-4 py-2 rounded-md text-sm border-gray-300">
+                    <option value="" disabled>Select Role</option>
+                    <option v-for="role in roles" :key="role.id" :value="role.name">{{ role.name }}</option>
+                </select>
             </div>
             <div class="flex items-center gap-4">
                 <!-- <PrimaryButton :disabled="form.processing">Save</PrimaryButton> -->

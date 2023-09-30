@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\User;
 use App\Models\Facility;
 use Illuminate\Http\Request;
 
@@ -10,12 +11,20 @@ class FacilityController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // $facilities = Facility::all();
-
+        // dd($request);
+        
         return inertia('Facility/Index', [
-            'facilities' => Facility::with('user')->get()
+            'facilities' => Facility::with('user')
+                ->withCount('items')
+                ->orderBy('facility_name')
+                ->when($request->input('search'), function ($query, $search) {
+                    $query->where('facility_name', 'like', "%{$search}%");
+                })
+                ->paginate(8)
+                ->withQueryString(),
+            'filters' => $request->only(['search']),
         ]);
     }
 
@@ -24,7 +33,9 @@ class FacilityController extends Controller
      */
     public function create()
     {
-        //
+        return inertia('Facility/Create', [
+            'users' => User::select('id', 'fname', 'lname')->get()
+        ]);
     }
 
     /**
@@ -32,7 +43,18 @@ class FacilityController extends Controller
      */
     public function store(Request $request)
     {
-        //
+
+        $fields = $request->validate([
+            'facility_name' => ['required', 'string'],
+            'building' => ['required', 'string'],
+            'user_id' => ['required']
+        ],[
+            'user_id.required' => 'The facility head must not be empty.'
+        ]);
+
+        Facility::create($fields);
+
+        return redirect('/facilities');
     }
 
     /**
@@ -51,7 +73,10 @@ class FacilityController extends Controller
      */
     public function edit(Facility $facility)
     {
-        //
+        return inertia('Facility/Edit', [
+            'facility' => $facility,
+            'users' => User::select('id', 'fname', 'lname')->get()
+        ]);
     }
 
     /**
@@ -59,7 +84,19 @@ class FacilityController extends Controller
      */
     public function update(Request $request, Facility $facility)
     {
-        //
+        $fields = $request->validate([
+            'facility_name' => ['required', 'string'],
+            'building' => ['required', 'string'],
+            'user_id' => ['required']
+        ],[
+            'user_id.required' => 'The facility head must not be empty.'
+        ]);
+
+        $facname = $facility->facility_name;
+
+        $facility->update($fields);
+
+        return redirect('/facilities')->with('success', $facname.' has been updated');
     }
 
     /**
@@ -67,6 +104,16 @@ class FacilityController extends Controller
      */
     public function destroy(Facility $facility)
     {
-        //
+        if(!$facility->items()->exists()) {
+            $facility->delete();
+
+            return back()->with('success', 'Facility has been removed successfully.');
+        } else {
+            return back()->with('error', 'This facility has existing properties.');
+        }
+
+        // return $facility->items()->exists() 
+        //     ? back()->with('error', 'This facility has existing properties.') 
+        //     : back()->with('success', 'Facility has been removed successfully.');
     }
 }

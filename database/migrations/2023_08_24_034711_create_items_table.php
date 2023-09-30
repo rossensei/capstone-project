@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('description');
             $table->string('condition');
             $table->string('remarks')->nullable();
-            $table->date('date_acquired');
+            $table->date('date_acquired')->nullable();
             $table->timestamps();
             $table->foreign('facility_id')->references('id')->on('facilities');
         });

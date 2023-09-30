@@ -1,11 +1,16 @@
 <?php
 
+use App\Models\Item;
+use App\Models\User;
+use Inertia\Inertia;
+use App\Models\Facility;
+use Illuminate\Support\Facades\Route;
+use Illuminate\Foundation\Application;
+use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\FacilityController;
-use App\Http\Controllers\UserController;
-use Illuminate\Foundation\Application;
-use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+use App\Http\Controllers\ItemController;
+use App\Http\Controllers\RequestController;
 
 /*
 |--------------------------------------------------------------------------
@@ -23,7 +28,11 @@ use Inertia\Inertia;
 // });
 
 Route::get('/dashboard', function () {
-    return Inertia::render('Dashboard');
+    return Inertia::render('Dashboard', [
+        'users' => User::count(),
+        'facilities' => Facility::count(),
+        'items' => Item::count(),
+    ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
 Route::middleware('auth')->group(function () {
@@ -32,7 +41,12 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     Route::get('/facilities', [FacilityController::class, 'index'])->name('facilities.index');
+    Route::get('/facilities/create', [FacilityController::class, 'create'])->name('facilities.create');
     Route::get('/facilities/view/{facility}', [FacilityController::class, 'show'])->name('facilities.show');
+    Route::get('/facilities/edit/{facility}', [FacilityController::class, 'edit'])->name('facilities.edit');
+    Route::patch('/facilities/{facility}', [FacilityController::class, 'update'])->name('facilities.update');
+    Route::post('/facilities', [FacilityController::class, 'store'])->name('facilities.store');
+    Route::delete('/facilities/remove-facility/{facility}', [FacilityController::class, 'destroy'])->name('facilities.destroy');
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
@@ -41,7 +55,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/users/{user}', [UserController::class, 'update']);
     Route::post('/users/toggle-active/{user}', [UserController::class, 'toggleActive']);
     Route::patch('/users/update-role/{user}', [UserController::class, 'updateRole'])->middleware('role:admin');
+    Route::patch('/users/update-password/{user}', [UserController::class, 'updatePassword'])->middleware('role:admin');
     Route::delete('/users/delete/{user}', [UserController::class, 'destroy']);
+
+    Route::get('/items', [ItemController::class, 'index'])->name('items.index');
+
+    Route::get('/requests', [RequestController::class, 'index'])->name('requests.index');
 });
 
 require __DIR__.'/auth.php';

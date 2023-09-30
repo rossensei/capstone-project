@@ -52,7 +52,7 @@ class User extends Authenticatable
 
     public function getProfilePhotoUrlAttribute()
     {
-        $url = $this->profile_photo_path ? asset('images/profile_pic/'.$this->profile_photo_path) : null;
+        $url = $this->profile_photo_path ? asset('images/profile_pic/'.$this->profile_photo_path) : 'https://static.vecteezy.com/system/resources/thumbnails/008/442/086/small/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg';
 
         return $url;
     }
