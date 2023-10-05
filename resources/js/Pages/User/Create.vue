@@ -1,6 +1,7 @@
 <script setup>
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
+import Breadcrumb from '@/Components/Breadcrumb.vue';
 import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import CreateUserVector from '@/Components/vectors/CreateUserVector.vue';
@@ -24,16 +25,35 @@ const submit = () => {
     form.post('/users')
 }
 
+const crumbs = [
+    {
+        name: 'Dashboard',
+        url: '/dashboard',
+        active: false,
+    },
+    {
+        name: 'Users',
+        url: '/users',
+        active: false,
+    },
+    {
+        name: 'Create New User',
+        url: null,
+        active: true,
+    },
+]
 </script>
 
 <template>
     <Head title="Create User"/>
 
     <AuthenticatedLayout>
-        <div class="py-12">
-            
+        <div class="py-4">
             <div class="w-full sm:px-6 lg:px-8">
-                <h1 class="text-2xl text-gray-600 font-semibold mb-4">Create New User</h1>
+                <h1 class="font-semibold text-3xl text-gray-700 leading-tight mb-4">Create New User</h1>
+
+                <Breadcrumb :crumbs="crumbs" class="mb-4" />
+
                 <div class="flex items-start space-x-4 ">
                     <div class="w-2/3 overflow-hidden">
                         <div class="p-6 text-gray-900 max-w-xl">

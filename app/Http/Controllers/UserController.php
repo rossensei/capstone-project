@@ -45,33 +45,6 @@ class UserController extends Controller
         $users = $userQuery->paginate(8)->withQueryString();
 
         return inertia('User/Index', [
-            // 'users' => User::orderBy('fname')
-            //     ->with('roles')
-            //     // ->whereHas('roles', function ($query) use ($role) {
-            //     //     $query->where('name', $role);
-            //     // })
-            //     // ->when($search, function ($query) use ($search) {
-            //     //     $query->where('fname', 'like', "%{$search}%")
-            //     //         ->orWhere('lname', 'like', "%{$search}%")
-            //     //         ->orWhere('email', 'like', "%{$search}%");
-            //     // })
-            //     ->where(function ($query) use ($search, $role) {
-
-            //         // dd($query);
-            //         if($role) {
-            //             $query->whereHas('roles', function ($query) use ($role) {
-            //                 $query->where('name', $role);
-            //             });
-            //         }
-                    
-            //         if($search) {
-            //             $query->where('fname', 'like', "%{$search}%")
-            //                 ->orWhere('lname', 'like', "%{$search}%")
-            //                 ->orWhere('email', 'like', "%{$search}%");
-            //         }   
-            //     })
-            //     ->paginate(8)
-            //     ->withQueryString(),
             'users' => $users,
             'filters' => $request->only(['search', 'role', 'status']),
             'roles' => Role::all()
@@ -104,7 +77,6 @@ class UserController extends Controller
         $user->assignRole($role);
 
         return redirect('/users');
-        // dd($fields, $role);
     }
 
     public function edit(User $user)
@@ -136,6 +108,10 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
+        if($user->facility()->exists()) {
+            // dd(true);
+            return back();
+        }
         $user->delete();
 
         return back();

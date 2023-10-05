@@ -12,7 +12,7 @@ const prop = defineProps({
 })
 // console.log(prop.user.roles[0].name)
 const form = useForm({
-    role: prop.user.roles[0].name,
+    role: prop.user.roles[0]?.name,
 });
 
 const updateRole = () => {

@@ -1,5 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import Breadcrumb from '@/Components/Breadcrumb.vue';
 import Pagination from '@/Components/Pagination.vue';
 import Table from '@/Components/Table.vue';
 import { Head, router, Link, useForm } from '@inertiajs/vue3';
@@ -31,21 +32,31 @@ const clearSearch = () => {
     search.value = ''
 }
 
+const crumbs = [
+    {
+        name: 'Dashboard',
+        url: '/dashboard',
+        active: false,
+    },
+    {
+        name: 'Users',
+        url: '/users',
+        active: true,
+    },
+]
 </script>
 
 <template>
     <Head title="Users" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <h1 class="text-2xl text-gray-500 font-semibold">List of Users</h1>
-        </template>
-
-        <div class="py-12">
+        <div class="py-4">
             <div class="w-full sm:px-6 lg:px-8">
-                <h1 class="text-2xl text-gray-500 font-semibold mb-6">List of Users</h1>
-
                 
+                <h1 class="font-semibold text-3xl text-gray-700 leading-tight mb-4">List of Users</h1>
+
+                <Breadcrumb :crumbs="crumbs" class="mb-4" />
+
                 <div class="relative overflow-x-auto bg-white shadow">
                     <div class="p-4">
                         <div class="flex items-center justify-between mb-4">
@@ -62,10 +73,10 @@ const clearSearch = () => {
                                 <!-- Status Filter -->
                                 <select 
                                 v-model="status"
-                                class="w-auto border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                class="w-auto border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
                                 name=""
                                 id="facility-head">
-                                    <option value="" disabled>Filter by status</option>
+                                    <option value="">Filter by status</option>
                                     <option value="true">Active</option>
                                     <option value="false">Deactivated</option>
                                 </select>
@@ -73,10 +84,10 @@ const clearSearch = () => {
                                 <!-- Role Filter -->
                                 <select 
                                 v-model="role"
-                                class="w-auto border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                                class="w-auto border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
                                 name=""
                                 id="facility-head">
-                                    <option value="" disabled>Filter by role</option>
+                                    <option value="">Filter by role</option>
                                     <option v-for="role in roles" :key="role.id" :value="role.name">{{ role.name }}</option>
                                 </select>
 
@@ -105,6 +116,17 @@ const clearSearch = () => {
                         <hr>
                         
                         <Table :users="users.data" />
+
+                        <hr>
+                        <!-- Paginator -->
+                        <Pagination 
+                        v-show="users.data" 
+                        :links="users.links"
+                        :current_page="users.current_page"
+                        :prev_page_url="users.prev_page_url"
+                        :next_page_url="users.next_page_url"
+                        :last_page="users.last_page"
+                        class="mt-4"/>
                     </div>
                 </div>
 
@@ -114,8 +136,6 @@ const clearSearch = () => {
                     <img src="../../Components/images/no-result.png" alt="no result" class="w-[250px] opacity-25 mx-auto">
                 </div>
 
-                <!-- Paginator -->
-                <Pagination v-show="users.data" :links="users.links" class="mt-6"/>
 
             </div>
         </div>

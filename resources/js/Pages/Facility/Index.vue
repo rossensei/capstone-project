@@ -135,9 +135,16 @@ watch(search, debounce( function (value) {
                         </table>
                     </div>
 
+                    <hr>
+                    
                     <Pagination 
                     class="mt-5"
-                    :links="facilities.links" />
+                    :links="facilities.links"
+                    :current_page="facilities.current_page"
+                    :prev_page_url="facilities.prev_page_url"
+                    :next_page_url="facilities.next_page_url"
+                    :last_page="facilities.last_page"
+                    />
                 </div>
             </div>
         </div>

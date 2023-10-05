@@ -4,6 +4,7 @@ import UpdateUserInformation from './Partials/UpdateUserInformation.vue';
 import ChangePasswordForm from './Partials/ChangePasswordForm.vue';
 import ChangeUserRole from './Partials/ChangeUserRole.vue';
 import UserAccountControl from './Partials/UserAccountControl.vue';
+import Breadcrumb from '@/Components/Breadcrumb.vue';
 import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import { Head, useForm } from '@inertiajs/vue3';
@@ -12,21 +13,37 @@ defineProps({
     user: Object,
     roles: Array
 })
+
+const crumbs = [
+    {
+        name: 'Dashboard',
+        url: '/dashboard',
+        active: false,
+    },
+    {
+        name: 'Users',
+        url: '/users',
+        active: false,
+    },
+    {
+        name: 'Edit User',
+        url: null,
+        active: true,
+    },
+]
 </script>
 
 <template>
-    <Head title="Edit User"/>
+    <Head :title="user.fname + ' ' + user.lname "/>
 
     <AuthenticatedLayout>
-        <!-- <template #header>
-            <h1 class="text-2xl text-gray-600 font-semibold">Edit User</h1>
-        </template> -->
-
-        <div class="py-12">
-            <div class="w-full sm:px-6 lg:px-8 space-y-6">
+        <div class="py-4">
+            <div class="w-full sm:px-6 lg:px-8">
                 
-                <h1 class="text-2xl text-gray-600 font-semibold mb-4">Edit User</h1>
-                    
+                <h1 class="font-semibold text-3xl text-gray-700 leading-tight mb-4">Edit User</h1>
+                
+                <Breadcrumb :crumbs="crumbs"/>
+
                 <div class="space-y-4">
                     <div class="p-4 sm:p-8">
                     <h4 class="text-2xl text-blue-600 font-semibold mb-4 uppercase">[ {{ user.fname }} {{ user.lname }} ]</h4>

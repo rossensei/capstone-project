@@ -2,20 +2,56 @@
 import { Link } from '@inertiajs/vue3';
 
 defineProps({
+    prev_page_url: String,
+    next_page_url: String,
+    last_page: Number,
+    current_page: Number,
     links: Array
 })
 </script>
 
 <template>
-    <div>
-        <div class="flex flex-wrap -mb-1">
-            <template v-for="(link, p) in links" :key="p">
-                <div v-if="link.url === null" class="mr-1 mb-1 px-4 py-3 text-sm leading-4 text-gray-400 border rounded"
-                    v-html="link.label"></div>
-                <Link v-else
-                    class="mr-1 mb-1 px-4 py-3 text-sm leading-4 border rounded hover:bg-white focus:border-indigo-500 focus:text-indigo-500"
-                    :class="{ 'border-indigo-500': link.active }" :href="link.url" v-html="link.label"></Link>
+    <nav>
+
+        <div class="flex items-center space-x-1 ">
+
+            <!-- Previous Button -->
+            <Link v-if="current_page > 1" :href="prev_page_url" class="h-[30px] w-[30px] flex items-center justify-center rounded-full text-sm text-gray-400 border border-gray-300 hover:bg-blue-600 hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-3 h-3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+              </Link>
+            <span v-else class="h-[30px] w-[30px] flex items-center justify-center rounded-full text-sm text-gray-400 border border-gray-300">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-3 h-3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
+              </svg>
+              </span>
+
+            <!-- Links -->
+            <template v-for="(link, index) in links" :key="index">     
+                    <Link 
+                    v-if="index !== 0 && index !== links.length-1" 
+                    :href="link.url" 
+                    class="h-[30px] w-[30px] flex items-center justify-center rounded-full text-sm text-gray-400 hover:bg-blue-600 hover:text-white"
+                    :class="{'bg-blue-600 text-white' : link.active, 'border border-gray-300' : !link.active}"
+                    >{{ link.label }}</Link>
             </template>
+
+            <!-- Next Button -->
+            <Link v-if="current_page < last_page" :href="next_page_url" class="h-[30px] w-[30px] flex items-center justify-center rounded-full text-sm text-gray-400 border border-gray-300 hover:bg-blue-600 hover:text-white">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-3 h-3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+              </Link>
+            <span v-else class="h-[30px] w-[30px] flex items-center justify-center rounded-full text-sm text-gray-400 border border-gray-300">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-3 h-3">
+                <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
+              </svg>
+              </span>
         </div>
-    </div>
+
+
+
+        
+    </nav>
 </template>

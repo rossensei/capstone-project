@@ -69,16 +69,18 @@ const formatTimestampToDate = (timestamp) => {
                     </div>
                 </td>
                 <td class="text-center">
-                    <span 
-                        v-for="role in user.roles" 
-                        :key="role.id" 
-                        v-html="role.name" 
-                        class="px-3 py-1.5 text-xs rounded-lg"
-                        :class="{
-                            'bg-indigo-100 text-indigo-600 uppercase tracking-wide' : role.name == 'admin',
-                            'bg-green-100 text-green-600 uppercase tracking-wide' : role.name == 'faculty',
-                        }"
-                    ></span>
+                    <div v-if="user.roles.length">
+                        <span 
+                            v-for="role in user.roles" 
+                            :key="role.id" 
+                            v-html="role.name" 
+                            class="px-3 py-1.5 text-xs rounded-lg"
+                            :class="{
+                                'bg-indigo-100 text-indigo-600 uppercase tracking-wide font-semibold' : role.name == 'admin',
+                                'bg-green-100 text-green-600 uppercase tracking-wide font-semibold' : role.name == 'faculty',
+                            }"
+                        ></span>
+                    </div>
                 </td>
                 <td>
                     <div class="flex items-center justify-center space-x-2">
