@@ -42,7 +42,7 @@ class UserController extends Controller
         }
         
 
-        $users = $userQuery->paginate(8)->withQueryString();
+        $users = $userQuery->paginate(7)->withQueryString();
 
         return inertia('User/Index', [
             'users' => $users,

@@ -58,7 +58,7 @@ const prop = defineProps({
                             </th>
                         </thead>
                         <tbody>
-                            <tr v-for="(item, index) in prop.facility.items" :key="index">
+                            <tr v-for="(item, index) in prop.facility.properties" :key="index">
                                 <td>
                                     {{ index+1 }}
                                 </td>
@@ -69,7 +69,7 @@ const prop = defineProps({
                                     {{ item.serial_no }}
                                 </td>
                                 <td>
-                                    {{ item.item_name }}
+                                    {{ item.name }}
                                 </td>
                                 <td>
                                     {{ item.description }}

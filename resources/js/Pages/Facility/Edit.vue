@@ -1,5 +1,6 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import Breadcrumb from '@/Components/Breadcrumb.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -21,16 +22,37 @@ const form = useForm({
 const submit = () => {
     form.patch('/facilities/' + prop.facility.id)
 }
+
+const crumbs = [
+    {
+        name: 'Dashboard',
+        url: '/dashboard',
+        active: false,
+    },
+    {
+        name: 'Facilities',
+        url: '/facilities',
+        active: false,
+    },
+    {
+        name: 'Edit Facility',
+        url: null,
+        active: true,
+    },
+    
+]
 </script>
 
 <template>
     <Head :title="facility.facility_name" />
     <AuthenticatedLayout>
-        <div class="py-12">
+        <div class="py-4">
             <div class="w-full sm:px-6 lg:px-8">
-                <h1 class="text-2xl text-gray-500 font-semibold mb-4">Edit {{ facility.facility_name }} details</h1>
+                <h1 class="font-semibold text-3xl text-gray-700 leading-tight mb-4">Edit {{ facility.facility_name }} details</h1>
 
-                <div class="bg-white w-full shadow p-4">
+                <Breadcrumb :crumbs="crumbs" class="mb-4" />
+
+                <div class="bg-white w-full shadow p-4 rounded-lg">
                     <form @submit.prevent="submit">
                         <div class="max-w-2xl mb-4">
                             <InputLabel value="Facility Name" />

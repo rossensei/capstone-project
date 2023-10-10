@@ -5,51 +5,60 @@ defineProps({
     users: Array
 })
 
-
 const formatTimestampToDate = (timestamp) => {
     const date = new Date(timestamp);
 
-    const options = {
-        year: 'numeric',
-        month: 'long', // or 'short' or 'numeric' depending on your preference
-        day: 'numeric',
-    };
+    const monthNames = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
 
-    return date.toLocaleDateString(undefined, options);
+    const day = date.getDate();
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+
+    return `${day} ${month} ${year}`;
 }
 </script>
 
 <template>
-    <table class="bordered-table">
-        <thead>
-            <th>#</th>
-            <th>User</th>
-            <th>Joined</th>
-            <th>Active</th>
-            <th>Role</th>
-            <th>Action</th>
+    <table class="w-full text-sm text-left text-gray-500">
+        <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+            <tr>
+                <th scope="col" class="w-20 px-6 py-3">
+                    #
+                </th>
+                <th scope="col" class="px-6 py-3">
+                    Name
+                </th>
+                <th scope="col" class="w-32 px-6 py-3">
+                    Joined
+                </th>
+                <th scope="col" class="w-32 px-6 py-3 text-center">
+                    Status
+                </th>
+                <th scope="col" class="w-32 px-6 py-3 text-center">
+                    Role
+                </th>
+                <th scope="col" class="px-6 py-3 text-center">
+                    Action
+                </th>
+            </tr>
         </thead>
         <tbody>
-            <tr v-for="user in users" :key="user.id">
-                <td>
-                      {{ user.id }}
+            <tr class="bg-white border-b hover:bg-gray-50" v-for="(user, index) in users" :key="user.id">
+                <td class="px-6 py-3">
+                    {{ (index+1) }}
                 </td>
-                <td>
-                    <div class="flex items-center whitespace-nowrap w-full">
-                        <div>
-                            <img v-if="user.profile_photo" :src="user.profile_photo_url" alt="user_photo" class="w-10 h-10 rounded-full">
-                            <img v-else src="../Components/images/user-icon.png" class="w-10 h-10 rounded-full" alt="">
-                        </div>
-                        <div class="pl-3">
-                            <div class="text-base font-semibold">{{ user.fname }} {{ user.lname }}</div>
-                            <div class="font-normal text-gray-500">{{ user.email }}</div>
-                        </div> 
-                    </div>
+                <th scope="row" class="flex items-center px-6 py-3 text-gray-900 whitespace-nowrap">
+                    <img v-if="user.profile_photo" :src="user.profile_photo_url" alt="user_photo" class="w-10 h-10 rounded-full">
+                    <img v-else src="../../../Components/images/user-icon.png" class="w-10 h-10 rounded-full" alt="">
+                    <div class="pl-3">
+                        <div class="text-base font-semibold">{{ user.fname }} {{ user.lname }}</div>
+                        <div class="font-normal text-gray-500">{{ user.email }} </div>
+                    </div>  
+                </th>
+                <td class="px-6 py-3">
+                    {{ formatTimestampToDate(user.created_at) }}
                 </td>
-                <td class="text-center text-gray-900 text-sm">
-                      {{ formatTimestampToDate(user.created_at) }}
-                </td>
-                <td class="text-center text-sm">
+                <td class="px-6 py-3">
                     <div class="flex justify-center">
                         <span v-if="user.active" class="text-green-600 font-extrabold">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -63,7 +72,7 @@ const formatTimestampToDate = (timestamp) => {
                         </span>
                     </div>
                 </td>
-                <td class="text-center">
+                <td class="px-6 py-3 text-center">
                     <div v-if="user.roles.length">
                         <span 
                             v-for="role in user.roles" 
@@ -77,7 +86,7 @@ const formatTimestampToDate = (timestamp) => {
                         ></span>
                     </div>
                 </td>
-                <td>
+                <td class="px-6 py-3">
                     <div class="flex items-center justify-center space-x-2">
                         <Link :href="'/users/edit/' + user.id" class="text-sm text-white rounded-sm p-1 hover:bg-blue-500 bg-blue-600 outline outline-2 hover:outline-blue-300 duration-100">
                             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
@@ -95,32 +104,3 @@ const formatTimestampToDate = (timestamp) => {
         </tbody>
     </table>
 </template>
-
-<style scoped>
-.bordered-table {
-    width: 100%;
-    border-collapse: collapse;
-}
-
-/*.bordered-table thead {
-    @apply border border-gray-300;
-}**/
-.bordered-table th {
-    @apply px-4 py-3 text-xs uppercase;
-}
-
-/**.bordered-table tbody tr {
-    @apply  border border-gray-300;
-}*/
-.bordered-table td {
-    @apply px-4 py-2 text-gray-600;
-}
-
-tr:nth-child(odd) {
-    @apply bg-gray-100;
-}
-
-tr:nth-child(even) {
-    @apply bg-none;
-}
-</style>

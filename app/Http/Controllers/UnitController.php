@@ -2,20 +2,17 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Item;
+use App\Models\Unit;
 use Illuminate\Http\Request;
 
-class ItemController extends Controller
+class UnitController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
     public function index()
     {
-        return inertia('Inventory/Index', [
-            'items' => Item::with('unit', 'category')
-                        ->get()
-        ]);
+        //
     }
 
     /**
@@ -37,7 +34,7 @@ class ItemController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Item $item)
+    public function show(Unit $unit)
     {
         //
     }
@@ -45,7 +42,7 @@ class ItemController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Item $item)
+    public function edit(Unit $unit)
     {
         //
     }
@@ -53,7 +50,7 @@ class ItemController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Item $item)
+    public function update(Request $request, Unit $unit)
     {
         //
     }
@@ -61,7 +58,7 @@ class ItemController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Item $item)
+    public function destroy(Unit $unit)
     {
         //
     }

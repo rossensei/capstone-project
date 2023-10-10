@@ -17,7 +17,7 @@ class FacilityController extends Controller
         
         return inertia('Facility/Index', [
             'facilities' => Facility::with('user')
-                ->withCount('items')
+                ->withCount('properties')
                 ->orderBy('facility_name')
                 ->when($request->input('search'), function ($query, $search) {
                     $query->where('facility_name', 'like', "%{$search}%");
@@ -64,7 +64,7 @@ class FacilityController extends Controller
     {
         // dd(Facility::with('items', 'user')->find($facility->id));
         return inertia('Facility/Show', [
-            'facility' => Facility::with('items', 'user')->find($facility->id)
+            'facility' => Facility::with('properties', 'user')->find($facility->id)
         ]);
     }
 
@@ -111,9 +111,5 @@ class FacilityController extends Controller
         } else {
             return back()->with('error', 'This facility has existing properties.');
         }
-
-        // return $facility->items()->exists() 
-        //     ? back()->with('error', 'This facility has existing properties.') 
-        //     : back()->with('success', 'Facility has been removed successfully.');
     }
 }

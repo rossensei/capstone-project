@@ -113,12 +113,12 @@ onBeforeUnmount(() => {
                             </NavLink>
                         </li>
                         <li>
-                            <NavLink :href="route('requests.index')" :active="route().current('requests.index')" class="flex items-center text-white">
+                            <NavLink :href="route('inventory.index')" :active="route().current('inventory.index')" class="flex items-center text-white">
                                 <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-check2-square" viewBox="0 0 16 16">
                                     <path d="M3 14.5A1.5 1.5 0 0 1 1.5 13V3A1.5 1.5 0 0 1 3 1.5h8a.5.5 0 0 1 0 1H3a.5.5 0 0 0-.5.5v10a.5.5 0 0 0 .5.5h10a.5.5 0 0 0 .5-.5V8a.5.5 0 0 1 1 0v5a1.5 1.5 0 0 1-1.5 1.5H3z"/>
                                     <path d="m8.354 10.354 7-7a.5.5 0 0 0-.708-.708L8 9.293 5.354 6.646a.5.5 0 1 0-.708.708l3 3a.5.5 0 0 0 .708 0z"/>
                                   </svg>
-                                <span class="ml-3" v-show="!isCollapsed">Manage Inventory</span>
+                                <span class="ml-3" v-show="!isCollapsed">Inventory</span>
                             </NavLink>
                         </li>
                         <li>
@@ -151,7 +151,7 @@ onBeforeUnmount(() => {
                                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-[20px] h-[20px]">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                                   </svg>                                  
-                                <span class="ml-3" v-show="!isCollapsed">Track Property</span>
+                                <span class="ml-3" v-show="!isCollapsed">Find Property</span>
                             </NavLink>
                         </li>
                     </ul>

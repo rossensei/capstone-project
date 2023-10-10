@@ -1,5 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import FacilitiesTable from '@/Pages/Facility/Partials/FacilitiesTable.vue';
+import Breadcrumb from '@/Components/Breadcrumb.vue';
 import Pagination from '@/Components/Pagination.vue';
 import { Head, Link, router } from '@inertiajs/vue3';
 import debounce from 'lodash/debounce';
@@ -23,22 +25,33 @@ watch(search, debounce( function (value) {
         replace: true
     });
 }, 300))
+
+const crumbs = [
+    {
+        name: 'Dashboard',
+        url: '/dashboard',
+        active: false,
+    },
+    {
+        name: 'Facilities',
+        url: null,
+        active: true,
+    },
+]
 </script>
 
 <template>
     <Head title="Facilities" />
 
     <AuthenticatedLayout>
-        <template #header>
-            <h1 class="text-2xl text-gray-500 font-semibold">Facilities</h1>
-        </template>
-        <div class="py-6">
+        <div class="py-4">
             <div class="w-full sm:px-6 lg:px-8">
                 
-                <h1 class="text-2xl text-gray-500 font-semibold mb-4">List of Facilities</h1>
+                <h1 class="font-semibold text-3xl text-gray-700 leading-tight mb-4">List of Facilities</h1>
 
-                <div class="relative overflow-x-auto bg-white">
+                <Breadcrumb :crumbs="crumbs" class="mb-4" />
 
+                <div class="relative overflow-x-auto bg-white shadow rounded-lg">
                     <div class="p-4">
                         <div class="flex items-center justify-between bg-white mb-4">
                             <div class="flex items-center space-x-2">
@@ -69,9 +82,8 @@ watch(search, debounce( function (value) {
                             </div>
                         </div>
 
-                        <hr>
-    
-                        <table class="bordered-table">
+                        <FacilitiesTable :facilities="facilities.data" />
+                        <!-- <table class="bordered-table">
                             <thead>
                                 <th>
                                     #
@@ -108,7 +120,6 @@ watch(search, debounce( function (value) {
                                     </td>
                                     <td class="text-center">
                                         {{ facility.items_count }}
-                                        <!-- <Link :href="'/facilities/view/' + facility.id" class="underline text-blue-600">{{ facility.items_count }}</Link> -->
                                     </td>
                                     <td>
                                         <div class="flex items-center justify-center space-x-1">
@@ -132,19 +143,17 @@ watch(search, debounce( function (value) {
                                     </td>
                                 </tr>
                             </tbody>
-                        </table>
-                    </div>
+                        </table> -->
 
-                    <hr>
-                    
-                    <Pagination 
-                    class="mt-5"
-                    :links="facilities.links"
-                    :current_page="facilities.current_page"
-                    :prev_page_url="facilities.prev_page_url"
-                    :next_page_url="facilities.next_page_url"
-                    :last_page="facilities.last_page"
-                    />
+                        <Pagination 
+                        class="mt-4"
+                        :links="facilities.links"
+                        :current_page="facilities.current_page"
+                        :prev_page_url="facilities.prev_page_url"
+                        :next_page_url="facilities.next_page_url"
+                        :last_page="facilities.last_page"
+                        />
+                    </div>                    
                 </div>
             </div>
         </div>

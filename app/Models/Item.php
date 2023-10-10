@@ -10,18 +10,37 @@ class Item extends Model
     use HasFactory;
 
     protected $fillable = [
-        'facility_id',
-        'tag_no',
-        'serial_no',
-        'item_name',
-        'description',
-        'condition',
-        'remarks',
-        'date_acquired',
+        'category_id',
+        'name',
+        'qty',
+        'unit_id',
+        'size',
+        'expiry_date',
     ];
 
-    public function facility()
+    public function unit()
     {
-        return $this->belongsTo('App\Models\Facility');
+        return $this->belongsTo('App\Models\Unit');
+    }
+
+    public function category()
+    {
+        return $this->belongsTo('App\Models\Category');
+    }
+
+    public function usages()
+    {
+        return $this->hasMany('App\Models\Usage');
+    }
+
+    // public function allocations()
+    // {
+    //     return $this->belongsToMany('App\Models\Allocation');
+    // }
+
+    public function users()
+    {
+        return $this->belongsToMany('App\Models\User', 'user_item')
+            ->withPivot(['qty', 'status', 'signature', 'date']);
     }
 }

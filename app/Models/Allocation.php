@@ -5,14 +5,17 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class Facility extends Model
+class Allocation extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'facility_name',
-        'building',
         'user_id',
+        'item_id',
+        'qty',
+        'status',
+        'date',
+        'signature',
     ];
 
     public function user()
@@ -20,8 +23,8 @@ class Facility extends Model
         return $this->belongsTo('App\Models\User');
     }
 
-    public function properties()
+    public function items()
     {
-        return $this->hasMany('App\Models\Property');
+        return $this->belongsToMany('App\Models\Item');
     }
 }

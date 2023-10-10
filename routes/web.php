@@ -6,11 +6,12 @@ use Inertia\Inertia;
 use App\Models\Facility;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
+use App\Http\Controllers\ItemController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\FacilityController;
-use App\Http\Controllers\ItemController;
 use App\Http\Controllers\RequestController;
+use App\Http\Controllers\FacilityController;
+use App\Http\Controllers\UserWithItemsController;
 
 /*
 |--------------------------------------------------------------------------
@@ -58,9 +59,13 @@ Route::middleware('auth')->group(function () {
     Route::patch('/users/update-password/{user}', [UserController::class, 'updatePassword'])->middleware('role:admin');
     Route::delete('/users/delete/{user}', [UserController::class, 'destroy']);
 
+    Route::get('/inventory', [ItemController::class, 'index'])->name('inventory.index');
+
     Route::get('/items', [ItemController::class, 'index'])->name('items.index');
 
     Route::get('/requests', [RequestController::class, 'index'])->name('requests.index');
+
+    Route::get('/item-usages', [UserWithItemsController::class, 'index']);
 });
 
 require __DIR__.'/auth.php';

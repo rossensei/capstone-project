@@ -66,4 +66,10 @@ class User extends Authenticatable
     {
         return $this->hasOne('App\Models\Facility');
     }
+
+    public function items()
+    {
+        return $this->belongsToMany('App\Models\Item', 'user_item')
+            ->withPivot(['qty', 'status', 'signature', 'date']);
+    }
 }

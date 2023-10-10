@@ -1,62 +1,37 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Breadcrumb from '@/Components/Breadcrumb.vue';
-import Pagination from '@/Components/Pagination.vue';
-import Table from '@/Components/Table.vue';
-import UsersTable from '@/Pages/User/Partials/UsersTable.vue';
-import { Head, router, Link, useForm } from '@inertiajs/vue3';
-import throttle from 'lodash/throttle';
-import { watch, ref } from 'vue';
+import ItemsTable from '@/Pages/Inventory/Partials/ItemsTable.vue';
+import { Head, Link } from '@inertiajs/vue3';
+import { ref } from 'vue';
 
 const props = defineProps({
-    users: Object,
-    filters: Object,
-    roles: Array
+    items: Array,
 })
-
-const search = ref(props.filters.search)
-const role = ref(!props.filters.role ? '' : props.filters.role);
-const status = ref(!props.filters.status ? '' : props.filters.status);
-
-watch([search, role, status], throttle( function ([value1, value2, value3]) {
-    router.get('/users', { 
-        search: value1,
-        role: value2,
-        status: value3,
-        },{
-        preserveState: true,
-        replace: true,
-    });
-}, 300));
-
-const clearSearch = () => {
-    search.value = ''
-}
 
 const crumbs = [
     {
         name: 'Dashboard',
         url: '/dashboard',
-        active: false,
+        active: false
     },
     {
-        name: 'Users',
-        url: '/users',
-        active: true,
-    },
+        name: 'Inventory',
+        url: '/inventory',
+        active: true
+    }
 ]
 </script>
 
 <template>
-    <Head title="Users" />
+    <Head title="Dashboard" />
 
     <AuthenticatedLayout>
         <div class="py-4">
             <div class="w-full sm:px-6 lg:px-8">
-                
-                <h1 class="font-semibold text-3xl text-gray-700 leading-tight mb-4">List of Users</h1>
+                <h2 class="font-semibold text-3xl text-gray-700 leading-tight mb-4">List of Items</h2>
 
-                <Breadcrumb :crumbs="crumbs" class="mb-4" />
+                <Breadcrumb :crumbs="crumbs" class="mb-4"/>
 
                 <div class="relative overflow-x-auto bg-white shadow rounded-lg">
                     <div class="p-4">
@@ -67,31 +42,12 @@ const crumbs = [
                                         <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
                                         <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
                                     </svg>
-                                    <span class="text-sm">Add User</span>
+                                    <span class="text-sm">Add Item</span>
                                 </Link>
                             </div>
                             
                             <div class="flex space-x-2">
-                                <!-- Status Filter -->
-                                <select 
-                                v-model="status"
-                                class="w-auto border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
-                                name=""
-                                id="facility-head">
-                                    <option value="">Filter by status</option>
-                                    <option value="true">Active</option>
-                                    <option value="false">Deactivated</option>
-                                </select>
-
-                                <!-- Role Filter -->
-                                <select 
-                                v-model="role"
-                                class="w-auto border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
-                                name=""
-                                id="facility-head">
-                                    <option value="">Filter by role</option>
-                                    <option v-for="role in roles" :key="role.id" :value="role.name">{{ role.name }}</option>
-                                </select>
+                                
 
                                 <label for="search" class="relative">
                                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -117,28 +73,19 @@ const crumbs = [
 
                         <!-- <hr> -->
                         
-                        <UsersTable :users="users.data" />
+                        <ItemsTable :items="items" />
 
-                        <!-- <hr> -->
                         <!-- Paginator -->
-                        <Pagination 
+                        <!-- <Pagination 
                         v-show="users" 
                         :links="users.links"
                         :current_page="users.current_page"
                         :prev_page_url="users.prev_page_url"
                         :next_page_url="users.next_page_url"
                         :last_page="users.last_page"
-                        class="mt-4"/>
+                        class="mt-4"/> -->
                     </div>
                 </div>
-
-
-                <div v-show="users.data.length < 1" class="flex flex-col w-full mt-9">
-                    <h1 class="text-center text-xl text-gray-400 mb-6">No user found</h1>
-                    <img src="../../Components/images/no-result.png" alt="no result" class="w-[250px] opacity-25 mx-auto">
-                </div>
-
-
             </div>
         </div>
     </AuthenticatedLayout>

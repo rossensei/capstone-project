@@ -13,16 +13,16 @@ return new class extends Migration
     {
         Schema::create('items', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('facility_id');
-            $table->string('tag_no');
-            $table->string('serial_no');
-            $table->string('item_name');
-            $table->string('description');
-            $table->string('condition');
-            $table->string('remarks')->nullable();
-            $table->date('date_acquired')->nullable();
+            $table->unsignedBigInteger('category_id');
+            $table->string('name');
+            $table->string('qty');
+            $table->unsignedBigInteger('unit_id');
+            $table->string('size')->nullable();
+            $table->date('expiry_date')->nullable();
             $table->timestamps();
-            $table->foreign('facility_id')->references('id')->on('facilities');
+
+            $table->foreign('category_id')->references('id')->on('categories');
+            $table->foreign('unit_id')->references('id')->on('units');
         });
     }
 
