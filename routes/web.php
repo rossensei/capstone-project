@@ -59,9 +59,12 @@ Route::middleware('auth')->group(function () {
     Route::patch('/users/update-password/{user}', [UserController::class, 'updatePassword'])->middleware('role:admin');
     Route::delete('/users/delete/{user}', [UserController::class, 'destroy']);
 
-    Route::get('/inventory', [ItemController::class, 'index'])->name('inventory.index');
-
-    Route::get('/items', [ItemController::class, 'index'])->name('items.index');
+    Route::get('/items', [ItemController::class, 'index'])->name('item.index');
+    Route::get('/items/add-item', [ItemController::class, 'create'])->name('item.create');
+    Route::post('/items', [ItemController::class, 'store'])->name('item.store');
+    Route::get('/items/edit/{item}', [ItemController::class, 'edit'])->name('item.edit');
+    Route::put('/items/{item}', [ItemController::class, 'update'])->name('item.update');
+    Route::delete('/items/delete-item/{item}', [ItemController::class, 'destroy'])->name('item.destroy');
 
     Route::get('/requests', [RequestController::class, 'index'])->name('requests.index');
 

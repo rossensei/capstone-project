@@ -13,12 +13,11 @@ return new class extends Migration
     {
         Schema::create('items', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('category_id');
             $table->string('name');
-            $table->string('qty');
-            $table->unsignedBigInteger('unit_id');
-            $table->string('size')->nullable();
+            $table->string('qty_stock');
             $table->date('expiry_date')->nullable();
+            $table->unsignedBigInteger('unit_id');
+            $table->unsignedBigInteger('category_id');
             $table->timestamps();
 
             $table->foreign('category_id')->references('id')->on('categories');

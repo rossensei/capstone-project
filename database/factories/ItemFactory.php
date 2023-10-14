@@ -19,9 +19,8 @@ class ItemFactory extends Factory
         return [
             'name' => fake()->word(),
             'category_id' => fake()->randomElement(range(1,4)),
-            'qty' => fake()->randomNumber(4, false),
+            'qty_stock' => fake()->randomNumber(4, false),
             'unit_id' => fake()->randomElement(range(1,3)),
-            'size' => fake()->randomElement([null, null, null, 'Long', 'Short', 'Small', 'Medium', 'Large', 'Extra Large']),
         ];
     }
 }

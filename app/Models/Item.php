@@ -12,9 +12,8 @@ class Item extends Model
     protected $fillable = [
         'category_id',
         'name',
-        'qty',
+        'qty_stock',
         'unit_id',
-        'size',
         'expiry_date',
     ];
 

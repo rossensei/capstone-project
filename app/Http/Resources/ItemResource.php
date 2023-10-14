@@ -16,12 +16,12 @@ class ItemResource extends JsonResource
     {
         return [
             'id' => $this->id,
-            'item' => $this->name,
-            'category' => $this->category->cat_name,
+            'name' => $this->name,
             'size' => $this->size,
-            'qty' => $this->pivot->qty,
-            'unit' => $this->unit->abbreviation,
-            'date_taken' => $this->pivot->date,
+            'category' => $this->category->cat_name,
+            'qty' => $this->qty,
+            'unit' => $this->unit->name,
+            'expiry_date' => $this->unit->expiry_date,
         ];
     }
 }
