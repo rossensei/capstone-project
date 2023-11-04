@@ -14,11 +14,9 @@ return new class extends Migration
         Schema::create('facilities', function (Blueprint $table) {
             $table->id();
             $table->string('facility_name');
-            $table->string('building');
-            $table->unsignedBigInteger('user_id');
+            $table->string('description');
+            $table->foreignId('user_id')->constrained();
             $table->timestamps();
-
-            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 

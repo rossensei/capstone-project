@@ -13,6 +13,6 @@ class Category extends Model
 
     public function items()
     {
-        $this->hasMany('App\Models\Item');
+        return $this->hasMany('App\Models\Item');
     }
 }

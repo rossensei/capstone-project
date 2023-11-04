@@ -11,18 +11,13 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('user_item', function (Blueprint $table) {
+        Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('user_id');
-            $table->unsignedBigInteger('item_id');
-            $table->integer('qty');
+            $table->foreignId('user_id')->constrained();
+            $table->date('req_date');
             $table->string('status')->default('Pending');
-            $table->string('signature');
-            $table->date('date');
+            $table->string('signature')->nullable();
             $table->timestamps();
-
-            $table->foreign('item_id')->references('id')->on('items');
-            $table->foreign('user_id')->references('id')->on('users');
         });
     }
 
@@ -31,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('user_item');
+        Schema::dropIfExists('transactions');
     }
 };

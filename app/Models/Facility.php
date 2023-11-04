@@ -11,7 +11,7 @@ class Facility extends Model
 
     protected $fillable = [
         'facility_name',
-        'building',
+        'description',
         'user_id',
     ];
 
@@ -20,8 +20,8 @@ class Facility extends Model
         return $this->belongsTo('App\Models\User');
     }
 
-    public function properties()
+    public function facilityProperties()
     {
-        return $this->hasMany('App\Models\Property');
+        return $this->hasMany('App\Models\FacilityProperty');
     }
 }

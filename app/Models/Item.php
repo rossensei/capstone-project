@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Transaction;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Item extends Model
 {
@@ -27,19 +28,14 @@ class Item extends Model
         return $this->belongsTo('App\Models\Category');
     }
 
-    public function usages()
+    public function transactions()
     {
-        return $this->hasMany('App\Models\Usage');
+        return $this->belongsToMany(Transaction::class)
+            ->withPivot('qty');
     }
 
-    // public function allocations()
-    // {
-    //     return $this->belongsToMany('App\Models\Allocation');
-    // }
-
-    public function users()
+    public function getTotalQuantity()
     {
-        return $this->belongsToMany('App\Models\User', 'user_item')
-            ->withPivot(['qty', 'status', 'signature', 'date']);
+        return $this->transactions->sum('pivot.qty');
     }
 }

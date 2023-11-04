@@ -11,14 +11,15 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('usages', function (Blueprint $table) {
+        Schema::create('facility_properties', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('item_id');
-            $table->dateTime('used_at');
-            $table->integer('quantity_used');
+            $table->foreignId('property_id')->constrained();
+            $table->foreignId('facility_id')->constrained();
+            $table->integer('tag_no');
+            $table->date('date_acquired');
+            $table->string('condition');
+            $table->string('remarks')->nullable();
             $table->timestamps();
-
-            $table->foreign('item_id')->references('id')->on('items');
         });
     }
 
@@ -27,6 +28,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('usages');
+        Schema::dropIfExists('facility_properties');
     }
 };

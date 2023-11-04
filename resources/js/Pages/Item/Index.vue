@@ -1,13 +1,16 @@
 <script setup>
+import { TrashIcon } from '@heroicons/vue/24/outline';
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Breadcrumb from '@/Components/Breadcrumb.vue';
-import ItemsTable from '@/Pages/Item/Partials/ItemsTable.vue';
-import { Head, Link } from '@inertiajs/vue3';
-import { ref, watch } from 'vue';
+import Pagination from '@/Components/Pagination.vue';
+import Alert from '@/Components/Alert.vue';
+import { PencilIcon, ChevronDownIcon } from '@heroicons/vue/24/solid';
+import { Head, Link, router, usePage } from '@inertiajs/vue3';
+import { ref, watch, computed, onBeforeUpdate } from 'vue';
 
 const props = defineProps({
     items: Array,
-})
+});
 
 const crumbs = [
     {
@@ -22,8 +25,8 @@ const crumbs = [
     }
 ];
 
-const getCurrentPercentage = (qty) => {
-    return (qty / qty) * 100;
+const getCurrentPercentage = (qty, used) => {
+    return ((qty - used) / qty) * 100;
 }
 
 const getDateFormat = (d) => {
@@ -38,24 +41,37 @@ const getDateFormat = (d) => {
     return `${day} ${month} ${year}`;
 }
 
-const isDropdownOpen = ref(false);
-
-const openDropdown = () => {
-    isDropdownOpen.value = !isDropdownOpen.value;
-}
-
+//handling bulk delete section
 const selectedItems = ref([]);
 
 const selectAll = ref(false);
 
 const toggleSelectAll = () => {
-    if(selectAll){
+    if(selectAll.value){
         selectedItems.value = props.items.map(item => item.id)
     } else {
         selectedItems.value = [];
     }
 }
 
+const deleteItems = () => {
+    if(selectedItems.value.length) {
+        router.delete('/items/delete-items', {
+            data: {
+                ids: selectedItems.value
+            },
+            onSuccess: () => {
+                selectedItems.value = [];
+            }
+        });
+    }
+}
+
+const showDropdown = ref(false);
+
+const toggleActionDropdown = () => {
+    showDropdown.value = !showDropdown.value
+}
 </script>
 
 <template>
@@ -64,44 +80,68 @@ const toggleSelectAll = () => {
     <AuthenticatedLayout>
         <div class="py-4">
             <div class="w-full sm:px-6 lg:px-8">
-                <h2 class="font-semibold text-3xl text-gray-700 leading-tight mb-4">List of Items</h2>
 
+
+                <div class="flex items-center justify-between mb-4">
+                    <h2 class="font-semibold text-3xl text-gray-700 leading-tight">List of Items</h2>
+                    <Link href="/items/add-item" class="flex items-center justify-start px-3 py-2 rounded-full bg-[#4e73df] hover:bg-[#7e99eb] text-white font-semibold duration-300 ease-in">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+                          </svg>                                                                           
+                        <span class="text-sm ml-1 font-semibold">Add Item</span>
+                    </Link>
+                </div>
+                <Alert class="mb-4" />
                 <Breadcrumb :crumbs="crumbs" class="mb-4"/>
 
-                <div class="relative overflow-x-auto bg-white shadow rounded-lg">
-                    <div class="p-4">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center space-x-2">
-                                <Link href="/items/add-item" class="flex items-center space-x-2 px-2 py-2 rounded-md bg-[#4e73df] hover:bg-[#4e72dfc0] text-white">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus-fill" viewBox="0 0 16 16">
-                                        <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                                        <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
-                                    </svg>
-                                    <span class="text-sm">Add Item</span>
-                                </Link>
 
-                                <!-- <button @click="openDropdown" id="dropdownDefaultButton" data-dropdown-toggle="dropdown" class="text-white bg-blue-700 hover:bg-blue-800 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center" type="button">
-                                    Action <svg class="w-2.5 h-2.5 ml-2.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 10 6">
-                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 4 4 4-4"/>
-                                </svg>
+                <!-- <Alert v-show="(flash.success || flash.error) && show" :message="flash" @close="closeAlert" class="mb-4" /> -->
+
+                <div class="relative overflow-x-auto bg-white shadow rounded-lg border">
+                    <!-- <div class="flex items-center justify-end p-4 bg-gray-50">
+                        <Link href="/items/add-item" class="flex items-center px-2 py-2 rounded-md bg-[#4e73df] hover:bg-[#4e72dfc0] text-white">
+                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v12m6-6H6" />
+                              </svg>                                                                           
+                            <span class="text-sm ml-1">Add Item</span>
+                        </Link>
+                    </div>
+
+                    <hr> -->
+                    <div class="p-4">
+
+
+                        <div class="flex items-center justify-between mb-4">
+
+                            <!-- <button type="button" @click="deleteItems" class="inline-flex items-center px-2 py-2 rounded-md border border-red-600 text-red-600 hover:bg-red-500 hover:text-white">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                    </svg> -->
+                            
+                            <!-- </button> -->
+
+                            <div class="flex items-center space-x-2">
+                                <span v-if="selectedItems.length != 0" class="text-sm font-medium text-blue-700 ml-1">{{selectedItems.length}} item(s) selected</span>
+
+                                <button type="button" @click="deleteItems"
+                                class="inline-flex items-center px-2 py-2 rounded-md tracking-wide uppercase text-xs font-semibold"
+                                :class="[!selectedItems.length ? 'text-gray-400 bg-gray-50' : 'bg-gray-50 hover:bg-red-100 text-red-600']">
+                                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
+                                        </svg>
+                                        Delete
                                 </button>
 
-                                <div v-if="isDropdownOpen" id="dropdown" class="z-10 block bg-white divide-y divide-gray-100 rounded-lg shadow w-44 dark:bg-gray-700">
-                                    <ul class="py-2 text-sm text-gray-700 dark:text-gray-200" aria-labelledby="dropdownDefaultButton">
-                                    <li>
-                                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Dashboard</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Settings</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Earnings</a>
-                                    </li>
-                                    <li>
-                                        <a href="#" class="block px-4 py-2 hover:bg-gray-100 dark:hover:bg-gray-600 dark:hover:text-white">Sign out</a>
-                                    </li>
-                                    </ul>
-                                </div> -->
+                                <button type="button" 
+                                class="inline-flex items-center px-2 py-2 rounded-md tracking-wide uppercase text-xs font-semibold"
+                                :class="[!selectedItems.length ? 'text-gray-400 bg-gray-50' : 'bg-gray-50 hover:bg-blue-100 text-blue-600']">
+                                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-4 h-4">
+                                    <path d="M21.731 2.269a2.625 2.625 0 00-3.712 0l-1.157 1.157 3.712 3.712 1.157-1.157a2.625 2.625 0 000-3.712zM19.513 8.199l-3.712-3.712-8.4 8.4a5.25 5.25 0 00-1.32 2.214l-.8 2.685a.75.75 0 00.933.933l2.685-.8a5.25 5.25 0 002.214-1.32l8.4-8.4z" />
+                                    <path d="M5.25 5.25a3 3 0 00-3 3v10.5a3 3 0 003 3h10.5a3 3 0 003-3V13.5a.75.75 0 00-1.5 0v5.25a1.5 1.5 0 01-1.5 1.5H5.25a1.5 1.5 0 01-1.5-1.5V8.25a1.5 1.5 0 011.5-1.5h5.25a.75.75 0 000-1.5H5.25z" />
+                                  </svg>
+                                  
+                                        Edit
+                                </button>
 
                             </div>
                             
@@ -144,9 +184,9 @@ const toggleSelectAll = () => {
                                     <th scope="col" class="px-6 py-3">
                                         Category
                                     </th>
-                                    <th scope="col" class="px-6 py-3">
+                                    <!-- <th scope="col" class="px-6 py-3">
                                         Qty Stock
-                                    </th>
+                                    </th> -->
                                     <th scope="col" class="px-6 py-3">
                                         Used
                                     </th>
@@ -162,7 +202,7 @@ const toggleSelectAll = () => {
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr class="bg-white border-b hover:bg-gray-50" v-for="item in items" :key="item.id">
+                                <tr class="border-b bg-white hover:bg-gray-50" v-for="item in items" :key="item.id" :class="{'border-l-4 border-l-blue-600' : selectedItems.includes(item.id)}">
                                     <td class="w-4 p-4">
                                         <div class="flex items-center">
                                             <input v-model="selectedItems" :id="'checkbox-' + item.id" :value="item.id" type="checkbox" class="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500">
@@ -173,18 +213,15 @@ const toggleSelectAll = () => {
                                         {{ item.name }}
                                     </th>
                                     <td class="px-6 py-4">
-                                        {{ item.category }}
+                                        {{ item.category.cat_name }}
                                     </td>
                                     <td class="px-6 py-4">
-                                        {{ item.qty_stock }} {{ item.unit }}
+                                        {{ item.used }}
                                     </td>
                                     <td class="px-6 py-4">
-                                        160
-                                    </td>
-                                    <td class="px-6 py-4">
-                                        {{ item.qty_stock }} out of {{ item.qty_stock }} {{ item.unit }}
+                                        {{ item.curr_stocks - item.used }} out of {{ item.init_qty }} {{ item.unit.abbreviation }}
                                         <div id="progress-bar" class="w-full bg-gray-200 rounded-full h-auto">
-                                            <div id="percentage" class="bg-green-500 rounded-full h-2" :style="{ 'width': getCurrentPercentage(item.qty_stock) + '%' }"></div>
+                                            <div id="percentage" class="bg-green-500 rounded-full h-2" :style="{ 'width': getCurrentPercentage(item.curr_stocks, item.used) + '%' }"></div>
                                         </div>
                                     </td>
                                     <td class="px-6 py-4">
@@ -192,15 +229,13 @@ const toggleSelectAll = () => {
                                     </td>
                                     <td class="px-6 py-4">
                                         <div class="flex items-center justify-center space-x-2">
-                                            <Link :href="'/items/edit/' + item.id" class="text-sm text-white rounded-sm p-1 hover:bg-blue-500 bg-blue-600 outline outline-2 hover:outline-blue-300 duration-100">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 4.487l1.687-1.688a1.875 1.875 0 112.652 2.652L10.582 16.07a4.5 4.5 0 01-1.897 1.13L6 18l.8-2.685a4.5 4.5 0 011.13-1.897l8.932-8.931zm0 0L19.5 7.125M18 14v4.75A2.25 2.25 0 0115.75 21H5.25A2.25 2.25 0 013 18.75V8.25A2.25 2.25 0 015.25 6H10" />
-                                                  </svg>
+                                            <Link :href="'/items/edit/' + item.id" class="inline-flex items-center text-xs font-semibold tracking-wide text-blue-600 uppercase rounded-sm px-2 py-1.5 hover:text-blue-600 hover:bg-blue-100 duration-300 ease-in-out">
+                                                <PencilIcon class="w-4 h-4 mr-1" />
+                                                Edit
                                             </Link>
-                                            <Link :href="'/items/delete-item/' + item.id" as="button" method="DELETE" class="text-sm text-white rounded-sm p-1 hover:bg-red-500 bg-red-600 outline outline-2 hover:outline-red-300 duration-100">
-                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-4 h-4">
-                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                                                  </svg>
+                                            <Link :href="'/items/delete-item/' + item.id" as="button" method="DELETE" class="inline-flex items-center text-xs font-semibold text-red-600 uppercase rounded-sm px-2 py-1.5 hover:bg-red-100 duration-300 ease-in-out">
+                                                  <TrashIcon class="w-[14px] h-[14px] mr-1" />
+                                                  Delete
                                             </Link>
                                         </div>
                                     </td>

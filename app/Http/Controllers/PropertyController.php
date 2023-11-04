@@ -12,7 +12,9 @@ class PropertyController extends Controller
      */
     public function index()
     {
-        //
+        // return inertia('Property/Index', [
+        //     'properties' => Property::
+        // ])
     }
 
     /**

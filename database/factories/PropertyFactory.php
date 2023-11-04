@@ -17,13 +17,8 @@ class PropertyFactory extends Factory
     public function definition(): array
     {
         return [
-            'facility_id' => fake()->randomElement(range(1,20)),
-            'tag_no' => fake()->randomNumber(5, true),
-            'serial_no' => fake()->randomNumber(8, true),
-            'name' => fake()->word(),
+            'property_name' => fake()->word(),
             'description' => fake()->sentence(),
-            'condition' => fake()->randomElement(['Good', 'Good', 'Damaged', 'New', 'Used']),
-            'date_acquired' => fake()->date(),
         ];
     }
 }

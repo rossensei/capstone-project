@@ -14,7 +14,8 @@ return new class extends Migration
         Schema::create('items', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->string('qty_stock');
+            $table->integer('curr_stocks');
+            $table->integer('init_qty');
             $table->date('expiry_date')->nullable();
             $table->unsignedBigInteger('unit_id');
             $table->unsignedBigInteger('category_id');

@@ -1,12 +1,16 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
+import { ArrowPathIcon, PencilIcon, ChevronDownIcon, EyeIcon, UserPlusIcon, AdjustmentsHorizontalIcon } from '@heroicons/vue/24/solid';
+import { TrashIcon, FunnelIcon, ExclamationTriangleIcon } from '@heroicons/vue/24/outline';
 import Breadcrumb from '@/Components/Breadcrumb.vue';
 import Pagination from '@/Components/Pagination.vue';
 import Table from '@/Components/Table.vue';
 import UsersTable from '@/Pages/User/Partials/UsersTable.vue';
 import { Head, router, Link, useForm } from '@inertiajs/vue3';
 import throttle from 'lodash/throttle';
-import { watch, ref } from 'vue';
+import { watch, ref, onMounted } from 'vue';
+import Alert from '@/Components/Alert.vue';
+import Modal from '@/Components/Modal.vue';
 
 const props = defineProps({
     users: Object,
@@ -15,83 +19,168 @@ const props = defineProps({
 })
 
 const search = ref(props.filters.search)
-const role = ref(!props.filters.role ? '' : props.filters.role);
-const status = ref(!props.filters.status ? '' : props.filters.status);
+const role = ref(props.filters.role);
+const status = ref(props.filters.status);
 
 watch([search, role, status], throttle( function ([value1, value2, value3]) {
-    router.get('/users', { 
+
+    let params = {
         search: value1,
         role: value2,
-        status: value3,
-        },{
+        status: value3
+    }
+
+    Object.keys(params).forEach(key => {
+        if(params[key] == '') {
+            delete params[key];
+        }
+    });
+
+    router.get('/users', params,{
         preserveState: true,
         replace: true,
     });
 }, 300));
 
-const clearSearch = () => {
-    search.value = ''
+// const crumbs = [
+//     {
+//         name: 'Dashboard',
+//         url: '/dashboard',
+//         active: false,
+//     },
+//     {
+//         name: 'Users',
+//         url: '/users',
+//         active: true,
+//     },
+// ]
+
+const formatTimestampToDate = (timestamp) => {
+    const date = new Date(timestamp);
+
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+
+    const day = date.getDate();
+    const month = monthNames[date.getMonth()];
+    const year = date.getFullYear();
+
+    return `${day} ${month} ${year}`;
 }
 
-const crumbs = [
-    {
-        name: 'Dashboard',
-        url: '/dashboard',
-        active: false,
-    },
-    {
-        name: 'Users',
-        url: '/users',
-        active: true,
-    },
-]
+const reset = () => {
+    role.value = '';
+    status.value = '';
+}
+
+const showFilter = ref(false);
+
+function openFilterDropdown() {
+    showFilter.value = !showFilter.value;
+}
+
+const selectedUser = ref({})
+const confirmingUserDeletion = ref(false);
+
+const deleteUser = (user) => {
+    confirmingUserDeletion.value = true;
+
+    selectedUser.value = user;
+}
+const closeModal = () => {
+    confirmingUserDeletion.value = false;
+};
+
+const confirmDeleteUser = () => {
+    router.delete('/users/delete/' + selectedUser.value.id, {
+        onSuccess: () => closeModal()
+    });
+}
 </script>
 
 <template>
     <Head title="Users" />
 
     <AuthenticatedLayout>
-        <div class="py-4">
+        <div class="py-6">
             <div class="w-full sm:px-6 lg:px-8">
                 
-                <h1 class="font-semibold text-3xl text-gray-700 leading-tight mb-4">List of Users</h1>
+                <div class="flex items-center justify-between mb-4">
+                    <h1 class="font-semibold text-3xl text-gray-700 leading-tight">Manage Users</h1>
+                    <Link href="/users/create" class="flex items-center px-3 py-2 rounded-full bg-[#4e73df] hover:bg-[#4e72dfc0] text-white">
+                        <UserPlusIcon class="w-4 h-4" />
+                        <span class="text-sm ml-1">Add User</span>
+                    </Link>
+                </div>
 
-                <Breadcrumb :crumbs="crumbs" class="mb-4" />
+                <Alert class="mb-4" />
 
-                <div class="relative overflow-x-auto bg-white shadow rounded-lg">
+                <div class="overflow-x-auto bg-white shadow rounded-lg">
                     <div class="p-4">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center space-x-2">
-                                <Link href="/users/create" class="flex items-center space-x-2 px-2 py-2 rounded-md bg-[#4e73df] hover:bg-[#4e72dfc0] text-white">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" fill="currentColor" class="bi bi-person-plus-fill" viewBox="0 0 16 16">
-                                        <path d="M1 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H1zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6z"/>
-                                        <path fill-rule="evenodd" d="M13.5 5a.5.5 0 0 1 .5.5V7h1.5a.5.5 0 0 1 0 1H14v1.5a.5.5 0 0 1-1 0V8h-1.5a.5.5 0 0 1 0-1H13V5.5a.5.5 0 0 1 .5-.5z"/>
-                                    </svg>
-                                    <span class="text-sm">Add User</span>
-                                </Link>
-                            </div>
+                        <div class="flex items-end justify-between mb-4">
                             
-                            <div class="flex space-x-2">
-                                <!-- Status Filter -->
-                                <select 
-                                v-model="status"
-                                class="w-auto border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
-                                name=""
-                                id="facility-head">
-                                    <option value="">Filter by status</option>
-                                    <option value="true">Active</option>
-                                    <option value="false">Deactivated</option>
-                                </select>
+                            <h1 class="text-xl font-semibold text-gray-600">User Information</h1>
 
-                                <!-- Role Filter -->
-                                <select 
-                                v-model="role"
-                                class="w-auto border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
-                                name=""
-                                id="facility-head">
-                                    <option value="">Filter by role</option>
-                                    <option v-for="role in roles" :key="role.id" :value="role.name">{{ role.name }}</option>
-                                </select>
+                            <div class="flex space-x-2">
+
+                                <button 
+                                v-if="role || status"
+                                @click="reset" 
+                                class="inline-flex items-center text-xs font-medium text-gray-600 justify-center uppercase bg-white hover:bg-gray-100 border border-gray-300 p-2 rounded-md">
+                                    <ArrowPathIcon class="w-4 h-4 mr-1" />
+                                    Reset</button>
+                                <div class="relative">
+                                    <button @click="openFilterDropdown" class="inline-flex justify-center text-gray-600 items-center rounded-md bg-white hover:bg-gray-100 border border-gray-300 p-2 text-sm font-medium">
+                                        <AdjustmentsHorizontalIcon class="w-4 h-4 mr-1"/>
+                                        Filter
+                                    </button>
+
+                                    <!-- Full Screen Dropdown Overlay -->
+                                    <div v-show="showFilter" class="fixed inset-0 z-40" @click="showFilter = false"></div>
+
+                                    <transition
+                                    enter-active-class="transition ease-out duration-200"
+                                    enter-from-class="opacity-0 scale-95"
+                                    enter-to-class="opacity-100 scale-100"
+                                    leave-active-class="transition ease-in duration-75"
+                                    leave-from-class="opacity-100 scale-100"
+                                    leave-to-class="opacity-0 scale-95"
+                                    >
+                                        <div v-show="showFilter" class="z-50 absolute w-52 top-10 right-0 bg-white border shadow-lg rounded-md py-3 px-3">
+                                            <span class="text-sm font-medium text-gray-600">Status</span>
+                                            <div class="mb-1">
+                                                <input v-model="status" value="true" type="radio" name="status" id="status-1" class="rounded-lg">
+                                                <label for="status-1" class="text-sm font-normal text-gray-600 mb-3">
+                                                    Active
+                                                </label>
+                                            </div>
+                                            <div class="mb-1">
+                                                <input v-model="status" value="false" type="radio" name="status" id="status-2" class="rounded-lg">
+                                                <label for="status-2" class="text-sm font-normal text-gray-600 mb-3">
+                                                    Deactivated
+                                                </label>
+                                            </div>
+                                            <span class="text-sm font-medium text-gray-600">Role</span>
+                                            <div class="mb-1">
+                                                <input v-model="role" value="admin" type="radio" name="role" id="role-1" class="rounded-lg">
+                                                <label for="role-1" class="text-sm font-normal text-gray-600 mb-3">
+                                                    Admin
+                                                </label>
+                                            </div>
+                                            <div class="mb-1">
+                                                <input v-model="role" value="faculty" type="radio" name="role" id="role-2" class="rounded-lg">
+                                                <label for="role-2" class="text-sm font-normal text-gray-600 mb-3">
+                                                    Faculty
+                                                </label>
+                                            </div>
+
+                                            <div class="flex justify-center">
+                                                <button @click="showFilter = false" class="inline-flex items-center text-xs font-medium text-gray-600 hover:text-blue-500 justify-center uppercase">
+                                                    <!-- <ArrowPathIcon class="w-4 h-4 mr-1" /> -->
+                                                    Close</button>
+                                            </div>
+                                        </div>
+                                    </transition>
+                                </div>
 
                                 <label for="search" class="relative">
                                     <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -101,44 +190,150 @@ const crumbs = [
                                     </div>
                                     <input 
                                         v-model="search"
-                                        type="text" 
+                                        type="search" 
                                         id="table-search-users" 
                                         class="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-gray-50 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
                                         placeholder="Search for users">
-                                        <span v-show="search" class="absolute right-2 top-3" @click="clearSearch">
-                                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4">
-                                                <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
-                                              </svg>                                      
-                                        </span>
                                 </label>
                                 
                             </div>
                         </div>
 
-                        <!-- <hr> -->
-                        
-                        <UsersTable :users="users.data" />
+                        <table class="w-full text-sm text-left text-gray-500">
+                            <thead class="text-xs text-gray-700 uppercase bg-gray-100">
+                                <tr>
+                                    <th scope="col" class="px-6 py-3">
+                                        User
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center">
+                                        Joined
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center">
+                                        Status
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center">
+                                        Role
+                                    </th>
+                                    <th scope="col" class="px-6 py-3 text-center">
+                                        Action
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr class="bg-white border-b hover:bg-gray-50" v-for="(user, index) in users.data" :key="index">
+                                    <th scope="row" class="flex items-center px-6 py-3 text-gray-900 whitespace-nowrap">
+                                        <img v-if="user.profile_photo" :src="user.profile_photo_url" alt="user_photo" class="w-10 h-10 rounded-full">
+                                        <img v-else src="../../Components/images/user-icon.png" class="w-10 h-10 rounded-full" alt="">
+                                        <div class="pl-3">
+                                            <div class="text-base font-semibold">{{ user.fname }} {{ user.lname }}</div>
+                                            <div class="font-normal text-gray-500">{{ user.email }} </div>
+                                        </div>  
+                                    </th>
+                                    <td class="px-6 py-3 text-center">
+                                        {{ formatTimestampToDate(user.created_at) }}
+                                    </td>
+                                    <td class="px-6 py-3">
+                                        <div class="flex justify-center">
+                                            <span v-if="user.active" class="text-green-600 font-extrabold">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                                  </svg>                          
+                                            </span>
+                                            <span v-else class="text-red-600 font-extrabold">
+                                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636" />
+                                                  </svg>                          
+                                            </span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-3 text-center">
+                                        <div v-if="user.roles.length">
+                                            <span 
+                                                v-for="role in user.roles" 
+                                                :key="role.id" 
+                                                v-html="role.name" 
+                                                class="px-3 py-1.5 text-xs rounded-lg"
+                                                :class="{
+                                                    'bg-indigo-100 text-indigo-600 uppercase tracking-wide font-semibold' : role.name == 'admin',
+                                                    'bg-green-100 text-green-600 uppercase tracking-wide font-semibold' : role.name == 'faculty',
+                                                }"
+                                            ></span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-3">
+                                        <div class="flex items-center justify-center space-x-2">
+                                            <Link :href="'/users/edit/' + user.id" class="inline-flex items-center text-xs font-semibold tracking-wide text-blue-600 uppercase rounded-sm px-2 py-1.5 hover:bg-blue-100 duration-300 ease-in-out">
+                                                <PencilIcon class="w-4 h-4 mr-1" />
+                                                Edit
+                                            </Link>
+                                            <!-- <Link :href="'/users/delete/' + user.id" as="button" method="DELETE" class="inline-flex items-center text-xs font-semibold text-red-600 uppercase rounded-sm px-2 py-1.5 hover:bg-red-100 duration-300 ease-in-out">
+                                                  <TrashIcon class="w-[14px] h-[14px] mr-1" />
+                                                  Delete
+                                            </Link> -->
+                                            <button @click="deleteUser(user)" type="button" class="inline-flex items-center text-xs font-semibold text-red-600 uppercase rounded-sm px-2 py-1.5 hover:bg-red-100 duration-300 ease-in-out">
+                                                  <TrashIcon class="w-[14px] h-[14px] mr-1" />
+                                                  Delete
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
 
-                        <!-- <hr> -->
+                        <!-- No user data response -->
+                        <div v-show="users.data.length < 1" class="flex flex-col w-full py-10">
+                            <h1 class="text-center text-md font-medium text-gray-400">No user found</h1>
+                        </div>        
+
                         <!-- Paginator -->
-                        <Pagination 
-                        v-show="users" 
-                        :links="users.links"
-                        :current_page="users.current_page"
-                        :prev_page_url="users.prev_page_url"
-                        :next_page_url="users.next_page_url"
-                        :last_page="users.last_page"
-                        class="mt-4"/>
+                        <div class="flex items-center justify-end mt-4">
+                            <Pagination 
+                            v-show="users" 
+                            :links="users.links"
+                            :current_page="users.current_page"
+                            :prev_page_url="users.prev_page_url"
+                            :next_page_url="users.next_page_url"
+                            :last_page="users.last_page"
+                            />
+                        </div>
+
+                        <!-- Delete Modal -->
+                        <Modal :show="confirmingUserDeletion" @close="closeModal">
+                            <div class="p-6">
+
+                                <div class="flex space-x-2">
+                                    <div class="shrink-0">
+                                        <ExclamationTriangleIcon class="w-5 h-5 mt-1" />
+                                    </div>
+                                    <div class="flex-1">
+                                        <h2 class="text-lg font-medium text-gray-900">
+                                            Delete Confirmation
+                                        </h2>
+        
+                                        <p class="mt-1 text-sm text-gray-600">
+                                            Are you sure you want to remove {{ selectedUser.fname }} {{ selectedUser.lname }}? This action cannot be undone.
+                                        </p>
+                                    </div>
+                                </div>
+
+                                <div class="mt-4 flex justify-end">
+                                    <button type="button" @click="closeModal"
+                                    class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 rounded-md font-medium text-sm text-gray-700 
+                                    shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-25 transition ease-in-out duration-150"
+                                    > Cancel </button>
+                
+                                    <button
+                                        type="button"
+                                        class="ml-3 inline-flex items-center px-4 py-2 bg-red-600 border border-transparent rounded-md font-medium text-sm text-white hover:bg-red-500 active:bg-red-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition ease-in-out duration-150"
+                                        @click="confirmDeleteUser()"
+                                    >
+                                        Delete
+                                    </button>
+                                </div>
+                            </div>
+                        </Modal>
                     </div>
                 </div>
-
-
-                <div v-show="users.data.length < 1" class="flex flex-col w-full mt-9">
-                    <h1 class="text-center text-xl text-gray-400 mb-6">No user found</h1>
-                    <img src="../../Components/images/no-result.png" alt="no result" class="w-[250px] opacity-25 mx-auto">
-                </div>
-
-
             </div>
         </div>
     </AuthenticatedLayout>

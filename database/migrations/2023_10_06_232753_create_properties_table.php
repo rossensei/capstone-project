@@ -13,17 +13,9 @@ return new class extends Migration
     {
         Schema::create('properties', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('facility_id');
-            $table->integer('tag_no');
-            $table->integer('serial_no');
-            $table->string('name');
+            $table->string('property_name');
             $table->string('description')->nullable();
-            $table->string('condition');
-            $table->string('remarks')->nullable();
-            $table->date('date_acquired');
             $table->timestamps();
-
-            $table->foreign('facility_id')->references('id')->on('facilities');
         });
     }
 

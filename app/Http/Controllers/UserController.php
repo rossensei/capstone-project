@@ -12,14 +12,13 @@ class UserController extends Controller
 {
     public function index(Request $request)
     {
-        // $users = User::with('roles')->pluck('name')->get();
         $role = $request->input('role');
         $search = $request->input('search');
         $status = $request->input('status');
 
-        // dd($status == 0);
+        $userQuery = User::query();
 
-        $userQuery = User::orderBy('fname')->with('roles');
+        $userQuery->orderBy('fname')->with('roles');
 
         if($role) {
             $userQuery->whereHas('roles', function ($query) use ($role) {
@@ -35,18 +34,18 @@ class UserController extends Controller
             });
         }
 
-        if($status == 'true') {
+        if($status && $status == 'true') {
             $userQuery->where('active', true);
         } else if($status == 'false') {
             $userQuery->where('active', false);
         }
         
 
-        $users = $userQuery->paginate(7)->withQueryString();
+        $users = $userQuery->paginate(5)->withQueryString();
 
         return inertia('User/Index', [
             'users' => $users,
-            'filters' => $request->only(['search', 'role', 'status']),
+            'filters' => $request->only(['search', 'role', 'status', 'perPage']),
             'roles' => Role::all()
         ]);
     }
@@ -76,7 +75,7 @@ class UserController extends Controller
 
         $user->assignRole($role);
 
-        return redirect('/users');
+        return redirect('/users')->with('success', 'User has been created.');
     }
 
     public function edit(User $user)
@@ -110,11 +109,11 @@ class UserController extends Controller
     {
         if($user->facility()->exists()) {
             // dd(true);
-            return back();
+            return back()->with('error', 'User cannot be deleted. This user might be handling a facility at this time.');
         }
         $user->delete();
 
-        return back();
+        return back()->with('success', 'User has been removed.');
     }
 
     public function updateRole(Request $request, User $user)

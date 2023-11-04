@@ -12,7 +12,7 @@ defineProps({
 
 const form = useForm({
     facility_name: '',
-    building: '',
+    description: '',
     user_id: '',
 })
 
@@ -67,14 +67,11 @@ const crumbs = [
                         </div>
     
                         <div class="max-w-2xl mb-4">
-                            <InputLabel value="Building" />
+                            <InputLabel value="Short Description" />
+
+                            <textarea v-model="form.description" id="description" class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"></textarea>
     
-                            <TextInput
-                            v-model="form.building"
-                            class="w-full"
-                            id="building" />
-    
-                            <InputError :message="form.errors.building" />
+                            <InputError :message="form.errors.description" />
                         </div>
     
                         <div class="max-w-2xl mb-4">

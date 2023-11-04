@@ -12,6 +12,8 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RequestController;
 use App\Http\Controllers\FacilityController;
 use App\Http\Controllers\UserWithItemsController;
+use App\Http\Controllers\FacultyRequestController;
+use App\Http\Controllers\FacilityPropertyController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,6 +38,8 @@ Route::get('/dashboard', function () {
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
 
+
+
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -43,7 +47,7 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/facilities', [FacilityController::class, 'index'])->name('facilities.index');
     Route::get('/facilities/create', [FacilityController::class, 'create'])->name('facilities.create');
-    Route::get('/facilities/view/{facility}', [FacilityController::class, 'show'])->name('facilities.show');
+    Route::get('/facilities/{facility}/view-properties', [FacilityPropertyController::class, 'index']);
     Route::get('/facilities/edit/{facility}', [FacilityController::class, 'edit'])->name('facilities.edit');
     Route::patch('/facilities/{facility}', [FacilityController::class, 'update'])->name('facilities.update');
     Route::post('/facilities', [FacilityController::class, 'store'])->name('facilities.store');
@@ -65,10 +69,19 @@ Route::middleware('auth')->group(function () {
     Route::get('/items/edit/{item}', [ItemController::class, 'edit'])->name('item.edit');
     Route::put('/items/{item}', [ItemController::class, 'update'])->name('item.update');
     Route::delete('/items/delete-item/{item}', [ItemController::class, 'destroy'])->name('item.destroy');
+    Route::delete('/items/delete-items', [ItemController::class, 'bulkDelete']);
 
-    Route::get('/requests', [RequestController::class, 'index'])->name('requests.index');
+    Route::get('/properties', [PropertyController::class, 'index'])->name('property.index');
+
+    Route::get('/request-items', [FacultyRequestController::class, 'index']); //test endpoint
+
 
     Route::get('/item-usages', [UserWithItemsController::class, 'index']);
+
+
+    Route::get('/test', function () {
+        return Inertia::render('TestPage');
+    })->name('test');
 });
 
 require __DIR__.'/auth.php';

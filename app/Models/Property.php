@@ -2,26 +2,21 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\FacilityProperty;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Property extends Model
 {
     use HasFactory;
 
     protected $fillable = [
-        'facility_id',
-        'tag_no',
-        'serial_no',
-        'item_name',
+        'property_name',
         'description',
-        'condition',
-        'remarks',
-        'date_acquired',
     ];
 
-    public function facility()
+    public function facilityProperty()
     {
-        return $this->belongsTo('App\Models\Facility');
+        return $this->belongsTo(FacilityProperty::class);
     }
 }

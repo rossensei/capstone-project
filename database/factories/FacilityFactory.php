@@ -18,7 +18,7 @@ class FacilityFactory extends Factory
     {
         return [
             'facility_name' => fake()->word(),
-            'building' => fake()->randomElement(['Main Building', 'Main Building', 'SHS Building', 'Nursing Building', 'Elementary Building']),
+            'description' => 'Lorem ipsum dolor sit amet consectetur adipisicing elit.',
             'user_id' => fake()->randomElement(range(1,20))
         ];
     }

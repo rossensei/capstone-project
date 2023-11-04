@@ -15,7 +15,7 @@ console.log(prop.facility.user_id)
 
 const form = useForm({
     facility_name: prop.facility.facility_name,
-    building: prop.facility.building,
+    description: prop.facility.description,
     user_id: prop.facility.user_id,
 });
 
@@ -66,22 +66,19 @@ const crumbs = [
                         </div>
     
                         <div class="max-w-2xl mb-4">
-                            <InputLabel value="Building" />
+                            <InputLabel value="Short Description" />
+
+                            <textarea v-model="form.description" id="description" class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"></textarea>
     
-                            <TextInput
-                            v-model="form.building"
-                            class="w-full"
-                            id="building" />
-    
-                            <InputError :message="form.errors.building" />
+                            <InputError :message="form.errors.description" />
                         </div>
     
                         <div class="max-w-2xl mb-4">
                             <InputLabel value="Facility Head" />
     
-                            <select 
+                            <select
                             v-model="form.user_id"
-                            class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                            class="w-full text-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
                             name=""
                             id="facility-head">
                                 <option value="">Select user</option>

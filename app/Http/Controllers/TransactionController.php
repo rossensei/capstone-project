@@ -2,10 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Allocation;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 
-class AllocationController extends Controller
+class TransactionController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,7 +34,7 @@ class AllocationController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(Allocation $allocation)
+    public function show(Transaction $transaction)
     {
         //
     }
@@ -42,7 +42,7 @@ class AllocationController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Allocation $allocation)
+    public function edit(Transaction $transaction)
     {
         //
     }
@@ -50,7 +50,7 @@ class AllocationController extends Controller
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, Allocation $allocation)
+    public function update(Request $request, Transaction $transaction)
     {
         //
     }
@@ -58,7 +58,7 @@ class AllocationController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Allocation $allocation)
+    public function destroy(Transaction $transaction)
     {
         //
     }

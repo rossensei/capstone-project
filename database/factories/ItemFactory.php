@@ -19,7 +19,8 @@ class ItemFactory extends Factory
         return [
             'name' => fake()->word(),
             'category_id' => fake()->randomElement(range(1,4)),
-            'qty_stock' => fake()->randomNumber(4, false),
+            'curr_stocks' => $data = fake()->randomNumber(4, false),
+            'init_qty' => $data,
             'unit_id' => fake()->randomElement(range(1,3)),
         ];
     }

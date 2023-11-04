@@ -6,6 +6,7 @@ use App\Models\Item;
 use App\Models\Unit;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ItemResource;
 
 class ItemController extends Controller
@@ -15,18 +16,33 @@ class ItemController extends Controller
      */
     public function index()
     {
-        $data = Item::all();
+        $items = Item::with([
+            'unit:id,name,abbreviation',
+            'category:id,cat_name',
+        ])->get();
 
-        $items = $data->map(function ($item) {
-            return [
-                'id' => $item->id,
-                'name' => $item->name,
-                'category' => $item->category->cat_name,
-                'qty_stock' => $item->qty_stock,
-                'unit' => $item->unit->name,
-                'expiry_date' => $item->expiry_date,
-            ];
+        // $items = $data->map(function ($item) {
+        //     return [
+        //         'id' => $item->id,
+        //         'name' => $item->name,
+        //         'category' => $item->category->cat_name,
+        //         'qty_stock' => $item->qty_stock,
+        //         'unit' => $item->unit->name,
+        //         'expiry_date' => $item->expiry_date,
+        //     ];
+        // });
+
+        // dd($items);
+        // $totalQty = 0;
+        // foreach ($items as $item) {
+        //     $totalQty = $item->transactions->sum('pivot.qty');
+        //     // Now, $totalQty contains the total sum of qty for this item.
+        // }
+        $items->each(function ($item) {
+            $item->used = $item->transactions->sum('pivot.qty');
         });
+
+        // dd($totalQty);
 
         return inertia('Item/Index', [
             'items' => $items
@@ -169,5 +185,19 @@ class ItemController extends Controller
         $item->delete();
 
         return redirect('/items');
+    }
+
+    public function bulkDelete(Request $request)
+    {
+        
+        $ids = $request->input('ids');
+
+        if($ids) {
+            Item::whereIn('id', $ids)->delete();
+            return back()->with('success', 'Items has been deleted.');
+        }else {
+            return back()->with('error', 'There was a problem processing your request.');
+        }
+
     }
 }

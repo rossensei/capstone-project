@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\User;
 use App\Models\Facility;
+use App\Models\Property;
 use Illuminate\Http\Request;
 
 class FacilityController extends Controller
@@ -14,17 +15,19 @@ class FacilityController extends Controller
     public function index(Request $request)
     {
         // dd($request);
+
+        $perPage = $request->input('perPage') ?: 5;
         
         return inertia('Facility/Index', [
             'facilities' => Facility::with('user')
-                ->withCount('properties')
+                ->withCount('facilityProperties')
                 ->orderBy('facility_name')
                 ->when($request->input('search'), function ($query, $search) {
                     $query->where('facility_name', 'like', "%{$search}%");
                 })
-                ->paginate(8)
+                ->paginate($perPage)
                 ->withQueryString(),
-            'filters' => $request->only(['search']),
+            'filters' => $request->only(['search', 'perPage']),
         ]);
     }
 
@@ -46,7 +49,7 @@ class FacilityController extends Controller
 
         $fields = $request->validate([
             'facility_name' => ['required', 'string'],
-            'building' => ['required', 'string'],
+            'description' => ['required', 'string'],
             'user_id' => ['required']
         ],[
             'user_id.required' => 'The facility head must not be empty.'
@@ -62,9 +65,11 @@ class FacilityController extends Controller
      */
     public function show(Facility $facility)
     {
+        // dd($facility->properties->paginate(5));
         // dd(Facility::with('items', 'user')->find($facility->id));
         return inertia('Facility/Show', [
-            'facility' => Facility::with('properties', 'user')->find($facility->id)
+            'facility' => $facility,
+            'properties' => Property::where('facility_id', $facility->id)->paginate(5)
         ]);
     }
 
@@ -84,9 +89,10 @@ class FacilityController extends Controller
      */
     public function update(Request $request, Facility $facility)
     {
+
         $fields = $request->validate([
             'facility_name' => ['required', 'string'],
-            'building' => ['required', 'string'],
+            'description' => ['required', 'string'],
             'user_id' => ['required']
         ],[
             'user_id.required' => 'The facility head must not be empty.'
