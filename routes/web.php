@@ -1,19 +1,20 @@
 <?php
 
 use App\Models\Item;
+use App\Models\Unit;
 use App\Models\User;
 use Inertia\Inertia;
-use App\Models\Facility;
+use App\Models\Category;
+use App\Models\Department;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Foundation\Application;
 use App\Http\Controllers\ItemController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\ItemApiController;
 use App\Http\Controllers\ProfileController;
-use App\Http\Controllers\RequestController;
-use App\Http\Controllers\FacilityController;
-use App\Http\Controllers\UserWithItemsController;
-use App\Http\Controllers\FacultyRequestController;
-use App\Http\Controllers\FacilityPropertyController;
+use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\DepartmentController;
+use App\Http\Controllers\DepartmentInventoryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -33,7 +34,7 @@ use App\Http\Controllers\FacilityPropertyController;
 Route::get('/dashboard', function () {
     return Inertia::render('Dashboard', [
         'users' => User::count(),
-        'facilities' => Facility::count(),
+        'facilities' => Department::count(),
         'items' => Item::count(),
     ]);
 })->middleware(['auth', 'verified'])->name('dashboard');
@@ -45,13 +46,22 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    Route::get('/facilities', [FacilityController::class, 'index'])->name('facilities.index');
-    Route::get('/facilities/create', [FacilityController::class, 'create'])->name('facilities.create');
-    Route::get('/facilities/{facility}/view-properties', [FacilityPropertyController::class, 'index']);
-    Route::get('/facilities/edit/{facility}', [FacilityController::class, 'edit'])->name('facilities.edit');
-    Route::patch('/facilities/{facility}', [FacilityController::class, 'update'])->name('facilities.update');
-    Route::post('/facilities', [FacilityController::class, 'store'])->name('facilities.store');
-    Route::delete('/facilities/remove-facility/{facility}', [FacilityController::class, 'destroy'])->name('facilities.destroy');
+    Route::get('/departments', [DepartmentController::class, 'index'])->name('department.index');
+    Route::get('/departments/create', [DepartmentController::class, 'create'])->name('department.create');
+    Route::get('/departments/{department}/inventory/view', [DepartmentController::class, 'show']);
+    Route::get('/departments/details/{department}/edit', [DepartmentController::class, 'edit'])->name('department.edit');
+    Route::patch('/departments/{department}', [DepartmentController::class, 'update'])->name('department.update');
+    Route::post('/departments', [DepartmentController::class, 'store'])->name('department.store');
+    Route::delete('/departments/remove-department/{department}', [DepartmentController::class, 'destroy'])->name('department.destroy');
+
+    Route::get('/departments/{department}/inventory/edit', [DepartmentInventoryController::class, 'index']);
+    Route::get('/departments/{department}/inventory/add-new', [DepartmentInventoryController::class, 'create']);
+    Route::post('/departments/{department}/inventory', [DepartmentInventoryController::class, 'store']);
+    Route::patch('/departments/{department}/inventory/{property}', [DepartmentInventoryController::class, 'update']);
+    Route::patch('/departments/{department}/inventory/{property}/status-update', [DepartmentInventoryController::class, 'updateStatus']);
+    Route::delete('/departments/{department}/inventory/{property}', [DepartmentInventoryController::class, 'deleteProperty']);
+    // Route::post('/departments/{sourceDepartment}/inventory/{property}/move-property/{targetDepartment}', [DepartmentInventoryController::class, 'moveProperty']);
+    // Route::get('/departments/{department}/inventory/edit', [PurchaseController::class, 'propertyForm']);
 
     Route::get('/users', [UserController::class, 'index'])->name('users.index');
     Route::get('/users/create', [UserController::class, 'create'])->name('users.create');
@@ -65,6 +75,8 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/items', [ItemController::class, 'index'])->name('item.index');
     Route::get('/items/add-item', [ItemController::class, 'create'])->name('item.create');
+    Route::get('/items/add-to-existing', [ItemController::class, 'createExisting']);
+    Route::put('/items/add-to-existing/{item}', [ItemController::class, 'storeToExisting']);
     Route::post('/items', [ItemController::class, 'store'])->name('item.store');
     Route::get('/items/edit/{item}', [ItemController::class, 'edit'])->name('item.edit');
     Route::put('/items/{item}', [ItemController::class, 'update'])->name('item.update');
@@ -73,15 +85,21 @@ Route::middleware('auth')->group(function () {
 
     Route::get('/properties', [PropertyController::class, 'index'])->name('property.index');
 
-    Route::get('/request-items', [FacultyRequestController::class, 'index']); //test endpoint
+    // Route::get('/request-items', [FacultyRequestController::class, 'index']); //test endpoint
 
 
-    Route::get('/item-usages', [UserWithItemsController::class, 'index']);
+    Route::get('/new-purchased-item', [PurchaseController::class, 'itemForm']);
+    Route::post('/store-item', [PurchaseController::class, 'storeItem']);
+    Route::get('/new-purchased-property', [PurchaseController::class, 'propertyForm']);
+    Route::post('/store-property', [PurchaseController::class, 'storeProperty']);
 
 
-    Route::get('/test', function () {
-        return Inertia::render('TestPage');
-    })->name('test');
+    // API Endpoints
+    Route::get('/api/units', [ItemApiController::class, 'getUnits']);
+    Route::get('/api/categories', [ItemApiController::class, 'getCategories']);
+    Route::get('/api/items', [ItemApiController::class, 'getItems']);
+    Route::get('/api/items/{item}', [ItemApiController::class, 'getItem']);
+
 });
 
 require __DIR__.'/auth.php';

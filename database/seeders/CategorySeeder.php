@@ -28,6 +28,12 @@ class CategorySeeder extends Seeder
             [
                 'cat_name' => 'School Supplies',
             ],
+            [
+                'cat_name' => 'Equipment',
+            ],
+            [
+                'cat_name' => 'Furniture',
+            ],
         ];
 
         foreach($categories as $cat) {

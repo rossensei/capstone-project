@@ -38,13 +38,13 @@ const showChangePasswordForm = ref(false);
 </script>
 
 <template>
-    <Head :title="user.fname + ' ' + user.lname "/>
+    <Head :title="user.name "/>
 
     <AuthenticatedLayout>
         <div class="py-4">
             <div class="w-full sm:px-6 lg:px-8">
                 
-                <h1 class="font-semibold text-2xl text-gray-700 leading-tight mb-4">Editing {{ user.fname }} {{ user.lname }}'s Information</h1>
+                <h1 class="font-semibold text-2xl text-gray-700 leading-tight mb-4">Editing {{ user.name }}'s Information</h1>
                 
                 <Breadcrumb :crumbs="crumbs"/>
 
@@ -63,7 +63,7 @@ const showChangePasswordForm = ref(false);
                         <ChangePasswordForm v-if="showChangePasswordForm" :user="user.id" class="mt-3" />
                     </div>
 
-                    <div class="w-full lg:flex-1 mt-8">
+                    <div class="w-full lg:flex-1 mt-8 lg:mt-0">
                         <h1 class="text-xl font-semibold text-gray-600 inline-flex items-center">Administrative Actions
                             <ShieldCheckIcon class="w-5 h-5 ml-2"/>
                         </h1>

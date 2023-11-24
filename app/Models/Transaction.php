@@ -13,9 +13,8 @@ class Transaction extends Model
 
     protected $fillable = [
         'user_id',
-        'req_date',
-        'status',
-        'signature',
+        'date_time',
+        'remarks',
     ];
 
     public function user()

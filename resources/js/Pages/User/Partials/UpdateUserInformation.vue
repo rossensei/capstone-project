@@ -12,10 +12,9 @@ const props = defineProps({
 })
 
 const form = useForm({
-    fname: props.user.fname,
-    lname: props.user.lname,
+    name: props.user.name,
     email: props.user.email,
-    user: props.user.user,
+    username: props.user.username,
 });
 
 const submit = () => {
@@ -35,42 +34,29 @@ const submit = () => {
         <form @submit.prevent="submit">
             <div  class="mt-2 space-y-2">
                 <div>
-                    <InputLabel for="fname" value="First Name" />
+                    <InputLabel for="name" value="Name" />
 
                     <TextInput
-                        id="fname"
-                        v-model="form.fname"
+                        id="name"
+                        v-model="form.name"
                         type="text"
                         class="mt-1 block w-full text-sm"
                     />
 
-                    <InputError :message="form.errors.fname" class="mt-2" />
+                    <InputError :message="form.errors.name" class="mt-2" />
                 </div>
 
                 <div>
-                    <InputLabel for="lname" value="Last Name" />
+                    <InputLabel for="username" value="Username" />
 
                     <TextInput
-                        id="lname"
-                        v-model="form.lname"
+                        id="username"
+                        v-model="form.username"
                         type="text"
                         class="mt-1 block w-full text-sm"
                     />
 
-                    <InputError :message="form.errors.lname" class="mt-2" />
-                </div>
-
-                <div>
-                    <InputLabel for="user" value="Username" />
-
-                    <TextInput
-                        id="user"
-                        v-model="form.user"
-                        type="text"
-                        class="mt-1 block w-full text-sm"
-                    />
-
-                    <InputError :message="form.errors.user" class="mt-2" />
+                    <InputError :message="form.errors.username" class="mt-2" />
                 </div>
                 <div>
                     <InputLabel for="email" value="Email" />

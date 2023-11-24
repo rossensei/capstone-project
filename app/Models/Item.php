@@ -13,9 +13,9 @@ class Item extends Model
     protected $fillable = [
         'category_id',
         'name',
-        'qty_stock',
+        'init_stocks',
+        'curr_stocks',
         'unit_id',
-        'expiry_date',
     ];
 
     public function unit()

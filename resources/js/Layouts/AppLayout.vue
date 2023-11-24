@@ -1,54 +1,127 @@
 <script setup>
+import NavLink from '@/Components/NavLink.vue';
+import Dropdown from '@/Components/Dropdown.vue';
+import DropdownLink from '@/Components/DropdownLink.vue';
+import { ChartPieIcon, UserGroupIcon, BuildingOfficeIcon, CubeIcon, Square3Stack3DIcon, ChevronUpIcon, DocumentTextIcon } from '@heroicons/vue/24/solid';
+import { Disclosure, DisclosureButton, DisclosurePanel, } from '@headlessui/vue'
 import { Link } from "@inertiajs/vue3";
 import { ref, watch } from "vue";
 
-const navItems = ref({
-    name: 'Dashboard',
-    active: route().current('test'),
-})
+const currentRoute = ref(window.location.pathname);
 
-console.log(navItems.value)
+const isActive = (route) => {
+    return currentRoute.value === route;
+};
+
+const navItems = [
+    { href: '/dashboard', active: isActive('/dashboard'), label: 'Dashboard', children: [], icon: ChartPieIcon },
+    { href: '#', active: false, label: 'Purchases', children: [
+        { href: '/new-purchased-item', active: isActive('/new-purchased-item'), label: 'New Item', children: [], icon: null },
+        { href: '/new-purchased-property', active: isActive('/new-purchased-property'), label: 'New Property', children: [], icon: null }
+    ], icon: DocumentTextIcon },
+    { href: '/departments', active: isActive('/departments'), label: 'Departments', children: [], icon: BuildingOfficeIcon },
+    { href: '/users', active: isActive('/users'), label: 'Manage Users', children: [], icon: UserGroupIcon },
+    { href: '/items', active: isActive('/items'), label: 'Items', children: [], icon: CubeIcon },
+    { href: '/properties', active: isActive('/properties'), label: 'Properties', children: [], icon: Square3Stack3DIcon },
+];
+
 
 </script>
 
 <template>
     <div>
         <div class="flex items-start min-h-screen bg-gray-100">
-            <div class="hidden sm:block sticky top-0 z-10 bg-[#4e73df] min-h-screen border-r duration-300 py-4" :class="[ !isCollapsed ? 'w-64' : 'w-16' ]">
+            <div class="hidden sm:block sticky top-0 z-10 bg-[#4e73df] min-h-screen border-r duration-300 py-4 w-16 lg:w-64">
                 <div class="px-4 mb-4">
                     <Link :href="route('dashboard')" class="w-full flex items-center space-x-2">
                         <img src="../Components/images/mdc-logo.png" alt="mdc-logo" class="w-[40px]">
-                        <span class="text-lg text-white font-extrabold text-center">MDC-IMS</span>
+                        <span class="text-lg text-white font-semibold text-center">MDC-IMS</span>
                     </Link>
                 </div>
 
-                <nav class="">
-                    <span class="text-xs font-semibold text-gray-100 uppercase tracking-wide ml-2">Main</span>
-                    <div>
-                        <ul>
-                            <li>
-                                <Link href="/test" class="border-l-4 py-3 inline-flex items-center w-full px-2 font-medium" :class="[ route().current('test') ? 'border-white text-white bg-[#7290e8]' : 'border-[#4e73df]']">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mr-1">
-                                        <path fill-rule="evenodd" d="M2.25 13.5a8.25 8.25 0 018.25-8.25.75.75 0 01.75.75v6.75H18a.75.75 0 01.75.75 8.25 8.25 0 01-16.5 0z" clip-rule="evenodd" />
-                                        <path fill-rule="evenodd" d="M12.75 3a.75.75 0 01.75-.75 8.25 8.25 0 018.25 8.25.75.75 0 01-.75.75h-7.5a.75.75 0 01-.75-.75V3z" clip-rule="evenodd" />
-                                      </svg>                                      
-                                    Dashboard
-                                </Link>
-                            </li>
-                            <li>
-                                <Link href="/users" class="border-l-4 py-3 inline-flex items-center w-full px-2 font-medium" :class="[ route().current('users.index') ? 'border-white text-white' : 'border-[#4e73df]']">
-                                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" class="w-6 h-6 mr-1">
-                                        <path fill-rule="evenodd" d="M8.25 6.75a3.75 3.75 0 117.5 0 3.75 3.75 0 01-7.5 0zM15.75 9.75a3 3 0 116 0 3 3 0 01-6 0zM2.25 9.75a3 3 0 116 0 3 3 0 01-6 0zM6.31 15.117A6.745 6.745 0 0112 12a6.745 6.745 0 016.709 7.498.75.75 0 01-.372.568A12.696 12.696 0 0112 21.75c-2.305 0-4.47-.612-6.337-1.684a.75.75 0 01-.372-.568 6.787 6.787 0 011.019-4.38z" clip-rule="evenodd" />
-                                        <path d="M5.082 14.254a8.287 8.287 0 00-1.308 5.135 9.687 9.687 0 01-1.764-.44l-.115-.04a.563.563 0 01-.373-.487l-.01-.121a3.75 3.75 0 013.57-4.047zM20.226 19.389a8.287 8.287 0 00-1.308-5.135 3.75 3.75 0 013.57 4.047l-.01.121a.563.563 0 01-.373.486l-.115.04c-.567.2-1.156.349-1.764.441z" />
-                                      </svg>                                      
-                                    User
-                                </Link>
-                            </li>
-                        </ul>
-                    </div>
+                <nav class="px-4">
+                    <span class="text-[10px] mb-2 text-gray-200 select-none font-bold uppercase mt-24 text-center">Menu</span>
+                    <ul class="space-y-2 text-sm">
+                        <li v-for="(item, index) in navItems" :key="index">
+                            <Link 
+                            v-if="!item.children.length"
+                            :href="item.href" 
+                            class="px-3 py-2 inline-flex items-center text-gray-200 hover:bg-[#7290e8] w-full rounded-md"
+                            :class="{ 'text-white font-medium' : item.active }"
+                            >
+                                <Component v-if="item.icon" :is="item.icon" class="w-5 h-5 mr-2" />
+                                <span>{{ item.label }}</span>
+                            </Link>
+
+                            <Disclosure v-else v-slot="{ open }">
+                                <DisclosureButton class="px-3 py-2 inline-flex items-center text-gray-200 hover:bg-[#7290e8] w-full rounded-md text-left">
+                                        <Component v-if="item.icon" :is="item.icon" class="w-5 h-5 mr-2" />
+                                        <span class="flex-1">{{ item.label }}</span>
+                                        <ChevronUpIcon
+                                            :class="open ? 'rotate-180 transform' : ''"
+                                            class="h-3 w-3 shrink-0"
+                                        />
+                                </DisclosureButton>
+                                <!-- <transition
+                                    enter-active-class="transition duration-100 ease-out"
+                                    enter-from-class="transform scale-95 opacity-0"
+                                    enter-to-class="transform scale-100 opacity-100"
+                                    leave-active-class="transition duration-75 ease-out"
+                                    leave-from-class="transform scale-100 opacity-100"
+                                    leave-to-class="transform scale-95 opacity-0"
+                                > -->
+                                    <DisclosurePanel>
+                                        <div>
+                                            <ul class="space-y-2 text-sm">
+                                                <li v-for="(child, index) in item.children" :key="index">
+                                                    <Link 
+                                                    :href="child.href"
+                                                    :class="{ 'text-white font-medium' : child.active }" 
+                                                    class="p-10 pr-4 py-2 inline-flex items-center text-gray-200 hover:bg-[#7290e8] w-full rounded-md">{{ child.label }}</Link>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </DisclosurePanel>
+                                <!-- </transition> -->
+                              </Disclosure>
+                        </li>
+                    </ul>
                 </nav>
             </div>
             <div class="flex-1 min-h-screen overflow-hidden">
+                <div class="w-full bg-white p-2 shadow">
+                    <div class="flex justify-end items-center">
+                        <!-- Search -->
+                        <!-- <GlobalSearchComponent /> -->
+                        
+                        <div class="ml-3 relative">
+                            <Dropdown align="right" width="48">
+                                <template #trigger>
+                                    <span class="inline-flex rounded-md">
+                                        <button
+                                            type="button"
+                                            class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
+                                        >
+                                            <!-- {{ $page.props.auth.user.name }} -->
+                                            
+                                            <img v-if="$page.props.auth.user.profile_photo" :src="$page.props.auth.user.profile_photo_url" class="ml-2 h-7 w-7 rounded-full" alt="">
+                                            <img v-else src="../Components/images/user-icon.png" class="ml-2 h-7 w-7 rounded-full" alt="">
+                                        </button>
+                                    </span>
+                                </template>
+
+                                <template #content>
+                                    <span class="block w-full px-4 py-2 leading-5 text-sm font-medium border-b text-gray-600 text-center">{{ $page.props.auth.user.name }}</span>
+                                    <DropdownLink :href="route('profile.edit')"> Profile </DropdownLink>
+                                    <DropdownLink :href="route('logout')" method="post" as="button">
+                                        Log Out
+                                    </DropdownLink>
+                                </template>
+                            </Dropdown>
+                        </div>
+                    </div>
+                    
+                </div>
                 <main>
                     <slot />
                 </main>

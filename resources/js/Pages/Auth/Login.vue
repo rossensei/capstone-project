@@ -17,7 +17,7 @@ import { Head, Link, useForm } from '@inertiajs/vue3';
 // });
 
 const form = useForm({
-    user: '',
+    username: '',
     password: '',
     remember: false,
 });
@@ -39,22 +39,22 @@ const submit = () => {
 
         <form @submit.prevent="submit">
             <div>
-                <label for="user" class="relative text-gray-400">
+                <label for="username" class="relative text-gray-400">
                     <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="currentColor" class="bi bi-person-fill absolute left-2 top-2" viewBox="0 0 16 16">
                         <path d="M3 14s-1 0-1-1 1-4 6-4 6 3 6 4-1 1-1 1H3Zm5-6a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
                         </svg>
                         <TextInput
-                            id="user"
+                            id="username"
                             type="text"
                             class="mt-1 block w-full pl-10 text-gray-600"
-                            v-model="form.user"
+                            v-model="form.username"
                             placeholder="Username"
                             autofocus
                             autocomplete="username"
                         />
                 </label>
                     
-                <InputError class="mt-2" :message="form.errors.user" />
+                <InputError class="mt-2" :message="form.errors.username" />
             </div>
 
             <div class="mt-4">

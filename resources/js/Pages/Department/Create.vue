@@ -1,6 +1,7 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import Breadcrumb from '@/Components/Breadcrumb.vue';
+import PrimaryButton from '@/Components/PrimaryButton.vue';
 import TextInput from '@/Components/TextInput.vue';
 import InputError from '@/Components/InputError.vue';
 import InputLabel from '@/Components/InputLabel.vue';
@@ -11,13 +12,12 @@ defineProps({
 })
 
 const form = useForm({
-    facility_name: '',
-    description: '',
+    name: '',
     user_id: '',
 })
 
 const submit = () => {
-    form.post('/facilities', {
+    form.post('/departments', {
         // onFinish: () => {
         //     console.log()
         // }
@@ -31,12 +31,12 @@ const crumbs = [
         active: false,
     },
     {
-        name: 'Facilities',
-        url: '/facilities',
+        name: 'Departments',
+        url: '/departments',
         active: false,
     },
     {
-        name: 'Add Facility',
+        name: 'Create Department',
         url: null,
         active: true,
     },
@@ -49,48 +49,51 @@ const crumbs = [
     <AuthenticatedLayout>
         <div class="py-4">
             <div class="w-full sm:px-6 lg:px-8">
-                <h1 class="font-semibold text-3xl text-gray-700 leading-tight mb-4">Add New Facility</h1>
-
                 <Breadcrumb :crumbs="crumbs" class="mb-4" />
 
-                <div class="p-4">
+                <h1 class="font-semibold text-3xl text-gray-700 leading-tight mb-4">Create new department</h1>
+
+                <hr class="mt-3 mb-3">
+
+                <div class="bg-white w-full shadow p-6 rounded-lg">
+                    <h1 class="text-xl text-gray-700 font-semibold mb-2">Department details</h1>
                     <form @submit.prevent="submit">
                         <div class="max-w-2xl mb-4">
-                            <InputLabel value="Facility Name" />
+                            <InputLabel class="text-sm" for="dept_name" value="Department Name" />
     
                             <TextInput 
-                            v-model="form.facility_name" 
-                            class="w-full"
-                            id="facname" />
+                            v-model="form.name" 
+                            class="w-full text-sm"
+                            id="dept_name" />
     
-                            <InputError :message="form.errors.facility_name" />
+                            <InputError :message="form.errors.name" />
                         </div>
     
-                        <div class="max-w-2xl mb-4">
+                        <!-- <div class="max-w-2xl mb-4">
                             <InputLabel value="Short Description" />
 
                             <textarea v-model="form.description" id="description" class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"></textarea>
     
                             <InputError :message="form.errors.description" />
-                        </div>
+                        </div> -->
     
                         <div class="max-w-2xl mb-4">
-                            <InputLabel value="Facility Head" />
+                            <InputLabel for="dept-head" class="text-sm" value="Facility Head" />
     
                             <select 
                             v-model="form.user_id"
-                            class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                            name=""
-                            id="facility-head">
+                            class="w-full text-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                            id="dept-head">
                                 <option value="">Select a head</option>
-                                <option v-for="user in users" :key="user.id" :value="user.id">{{ user.fname }} {{ user.lname }}</option>
+                                <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
                             </select>
     
                             <InputError :message="form.errors.user_id" />
                         </div>
 
-                        <div class="flex justify-start max-w-4xl mb-4">
-                            <button type="submit" class="px-4 py-1.5 text-sm bg-blue-600 rounded-md text-white">Submit</button>
+                        <div>
+                            <!-- <button type="submit" class="px-4 py-1.5 text-sm bg-blue-600 rounded-md text-white">Submit</button> -->
+                            <PrimaryButton type="submit" :disabled="form.processing">Submit</PrimaryButton>
                         </div>
                     </form>
                 </div>

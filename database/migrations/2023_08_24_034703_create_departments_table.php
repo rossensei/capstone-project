@@ -11,14 +11,12 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('facility_properties', function (Blueprint $table) {
+        Schema::create('departments', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('property_id')->constrained();
-            $table->foreignId('facility_id')->constrained();
-            $table->integer('tag_no');
-            $table->date('date_acquired');
-            $table->string('condition');
-            $table->string('remarks')->nullable();
+            $table->foreignId('user_id')->constrained();
+            $table->string('name');
+            // $table->date('date_created');
+            // $table->dateTime('last_updated');
             $table->timestamps();
         });
     }
@@ -28,6 +26,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('facility_properties');
+        Schema::dropIfExists('departments');
     }
 };

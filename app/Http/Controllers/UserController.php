@@ -18,7 +18,7 @@ class UserController extends Controller
 
         $userQuery = User::query();
 
-        $userQuery->orderBy('fname')->with('roles');
+        $userQuery->orderBy('name')->with('roles');
 
         if($role) {
             $userQuery->whereHas('roles', function ($query) use ($role) {
@@ -28,8 +28,7 @@ class UserController extends Controller
 
         if($search) {
             $userQuery->where(function ($query) use ($search) {
-                $query->where('fname', 'like', "%{$search}%")
-                ->orWhere('lname', 'like', "%{$search}%")
+                $query->where('name', 'like', "%{$search}%")
                 ->orWhere('email', 'like', "%{$search}%");
             });
         }
@@ -40,8 +39,18 @@ class UserController extends Controller
             $userQuery->where('active', false);
         }
         
-
-        $users = $userQuery->paginate(5)->withQueryString();
+        $users = $userQuery->paginate(10)
+            ->withQueryString()
+            ->through(fn($user) => [
+                'id' => $user->id,
+                'name' => $user->name,
+                'username' => $user->username,
+                'email' => $user->email,
+                'active' => $user->active,
+                'role' => $user->getUserRole(),
+                'profile_photo_url' => $user->profile_photo_url,
+                'created_at' => $user->created_at,
+            ]);
 
         return inertia('User/Index', [
             'users' => $users,
@@ -60,10 +69,9 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $fields = $request->validate([
-            'fname' => ['required', 'string', 'max:255'],
-            'lname' => ['required', 'string', 'max:255'],
+            'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users'],
-            'user' => ['required', 'max:255', 'unique:users'],
+            'username' => ['required', 'max:255', 'unique:users'],
             'password' => ['required', 'min:8', 'confirmed'],
             'role' => ['required'],
         ]);
@@ -107,7 +115,7 @@ class UserController extends Controller
 
     public function destroy(User $user)
     {
-        if($user->facility()->exists()) {
+        if($user->department()->exists()) {
             // dd(true);
             return back()->with('error', 'User cannot be deleted. This user might be handling a facility at this time.');
         }

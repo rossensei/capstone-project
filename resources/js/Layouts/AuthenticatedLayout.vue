@@ -1,12 +1,17 @@
 <script setup>
-import { ref, onMounted, onBeforeUnmount } from 'vue';
-import { ChartPieIcon, UserGroupIcon, BuildingOfficeIcon, CubeIcon, Square3Stack3DIcon } from '@heroicons/vue/24/solid';
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
+import { ChartPieIcon, UserGroupIcon, BuildingOfficeIcon, CubeIcon, Square3Stack3DIcon, ChevronUpIcon, DocumentTextIcon } from '@heroicons/vue/24/solid';
+import {
+    Disclosure,
+    DisclosureButton,
+    DisclosurePanel,
+  } from '@headlessui/vue'
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import GlobalSearchComponent from '@/Components/GlobalSearchComponent.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
-import { Link, useRemember } from '@inertiajs/vue3';
+import { Link, usePage } from '@inertiajs/vue3';
 
 const showingNavigationDropdown = ref(false);
 
@@ -25,16 +30,6 @@ const collapseSidebar = () => {
 
 const clearLocalStorage = () => {
     localStorage.clear();
-}
-
-const closeFlashMessage = () => {
-    const alert = document.getElementById('alert')
-
-    // alert.classList.toggle('none')
-    if(alert.classList.contains('flex', 'items-center')){
-        alert.classList.remove('flex', 'items-center')
-        alert.classList.add('hidden')
-    }
 }
 
 const getScreenWidth = () => {
@@ -62,17 +57,30 @@ onBeforeUnmount(() => {
     window.removeEventListener('resize', handleResize);
 })
 
+const currentRoute = ref(window.location.pathname);
+
+const isActive = (route) => {
+    return currentRoute.value === route;
+};
+
+const openPurchaseDropdown = ref(false);
+
+const handlePurchaseDropdown = () => {
+    openPurchaseDropdown.value = !openPurchaseDropdown.value;
+}
+
+
 </script>
 
 <template>
     <div>
-        <div class="flex items-start min-h-screen bg-gray-100">
-            <nav class="hidden sm:block sticky top-0 z-10 bg-[#4e73df] min-h-screen duration-300" :class="[ !isCollapsed ? 'w-64' : 'w-16' ]">
+        <div class="flex items-start min-h-screen bg-gray-50">
+            <nav class="hidden sm:block sticky top-0 z-10 bg-[#4e73df] min-h-screen duration-300 lg:w-64 w-16">
                 <div class="relative p-4">
                     <div class="flex mb-4" :class="[ !isCollapsed ? 'justify-between items-center' : 'justify-center']">
                         <!-- Logo branding -->
                         <Link :href="route('dashboard')" class="w-full flex items-center space-x-2">
-                            <img src="../Components/images/mdc-logo.png" alt="mdc-logo" class="w-[40px]">
+                            <img src="../Components/images/mdc-logo.png" alt="mdc-logo" class="w-10">
                             <h1 v-show="!isCollapsed" class="text-md text-white font-semibold text-center">MDC-IMS</h1>
                         </Link>
     
@@ -83,25 +91,44 @@ onBeforeUnmount(() => {
                           </svg>                     
                     </span> 
     
-    
                     <span class="text-[10px] mb-2 text-gray-200 select-none font-bold uppercase" :class="[ isCollapsed ? 'mt-24 text-center' : '']">Menu</span>
-                    <ul class="space-y-2 font-medium" :class="[ isCollapsed ? 'flex flex-col' : '']">
+                    <ul class="space-y-2" :class="[ isCollapsed ? 'flex flex-col' : '']">
                         <li>
                             <NavLink :href="route('dashboard')" :active="route().current('dashboard')" class="inline-flex items-center">
                                 <ChartPieIcon class="w-5 h-5" />
                                 <span class="ml-2" v-show="!isCollapsed">Dashboard</span>
                             </NavLink>
                         </li>
+                        <!-- <li>
+                            <a href="#" class="flex justify-between w-full px-2 py-2 items-center text-sm leading-5 rounded-md hover:bg-[#7290e8] text-gray-200 transition duration-150 ease-in-out" @click="handlePurchaseDropdown">
+                                <div class="inline-flex items-center">
+                                    <DocumentTextIcon class="w-5 h-5" />
+                                    <span class="flex-1 ml-2" v-show="!isCollapsed">Purchases</span>
+                                </div>
+                                
+                                <ChevronUpIcon class="w-3 h-3" :class="{ 'rotate-180' : openPurchaseDropdown }" />
+                            </a>
+                            <div v-if="openPurchaseDropdown">
+                                <ul class="w-full space-y-2 font-medium">
+                                    <li>
+                                        <NavLink href="/new-purchased-item" :active="isActive('/new-purchased-item')" class="flex items-center pl-10">New Item</NavLink>
+                                    </li>
+                                    <li>
+                                        <NavLink href="/new-purchased-property" :active="isActive('/new-purchased-property')" class="flex items-center pl-10">New Property</NavLink>
+                                    </li>
+                                </ul>
+                            </div>
+                        </li> -->
+                        <li>
+                            <NavLink :href="route('department.index')" :active="route().current('department.index')" class="flex items-center">
+                                <BuildingOfficeIcon class="w-5 h-5" />
+                                <span class="ml-2" v-show="!isCollapsed">Departments</span>
+                            </NavLink>
+                        </li>
                         <li>
                             <NavLink :href="route('users.index')" :active="route().current('users.index')" class="inline-flex items-center">
                                 <UserGroupIcon class="w-5 h-5" />
                                 <span class="ml-2" v-show="!isCollapsed">Users</span>
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink :href="route('facilities.index')" :active="route().current('facilities.index')" class="flex items-center">
-                                <BuildingOfficeIcon class="w-5 h-5" />
-                                <span class="ml-2" v-show="!isCollapsed">Facilities</span>
                             </NavLink>
                         </li>
                         <li>
@@ -116,31 +143,6 @@ onBeforeUnmount(() => {
                                 <span class="ml-2" v-show="!isCollapsed">Properties</span>
                             </NavLink>
                         </li>
-                        <!-- <li>
-                            <NavLink :href="route('requests.index')" :active="route().current('requests.index')" class="flex items-center text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-clipboard2" viewBox="0 0 16 16">
-                                    <path d="M3.5 2a.5.5 0 0 0-.5.5v12a.5.5 0 0 0 .5.5h9a.5.5 0 0 0 .5-.5v-12a.5.5 0 0 0-.5-.5H12a.5.5 0 0 1 0-1h.5A1.5 1.5 0 0 1 14 2.5v12a1.5 1.5 0 0 1-1.5 1.5h-9A1.5 1.5 0 0 1 2 14.5v-12A1.5 1.5 0 0 1 3.5 1H4a.5.5 0 0 1 0 1h-.5Z"/>
-                                    <path d="M10 .5a.5.5 0 0 0-.5-.5h-3a.5.5 0 0 0-.5.5.5.5 0 0 1-.5.5.5.5 0 0 0-.5.5V2a.5.5 0 0 0 .5.5h5A.5.5 0 0 0 11 2v-.5a.5.5 0 0 0-.5-.5.5.5 0 0 1-.5-.5Z"/>
-                                  </svg>
-                                <span class="ml-3" v-show="!isCollapsed">Item Requests</span>
-                            </NavLink>
-                        </li> -->
-                        <!-- <li>
-                            <NavLink :href="route('requests.index')" :active="route().current('requests.index')" class="flex items-center text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" fill="currentColor" class="bi bi-person-gear" viewBox="0 0 16 16">
-                                    <path d="M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0ZM8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4Zm.256 7a4.474 4.474 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10c.26 0 .507.009.74.025.226-.341.496-.65.804-.918C9.077 9.038 8.564 9 8 9c-5 0-6 3-6 4s1 1 1 1h5.256Zm3.63-4.54c.18-.613 1.048-.613 1.229 0l.043.148a.64.64 0 0 0 .921.382l.136-.074c.561-.306 1.175.308.87.869l-.075.136a.64.64 0 0 0 .382.92l.149.045c.612.18.612 1.048 0 1.229l-.15.043a.64.64 0 0 0-.38.921l.074.136c.305.561-.309 1.175-.87.87l-.136-.075a.64.64 0 0 0-.92.382l-.045.149c-.18.612-1.048.612-1.229 0l-.043-.15a.64.64 0 0 0-.921-.38l-.136.074c-.561.305-1.175-.309-.87-.87l.075-.136a.64.64 0 0 0-.382-.92l-.148-.045c-.613-.18-.613-1.048 0-1.229l.148-.043a.64.64 0 0 0 .382-.921l-.074-.136c-.306-.561.308-1.175.869-.87l.136.075a.64.64 0 0 0 .92-.382l.045-.148ZM14 12.5a1.5 1.5 0 1 0-3 0 1.5 1.5 0 0 0 3 0Z"/>
-                                  </svg>
-                                <span class="ml-3" v-show="!isCollapsed">Roles and Permissions</span>
-                            </NavLink>
-                        </li>
-                        <li>
-                            <NavLink :href="route('requests.index')" :active="route().current('requests.index')" class="flex items-center text-white">
-                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-[20px] h-[20px]">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                                  </svg>                                  
-                                <span class="ml-3" v-show="!isCollapsed">Find Property</span>
-                            </NavLink>
-                        </li> -->
                     </ul>
                 </div>
             </nav>
@@ -158,7 +160,7 @@ onBeforeUnmount(() => {
                                             type="button"
                                             class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
                                         >
-                                            {{ $page.props.auth.user.fname }}
+                                            <!-- {{ $page.props.auth.user.name }} -->
                                             
                                             <img v-if="$page.props.auth.user.profile_photo" :src="$page.props.auth.user.profile_photo_url" class="ml-2 h-7 w-7 rounded-full" alt="">
                                             <img v-else src="../Components/images/user-icon.png" class="ml-2 h-7 w-7 rounded-full" alt="">
@@ -167,6 +169,7 @@ onBeforeUnmount(() => {
                                 </template>
 
                                 <template #content>
+                                    <span class="block w-full px-4 py-2 leading-5 text-sm font-medium border-b text-gray-600 text-center">{{ $page.props.auth.user.name }}</span>
                                     <DropdownLink :href="route('profile.edit')"> Profile </DropdownLink>
                                     <DropdownLink :href="route('logout')" method="post" as="button" @click="clearLocalStorage">
                                         Log Out
@@ -185,18 +188,3 @@ onBeforeUnmount(() => {
         </div>
     </div>
 </template>
-
-<style scoped>
-.slide-enter-active {
-    transition: all 0.1s ease-out;
-}
-
-.slide-leave-active {
-    transition: all 0.1s ease-in;
-}
-
-.slide-enter-from,
-.slide-leave-to {
-    transform: translateY(-20px);
-}
-</style>

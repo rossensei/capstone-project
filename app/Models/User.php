@@ -21,9 +21,8 @@ class User extends Authenticatable
      * @var array<int, string>
      */
     protected $fillable = [
-        'user',
-        'fname',
-        'lname',
+        'username',
+        'name',
         'email',
         'password',
         'profile_photo_path',
@@ -53,7 +52,7 @@ class User extends Authenticatable
 
     public function getProfilePhotoUrlAttribute()
     {
-        $url = $this->profile_photo_path ? asset('images/profile_pic/'.$this->profile_photo_path) : 'https://static.vecteezy.com/system/resources/thumbnails/008/442/086/small/illustration-of-human-icon-user-symbol-icon-modern-design-on-blank-background-free-vector.jpg';
+        $url = $this->profile_photo_path ? asset('images/profile_pic/'.$this->profile_photo_path) : null;
 
         return $url;
     }
@@ -63,9 +62,14 @@ class User extends Authenticatable
         $this->attributes['password'] = Hash::make($value);
     }
 
-    public function facility()
+    public function getUserRole()
     {
-        return $this->hasOne('App\Models\Facility');
+        return $this->getRoleNames()->first();
+    }
+
+    public function department()
+    {
+        return $this->hasOne(Department::class);
     }
 
     public function transactions()

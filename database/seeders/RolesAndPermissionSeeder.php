@@ -15,33 +15,55 @@ class RolesAndPermissionSeeder extends Seeder
      */
     public function run(): void
     {
-        $admin = Role::create(['name' => 'admin']);
-        $faculty = Role::create(['name' => 'faculty']);
+        $admin = Role::create(['name' => 'Administrator']);
+        $custodian = Role::create(['name' => 'Property Custodian']);
+        $dept_head = Role::create(['name' => 'Department Head']);
+        $regular = Role::create(['name' => 'Regular User']);
 
         Permission::create(['name' => 'create-user']);
-        Permission::create(['name' => 'request-item']);
-        Permission::create(['name' => 'view']);
-        Permission::create(['name' => 'edit']);
-        Permission::create(['name' => 'delete']);
-        Permission::create(['name' => 'add']);
+        Permission::create(['name' => 'edit-user']);
+        Permission::create(['name' => 'delete-user']);
+
+        Permission::create(['name' => 'create-inventory']);
+        Permission::create(['name' => 'edit-inventory']);
+        Permission::create(['name' => 'delete-inventory']);
+
+        Permission::create(['name' => 'view-transaction-history']);
+
+        Permission::create(['name' => 'update-property-status']);
 
         $admin->givePermissionTo(Permission::all());
-        $faculty->givePermissionTo(['request-item', 'view']);
-        
-        $users = User::all();
+        $custodian->givePermissionTo(['create-inventory', 'edit-inventory', 'delete-inventory']);
+        $dept_head->givePermissionTo(['update-property-status']);
+        $regular->givePermissionTo(['view-transaction-history']);
 
-        foreach($users as $user) {
-            $user->assignRole('faculty');
+        $usersWithoutDept = User::doesntHave('department')->get();
+
+        foreach($usersWithoutDept as $user) {
+            $user->assignRole($regular);
+        }
+
+        $usersWithDept = User::has('department')->get();
+
+        foreach($usersWithDept as $user) {
+            $user->assignRole($dept_head);
         }
 
         $adminUser = User::create([
-            'user' => 'rossensei',
-            'fname' => 'Rosalino',
-            'lname' => 'Flores',
+            'username' => 'rossensei',
+            'name' => 'Rosalino Flores',
             'email' => 'fross0988@gmail.com',
             'password' => 'admin123',
         ]);
 
-        $adminUser->assignRole('admin');
+        $user1 = User::create([
+            'username' => 'cymaejosol',
+            'name' => 'Cymae Josol',
+            'email' => 'temp_xyz@email.com',
+            'password' => 'password123',
+        ]);
+
+        $adminUser->assignRole('Administrator');
+        $user1->assignRole('Property Custodian');
     }
 }

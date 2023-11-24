@@ -12,9 +12,8 @@ defineProps({
     roles: Array
 })
 const form = useForm({
-    fname: '',
-    lname: '',
-    user: '',
+    name: '',
+    username: '',
     email: '',
     password: '',
     password_confirmation: '',
@@ -56,38 +55,24 @@ const crumbs = [
                 <hr class="mb-4">
 
 
-                <div class="p-4">
-                    <h2 class="text-lg font-medium text-gray-600 mb-4">User Details</h2>
+                <div class="bg-white rounded-lg shadow p-6">
+                    <h2 class="text-xl text-gray-700 font-semibold mb-2">User Details</h2>
+
                     <form @submit.prevent="submit">
                         <div class="max-w-3xl flex items-center mt-2">
                             <div class="w-40">
-                                <InputLabel for="fname" value="First Name" />
+                                <InputLabel for="name" value="Name" />
                             </div>
                             <div class="flex-1">
                                 <TextInput
-                                    id="fname"
+                                    id="name"
                                     type="text"
                                     class="block w-full text-sm"
-                                    v-model="form.fname"
-                                    autocomplete="fname"
-                                    placeholder="First Name"
+                                    v-model="form.name"
+                                    autocomplete="name"
+                                    placeholder="Full Name"
                                 />
-                                <InputError class="mt-2" :message="form.errors.fname" />
-                            </div>
-                        </div>
-                        <div class="max-w-3xl flex items-center mt-2">
-                            <div class="w-40">
-                                <InputLabel for="lname" value="Last Name" />
-                            </div>
-                            <div class="flex-1">
-                                <TextInput
-                                    id="lname"
-                                    type="text"
-                                    class="block w-full text-sm"
-                                    placeholder="Last Name"
-                                    v-model="form.lname"
-                                />
-                                <InputError class="mt-2" :message="form.errors.lname" />
+                                <InputError class="mt-2" :message="form.errors.name" />
                             </div>
                         </div>
                         <div class="max-w-3xl flex items-center mt-2">
@@ -115,11 +100,11 @@ const crumbs = [
                                     id="username"
                                     type="text"
                                     class="block w-full text-sm"
-                                    v-model="form.user"
+                                    v-model="form.username"
                                     autocomplete="username"
                                     placeholder="Username"
                                 />
-                                <InputError class="mt-2" :message="form.errors.user" />
+                                <InputError class="mt-2" :message="form.errors.username" />
                             </div>
                         </div>
                         <div class="max-w-3xl flex items-center mt-2">

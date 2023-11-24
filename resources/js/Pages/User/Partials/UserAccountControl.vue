@@ -24,9 +24,9 @@ const toggleActive = () => {
 
         <div class="mt-6">
             <button v-if="user.active" @click="toggleActive" class="px-4 py-1.5 rounded-md text-sm flex items-center text-white font-medium bg-red-600 hover:bg-red-500 shadow-md">
-                <MinusCircleIcon class="w-5 h-5 mr-1" /> Deactivate this user</button>
+                <MinusCircleIcon class="w-5 h-5 mr-1" /> Deactivate</button>
             <button v-else @click="toggleActive" class="px-4 py-1.5 rounded-md text-sm flex items-center text-white bg-green-600 hover:bg-green-500 shadow-md">
-                <CheckCircleIcon class="w-5 h-5 mr-1" /> Reactivate this user</button>
+                <CheckCircleIcon class="w-5 h-5 mr-1" /> Reactivate</button>
         </div>
     </section>
 </template>

@@ -2,6 +2,8 @@
 
 namespace Database\Factories;
 
+use App\Models\Unit;
+use App\Models\Category;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,10 +20,10 @@ class ItemFactory extends Factory
     {
         return [
             'name' => fake()->word(),
-            'category_id' => fake()->randomElement(range(1,4)),
-            'curr_stocks' => $data = fake()->randomNumber(4, false),
-            'init_qty' => $data,
-            'unit_id' => fake()->randomElement(range(1,3)),
+            'category_id' => mt_rand(1, Category::count()),
+            'unit_id' => mt_rand(1, Unit::count()),
+            'init_stocks' => $stocks = fake()->randomNumber(3, false),
+            'curr_stocks' => $stocks
         ];
     }
 }

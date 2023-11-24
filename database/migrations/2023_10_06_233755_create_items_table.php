@@ -13,16 +13,12 @@ return new class extends Migration
     {
         Schema::create('items', function (Blueprint $table) {
             $table->id();
+            $table->foreignId('unit_id')->constrained();
+            $table->foreignId('category_id')->constrained();
             $table->string('name');
+            $table->integer('init_stocks');
             $table->integer('curr_stocks');
-            $table->integer('init_qty');
-            $table->date('expiry_date')->nullable();
-            $table->unsignedBigInteger('unit_id');
-            $table->unsignedBigInteger('category_id');
             $table->timestamps();
-
-            $table->foreign('category_id')->references('id')->on('categories');
-            $table->foreign('unit_id')->references('id')->on('units');
         });
     }
 

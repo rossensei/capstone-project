@@ -8,6 +8,7 @@ use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Resources\ItemResource;
+use Illuminate\Support\Carbon;
 
 class ItemController extends Controller
 {
@@ -19,8 +20,26 @@ class ItemController extends Controller
         $items = Item::with([
             'unit:id,name,abbreviation',
             'category:id,cat_name',
-        ])->get();
-
+        ])->get()->map(function ($item) {
+            return [
+                'id' => $item->id,
+                'name' => $item->name,
+                'category' => $item->category->cat_name,
+                'init_stocks' => $item->init_stocks,
+                'curr_stocks' => $item->curr_stocks,
+                'used' => $item->transactions->sum('pivot.qty'),
+                'unit' => $item->unit->name,
+                'created_at' => $item->created_at->format('F j, Y'),
+                // 'transactions' => $item->transactions->map(function ($transaction) {
+                //     return [
+                //         'id' => $transaction->id,
+                //         'user' => $transaction->user->name,
+                //         'date_time' => $transaction->date_time,
+                //         'remarks' => $transaction->remarks,
+                //     ];
+                // }),
+            ];
+        });
         // $items = $data->map(function ($item) {
         //     return [
         //         'id' => $item->id,
@@ -38,11 +57,9 @@ class ItemController extends Controller
         //     $totalQty = $item->transactions->sum('pivot.qty');
         //     // Now, $totalQty contains the total sum of qty for this item.
         // }
-        $items->each(function ($item) {
-            $item->used = $item->transactions->sum('pivot.qty');
-        });
-
-        // dd($totalQty);
+        // $items->each(function ($item) {
+        //     $item->used = $item->transactions->sum('pivot.qty');
+        // });
 
         return inertia('Item/Index', [
             'items' => $items
@@ -78,33 +95,73 @@ class ItemController extends Controller
         ]);                    
     }
 
+    public function createExisting()
+    {
+        $units = Unit::orderBy('name')
+                    ->get()
+                    ->map(function ($unit) {
+                        return [
+                            'id' => $unit->id,
+                            'name' => $unit->name,
+                        ];
+                    });
+        $items = Item::with('unit:id,name')
+                    ->get()
+                    ->map(function ($item) {
+                        return [
+                            'id' => $item->id,
+                            'name' => $item->name,
+                            'unit' => $item->unit_id,
+                        ];
+                    });
+
+
+        
+        return inertia('Item/CreateExisting', [
+            'items' => $items,
+            'units' => $units,
+        ]);  
+    }
+
+    public function storeToExisting(Item $item, Request $request) {
+        // dd($item, $request->all());
+        $request->validate([
+            'qty' => ['required', 'numeric', 'min:0']
+        ], [
+            'qty.required' => 'The quantity field is required.',
+            'qty.min' => 'The quantity field must not contain a negative number.'
+        ]);
+    }
+
     /**
      * Store a newly created resource in storage.
      */
     public function store(Request $request)
     {
+        // dd($request->all());
         $request->validate([
-            'name' => ['string', 'required'],
+            'name' => ['required'],
             'category_id' => ['required'],
-            'qty_stock' => ['required', 'numeric'],
+            'curr_stocks' => ['required', 'numeric', 'min:0'],
             'unit_id' => ['required'],
         ],[
             'category_id.required' => 'The category field is required.',
-            'unit_id.required' => 'Please specify a unit of quantity.',
-            'qty_stock.required' => 'The quantity stock is required.',
+            'unit_id.required' => 'The unit field is required.',
+            'curr_stocks.required' => 'The quantity stocks field is required.',
+            'curr_stocks.min' => 'The quantity stocks field must not contain a negative number.',
         ]);
 
         $attributes = [
             'name' => $request->name,
             'category_id' => $request->category_id,
-            'qty_stock' => $request->qty_stock,
+            'init_stocks' => $request->curr_stocks,
+            'curr_stocks' => $request->curr_stocks,
             'unit_id' => $request->unit_id,
-            'expiry_date' => $request->expiry_date,
         ];
         
         Item::create($attributes);
 
-        return redirect('/items')->with('success', 'A new item has been added to the list.');
+        return redirect('/items')->with('success', 'A new item has been added to the inventory.');
     }
 
     /**
@@ -153,20 +210,21 @@ class ItemController extends Controller
         $request->validate([
             'name' => ['string', 'required'],
             'category_id' => ['required'],
-            'qty_stock' => ['required', 'numeric'],
+            'curr_stocks' => ['required', 'numeric', 'min:0'],
             'unit_id' => ['required'],
         ],[
             'category_id.required' => 'The category field is required.',
-            'unit_id.required' => 'Please specify a unit of quantity.',
-            'qty_stock.required' => 'The quantity stock is required.',
+            'unit_id.required' => 'The unit field is required.',
+            'curr_stocks.required' => 'The quantity stocks field is required.',
+            'curr_stocks.min' => 'The quantity stocks field must not contain a negative number.',
         ]);
 
         $attributes = [
             'name' => $request->name,
             'category_id' => $request->category_id,
-            'qty_stock' => $request->qty_stock,
+            'init_stocks' => $request->curr_stocks,
+            'curr_stocks' => $request->curr_stocks,
             'unit_id' => $request->unit_id,
-            'expiry_date' => $request->expiry_date,
         ];
 
         $item->update($attributes);
@@ -180,11 +238,15 @@ class ItemController extends Controller
      */
     public function destroy(Item $item)
     {
-        // dd($item->has(''))
+        // dd($item->transactions()->exists());
 
+        if($item->transactions()->exists())
+        {
+            return back()->with('error', 'You cannot delete this item because it has existing transactions.');
+        }
         $item->delete();
 
-        return redirect('/items');
+        return back()->with('success', 'Item has been removed from the inventory.');
     }
 
     public function bulkDelete(Request $request)

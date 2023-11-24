@@ -14,9 +14,8 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
             $table->foreignId('user_id')->constrained();
-            $table->date('req_date');
-            $table->string('status')->default('Pending');
-            $table->string('signature')->nullable();
+            $table->dateTime('date_time');
+            $table->string('remarks')->nullable();
             $table->timestamps();
         });
     }
