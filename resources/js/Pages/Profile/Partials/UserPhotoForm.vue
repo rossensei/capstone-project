@@ -46,10 +46,6 @@ function updatePhotoPreview() {
 </script>
 
 <template>
-    <div>
-        <header>
-            <h1 class="text-xl font-semibold text-gray-600">Avatar</h1>
-        </header>
         <div class="flex items-center">
             <div v-show="!photoPreview">
                 <img 
@@ -94,5 +90,4 @@ function updatePhotoPreview() {
                 Edit</button>
             </div>
         </div>
-    </div>
 </template>

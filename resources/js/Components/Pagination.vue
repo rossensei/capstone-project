@@ -1,62 +1,88 @@
 <script setup>
-import { Link } from '@inertiajs/vue3';
+import { Link, router } from '@inertiajs/vue3';
+import { computed, ref } from 'vue';
+import { ChevronDoubleLeftIcon, ChevronDoubleRightIcon, ChevronLeftIcon, ChevronRightIcon } from '@heroicons/vue/24/solid'
 
-defineProps({
-    prev_page_url: String,
-    next_page_url: String,
-    last_page: Number,
-    current_page: Number,
-    links: Array
+const props = defineProps({
+    data: Object,
 })
+
+
+const displayedPages = computed(() => {
+  const filteredLinks = props.data.links.filter(link => link.label !== 'Previous' && link.label !== 'Next');
+
+  const pagesToShow = 5;
+  let start = Math.max(1, props.data.current_page - Math.floor(pagesToShow / 2));
+  const end = Math.min(filteredLinks.length, start + pagesToShow - 1);
+
+  if(end - start + 1 < pagesToShow) {
+    start = Math.max(1, end - pagesToShow + 1);
+  }
+
+  const pages = [];
+  for(let i = start; i <= end; i++) {
+    pages.push(i);
+  }
+
+  return pages;
+})
+
+const goToPage = (page) => {
+  router.get(router.page.url, { page: page })
+}
+
+const noPreviousPage = computed(() => {
+  return props.data.current_page - 1 <= 0;
+})
+
+const noNextPage = computed(() => {
+  return props.data.current_page + 1 > props.data.last_page;
+})
+
+const emits = defineEmits(['update-per-page'])
+
+const updatePageSize = (event) => {
+  emits('update-per-page', event.target.value)
+}
 </script>
 
 <template>
     <nav class="flex flex-wrap space-x-1">
+      <!-- First Page Button -->
+      <button @click="goToPage(1)" class="h-10 w-10 rounded-full text-sm flex items-center justify-center" :class="{ 'hover:bg-gray-100' : !noPreviousPage }" :disabled="noPreviousPage">
+        <ChevronDoubleLeftIcon class="w-3 h-3" />
+      </button>
 
+      <button @click="goToPage(data.current_page - 1)" class="h-10 w-10 rounded-full text-sm flex items-center justify-center" :class="{ 'hover:bg-gray-100' : !noPreviousPage }" :disabled="noPreviousPage">
+        <ChevronLeftIcon class="w-3 h-3" />
+      </button>
 
-          <!-- Paginator -->
-          <!-- <div class="flex items-center space-x-1"> -->
-              <!-- Previous Button -->
-              <!-- <Link v-if="current_page > 1" :href="prev_page_url" class="h-[30px] w-[30px] bg-white flex items-center justify-center rounded-md text-sm text-gray-400 shadow hover:bg-blue-600 hover:text-white">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-3 h-3">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                </svg>
-                </Link>
-              <span v-else class="h-[30px] w-[30px] flex items-center justify-center rounded-md text-sm text-gray-400 shadow">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-3 h-3">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 19.5L8.25 12l7.5-7.5" />
-                </svg>
-                </span> -->
+      <!-- Page Numbers -->
+          <button
+            v-for="n in displayedPages" :key="n"
+            @click="goToPage(n)"
+            class="h-10 w-10 rounded-full text-sm flex items-center justify-center"
+            :class="[ n === data.current_page ? 'bg-blue-50 text-blue-500 font-medium' : 'hover:bg-gray-100' ]"
+            >
+                {{ n }}
+          </button>
 
-              <!-- Links -->
-              <!-- <template v-for="(link, index) in links" :key="index">     
-                      <Link 
-                      v-if="index !== 0 && index !== links.length-1" 
-                      :href="link.url" 
-                      class="h-[30px] w-[30px] flex items-center justify-center rounded-md font-medium text-sm text-gray-400 hover:bg-blue-600 hover:text-white shadow"
-                      :class="{'bg-blue-600 text-white' : link.active, 'bg-white' : !link.active}"
-                      >{{ link.label }}</Link>
-              </template> -->
+      <!-- Next Page Button-->
+      <button @click="goToPage(data.current_page + 1)" class="h-10 w-10 rounded-full flex items-center justify-center" :class="{ 'hover:bg-gray-100' : !noNextPage }" :disabled="noNextPage">
+        <ChevronRightIcon class="w-3 h-3" />
+      </button>
 
-              <!-- Next Button -->
-              <!-- <Link v-if="current_page < last_page" :href="next_page_url" class="h-[30px] w-[30px] flex items-center justify-center rounded-md text-sm text-gray-400 shadow hover:bg-blue-600 hover:text-white">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-3 h-3">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                </svg>
-                </Link>
-              <span v-else class="h-[30px] w-[30px] flex items-center justify-center rounded-md text-sm text-gray-400 shadow">
-                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="3" stroke="currentColor" class="w-3 h-3">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M8.25 4.5l7.5 7.5-7.5 7.5" />
-                </svg>
-                </span>
-          </div> -->
+      <!-- Last Page Button -->
+      <button @click="goToPage(data.last_page)" class="h-10 w-10 rounded-full flex items-center justify-center" :class="{ 'hover:bg-gray-100' : !noNextPage }" :disabled="noNextPage" >
+        <ChevronDoubleRightIcon class="w-3 h-3" />
+      </button>
 
-          <template v-for="(link, p) in links" :key="p">
-            <span v-if="link.url === null" class="py-2 px-3 text-sm leading-none bg-white text-gray-400 border border-gray-300 rounded shadow"
-                v-html="link.label"></span>
-            <Link v-else
-                class="py-2 px-3 text-sm leading-none border border-gray-400 text-gray-600 rounded shadow"
-                :class="[ link.active ? 'bg-[#4e73df] text-white font-medium' : 'bg-white']" :href="link.url">{{ link.label }}</Link>
-        </template>
+      <select id="per-page" @change="updatePageSize($event)" class="ml-2 text-sm rounded-md border-gray-300">
+        <option value="5" :selected="data.per_page === 5">5</option>
+        <option value="10" :selected="data.per_page === 10">10</option>
+        <option value="15" :selected="data.per_page === 15">15</option>
+        <option value="20" :selected="data.per_page === 20">20</option>
+        <option value="25" :selected="data.per_page === 25">25</option>
+      </select>
     </nav>
 </template>

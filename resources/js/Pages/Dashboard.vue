@@ -6,7 +6,7 @@ import { ref } from 'vue';
 
 const props = defineProps({
     users: Number,
-    facilities: Number,
+    offices: Number,
     items: Number,
 })
 </script>
@@ -26,8 +26,8 @@ const props = defineProps({
                         </div>
 
                         <div class="min-w-[350px] mb-4 mx-2 flex-1 p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100">
-                            <h5 class="text-2xl font-bold tracking-tight">{{ facilities }}</h5>
-                            <p class="font-normal text-gray-700 mb-2 ">Total Facilities </p>
+                            <h5 class="text-2xl font-bold tracking-tight">{{ offices }}</h5>
+                            <p class="font-normal text-gray-700 mb-2 ">Total Offices </p>
                         </div>
 
                         <div class="min-w-[350px] mb-4 mx-2 flex-1 p-6 bg-white border border-gray-200 rounded-lg shadow hover:bg-gray-100">

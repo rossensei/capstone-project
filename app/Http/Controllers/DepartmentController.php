@@ -7,6 +7,7 @@ use App\Models\Property;
 use App\Models\Department;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+// use Carbon\Carbon;
 use Illuminate\Validation\Rule;
 
 class DepartmentController extends Controller
@@ -17,26 +18,52 @@ class DepartmentController extends Controller
     public function index(Request $request)
     {
 
-        $dept = Department::query()
+        $dateFrom = $request->from;
+        $dateTo = $request->to;
+        $search = $request->search;
+        $perPage = $request->perPage ?? 5;
 
-            ->with('user')
-            // ->orderBy('name')
-            ->when($request->input('search'), function ($query, $search) {
-                $query->where('name', 'like', "%{$search}%");
-            })
-            ->paginate(10)
+        $query = Department::query();
+
+        $query->with('user');
+
+        if($search) {
+            $query->where('name', 'like', "%{$search}%");
+        }
+
+        if($dateFrom && $dateTo) {
+            $query->whereBetween('date_added', [$dateFrom, $dateTo]);
+        }
+
+        if($request->field && $request->direction) {
+            if($request->field === 'head') {
+                $query->join('users', 'departments.user_id', '=', 'users.id')
+                    ->orderBy('users.name', $request->direction);
+
+                // dd($query->get())
+            } else {
+                // $query->with('user');
+
+                $query->orderBy($request->field, $request->direction);
+            }
+            
+        }
+
+        // $query->with('user');
+
+        $departments = $query->paginate($perPage)
             ->withQueryString()
             ->through(fn($department) => [
                 'id' => $department->id,
                 'name' => $department->name,
                 'head' => $department->user->name,
-                'date_added' => $department->created_at->format('F j, Y'),
+                'date_added' => Carbon::parse($department->date_added)->format('F d, Y'),
                 'properties_count' => $department->properties->count(),
             ]);
         
         return inertia('Department/Index', [
-            'departments' => $dept,
-            'filters' => $request->only(['search']),
+            'departments' => $departments,
+            'filters' => $request->only(['search', 'perPage', 'from', 'to', 'field', 'direction']),
         ]);
     }
 
@@ -62,6 +89,8 @@ class DepartmentController extends Controller
             'user_id.required' => 'The department head must not be empty.',
             'name.unique' => 'Department name already exist.'
         ]);
+
+        $fields['date_added'] = Carbon::now()->toDateString();
 
         Department::create($fields);
 
@@ -139,6 +168,13 @@ class DepartmentController extends Controller
      */
     public function destroy(Department $department)
     {
-        //
+        if($department->properties()->exists()) {
+            // dd('This department has existing properties');
+            return back()->with('error', 'Delete request failed. This department has existing properties.');
+        } else {
+            $department->delete();
+
+            return back()->with('success', 'Department has been removed.');
+        }
     }
 }

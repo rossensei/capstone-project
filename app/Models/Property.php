@@ -17,7 +17,7 @@ class Property extends Model
     ];
 
     protected $fillable = [
-        'department_id',
+        'office_id',
         'name',
         'description',
         'tag_no',
@@ -25,9 +25,9 @@ class Property extends Model
         'status',
     ];
 
-    public function department()
+    public function office()
     {
-        return $this->belongsTo(Department::class);
+        return $this->belongsTo(Office::class);
     }
 
     public function category()

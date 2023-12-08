@@ -15,6 +15,7 @@ class UserController extends Controller
         $role = $request->input('role');
         $search = $request->input('search');
         $status = $request->input('status');
+        $perPage = $request->input('perPage') ?? 5;
 
         $userQuery = User::query();
 
@@ -33,19 +34,21 @@ class UserController extends Controller
             });
         }
 
-        if($status && $status == 'true') {
+        if($status && $status == 'active') {
             $userQuery->where('active', true);
-        } else if($status == 'false') {
+        } else if($status && $status == 'inactive') {
             $userQuery->where('active', false);
         }
         
-        $users = $userQuery->paginate(10)
+        $users = $userQuery->paginate($perPage)
+            ->onEachSide(0)
             ->withQueryString()
             ->through(fn($user) => [
                 'id' => $user->id,
                 'name' => $user->name,
                 'username' => $user->username,
                 'email' => $user->email,
+                'address' => $user->address,
                 'active' => $user->active,
                 'role' => $user->getUserRole(),
                 'profile_photo_url' => $user->profile_photo_url,
@@ -69,6 +72,7 @@ class UserController extends Controller
     public function store(Request $request)
     {
         $fields = $request->validate([
+            'address' => ['required', 'string', 'max:255'],
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users'],
             'username' => ['required', 'max:255', 'unique:users'],
@@ -83,18 +87,22 @@ class UserController extends Controller
 
         $user->assignRole($role);
 
-        return redirect('/users')->with('success', 'User has been created.');
+        return redirect('/admin/users')->with('success', 'User has been created.');
     }
 
     public function edit(User $user)
     {
-        $userWithRoles = User::with(['roles' => function ($query) {
-            $query->select('name');
-        }])->find($user->id);
+        $userWithRole = [
+            'id' => $user->id,
+            'username' => $user->username,
+            'address' => $user->address,
+            'name' => $user->name,
+            'email' => $user->email,
+            'role' => $user->getUserRole(),
+        ];
 
-        // dd($userWithRoles);
         return inertia('User/Edit', [
-            'user' => $userWithRoles,
+            'user' => $userWithRole,
             'roles' => Role::all()
         ]);
     }
@@ -102,22 +110,42 @@ class UserController extends Controller
     public function update(Request $request, User $user)
     {
         $fields = $request->validate([
-            'fname' => ['string', 'max:255'],
-            'lname' => ['string', 'max:255'],
-            'user' => ['string', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'name' => ['string', 'max:255'],
+            'address' => ['string', 'max:255'],
+            'username' => ['string', 'max:255', Rule::unique(User::class)->ignore($user->id)],
             'email' => ['email', 'max:255', Rule::unique(User::class)->ignore($user->id)],
+            'role' => ['required'],
         ]);
+
+        $role = $fields['role'];
+        unset($fields['role']);
+
+        $user->syncRoles($role);
 
         $user->update($fields);
 
-        return back();
+        return back()->with('success', 'User details has been updated.');
+    }
+
+    public function updateUserLogon(Request $request, User $user)
+    {
+        $attr = $request->validate([
+            'username' => ['required', 'string', 'max:16'],
+            'password' => ['confirmed', 'min:8', 'required']
+        ]);
+
+        // $user->password = $request->password;
+        // $user->save();
+        $user->update($attr);
+
+        return back()->with('success', 'User logon details has been updated.');
     }
 
     public function destroy(User $user)
     {
-        if($user->department()->exists()) {
+        if($user->office()->exists()) {
             // dd(true);
-            return back()->with('error', 'User cannot be deleted. This user might be handling a facility at this time.');
+            return back()->with('error', 'User cannot be deleted. This user might be handling an office at this moment.');
         }
         $user->delete();
 
@@ -141,8 +169,12 @@ class UserController extends Controller
     {
         $user->active = !$user->active;
         $user->save();
-
-        return redirect('/users');
+        
+        if($user->active) {
+            return back()->with('success', 'User has been activated.');
+        } else {
+            return back()->with('success', 'User has been deactivated.');
+        }
     }
 
     public function updatePassword(Request $request, User $user)

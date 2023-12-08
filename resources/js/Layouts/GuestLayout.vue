@@ -24,63 +24,197 @@ onBeforeUnmount(() => {
 </script>
 
 <template>
-    <div class="min-h-screen w-full relative overflow-hidden z-10">
-        <div v-if="!isSmallScreen">
-            <img src="../Components/images/mdc-background.jpg" alt="mdc-background" class="object-cover z-0 w-full h-full fixed">
+<div class="flex justify-center items-center min-h-screen bg-[#7a94e0]">
 
-            <div class="z-20 absolute top-0 min-h-screen w-full bg-gradient-to-t bg-black opacity-40"></div>
-            <div class="z-30 absolute top-0 h-full w-full">
-                <div class="flex justify-center items-center w-full h-full">
-                    <Transition name="slide-up">
-                        <div class="w-5/6 lg:w-1/2 xl:w-1/3 flex flex-col mx-auto bg-white p-6 rounded-lg">
-                            <img src="../Components/images/mdc-logo.png" alt="" class="w-32 mx-auto mb-3">
-                            <h1 class="text-2xl uppercase font-bold font-sans text-center text-gray-500 mb-4">wELCOME BACK!</h1>
-            
-                            <slot />
-                        </div>
-                    </Transition>
-                </div>
+    <div class="z-20 flex max-w-7xl mx-auto shadow-md rounded-lg h-[40rem]">
+        <div class="w-1/2 bg-[#4e73df] rounded-l-lg">
+            <div class="p-12">
+                <img src="../Components/images/data-report.png" alt="" class="w-[22rem] mx-auto">
+                <h4 class="text-xl font-semibold text-white">Mater Dei College</h4>
+                <h1 class="text-4xl font-bold text-white">Inventory Management System</h1>
             </div>
-
-            <!-- <div>
-                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 320">
-                    <path fill="#0099ff" fill-opacity="1" d="M0,224L48,192C96,160,192,96,288,101.3C384,107,480,181,576,181.3C672,181,768,107,864,117.3C960,128,1056,224,1152,261.3C1248,299,1344,277,1392,266.7L1440,256L1440,0L1392,0C1344,0,1248,0,1152,0C1056,0,960,0,864,0C768,0,672,0,576,0C480,0,384,0,288,0C192,0,96,0,48,0L0,0Z"></path>
-                </svg>
-            </div> -->
         </div>
-        
-        <!-- tablet and smaller screens login page -->
-        <div v-else>
-            <img src="../Components/images/mdc-background.jpg" alt="mdc-background" class="object-cover z-0 w-full h-[300px] fixed">
-            <div class="z-20 absolute top-0 h-[300px] w-full bg-gradient-to-t from-gray-900 from-20% opacity-50"></div>
-            <div class="z-30 absolute top-0 min-h-screen w-full flex flex-col justify-end">
-                <!-- <img src="../Components/images/mdc-logo.png" alt="" class="w-32 mx-auto mb-3">
-                <h1 class="z-20 text-5xl uppercase font-extrabold font-sans text-center text-white mb-4">MDC-IMS</h1>
-
-                <div class="flex flex-col mx-auto bg-white p-6 rounded-lg sm:w-9/12 w-11/12 shadow-sm border">
-                    
-                    <h1 class="text-2xl uppercase font-bold font-sans text-center text-gray-500 mb-4">WELCOME BACK!</h1>
-    
-                    <slot />
-                </div> -->
-
-                <div class="bg-white rounded-t-[50px] h-[650px] py-6 border">
-                    
-                    <!-- <div class="w-full flex justify-center items-center">
-                        <LoginVector class="w-[250px]" />
-                    </div> -->
-                    <img src="../Components/images/mdc-logo.png" class="w-32 mx-auto mb-3">
-                    <div class="flex flex-col rounded-lg px-20 sm:">
-                        <h1 class="text-2xl uppercase font-bold font-sans text-center text-gray-500 mb-4">LOGIN TO CONTINUE</h1>
-        
-                        <slot />
-                    </div>
-                </div>
+        <div class="w-1/2 bg-white flex items-center rounded-r-lg relative">
+            <img src="../Components/images/mdc-logo.png" alt="mdc-logo" class="w-[8rem] absolute top-9 left-1/2 -translate-x-1/2">
+            <div class="p-12 w-full">
+                <h4 class="text-2xl font-bold text-gray-600 mb-2">Sign in to your account</h4>
+                <div v-if="$page.props.flash.success" class="p-4 text-sm text-green-600 bg-green-100 rounded-lg mb-3">{{ $page.props.flash.success }}</div>
+                <slot />
             </div>
         </div>
     </div>
+    <div class="area" >
+        <ul class="circles">
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+                <li></li>
+        </ul>
+    </div>
+</div>
 </template>
 
 <style scoped>
 
+.area{
+    position: absolute;
+    background: #7a94e0;  
+    background: -webkit-linear-gradient(to left, #8f94fb, #4e54c8);  
+    width: 100%;
+    height:100vh;
+    
+   
+}
+
+.circles{
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+.circles li{
+    position: absolute;
+    display: block;
+    list-style: none;
+    width: 20px;
+    height: 20px;
+    background: rgba(255, 255, 255, 0.2);
+    animation: animate 25s linear infinite;
+    bottom: -150px;
+    
+}
+
+.circles li:nth-child(1){
+    left: 25%;
+    width: 80px;
+    height: 80px;
+    animation-delay: 0s;
+}
+
+
+.circles li:nth-child(2){
+    left: 10%;
+    width: 20px;
+    height: 20px;
+    animation-delay: 2s;
+    animation-duration: 12s;
+}
+
+.circles li:nth-child(3){
+    left: 70%;
+    width: 20px;
+    height: 20px;
+    animation-delay: 4s;
+}
+
+.circles li:nth-child(4){
+    left: 40%;
+    width: 60px;
+    height: 60px;
+    animation-delay: 0s;
+    animation-duration: 18s;
+}
+
+.circles li:nth-child(5){
+    left: 65%;
+    width: 20px;
+    height: 20px;
+    animation-delay: 0s;
+}
+
+.circles li:nth-child(6){
+    left: 75%;
+    width: 110px;
+    height: 110px;
+    animation-delay: 3s;
+}
+
+.circles li:nth-child(7){
+    left: 35%;
+    width: 150px;
+    height: 150px;
+    animation-delay: 7s;
+}
+
+.circles li:nth-child(8){
+    left: 50%;
+    width: 25px;
+    height: 25px;
+    animation-delay: 15s;
+    animation-duration: 45s;
+}
+
+.circles li:nth-child(9){
+    left: 20%;
+    width: 15px;
+    height: 15px;
+    animation-delay: 2s;
+    animation-duration: 35s;
+}
+
+.circles li:nth-child(10){
+    left: 85%;
+    width: 150px;
+    height: 150px;
+    animation-delay: 0s;
+    animation-duration: 11s;
+}
+
+
+
+@keyframes animate {
+
+    0%{
+        transform: translateY(0) rotate(0deg);
+        opacity: 1;
+        border-radius: 0;
+    }
+
+    100%{
+        transform: translateY(-1000px) rotate(720deg);
+        opacity: 0;
+        border-radius: 50%;
+    }
+
+}
+/*
+
+.animation-delay-1000 {
+    animation-delay: 2s;
+}
+
+.animation-delay-2000 {
+    animation-delay: 2s;
+}
+
+.animation-delay-3000 {
+    animation-delay: 2s;
+}
+
+.animation-delay-5000 {
+    animation-delay: 5s;
+}
+
+.animate-blob {
+    animation-name: blob;
+    animation-duration: 7s;
+    animation-iteration-count: infinite;
+}
+
+@keyframes blob {
+    0% { transform: translate(0px, 0px) scale(1)  }
+    33% { transform: translate(-30px, -50px) scale(1.1) }
+    66% { transform: translate(-20px, 20px) scale(0.9) }
+    100% { transform: translate(0px, 0px) scale(1)  }
+}
+*/
 </style>

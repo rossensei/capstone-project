@@ -49,6 +49,10 @@ watch(flash, () => {
 const closeAlert = () => {
     showSuccess.value = false;
     showError.value = false;
+
+    router.post(route('flashMessageHandler'), {
+        preserveState: true
+    })
 }
 
 const title = computed(() => {
@@ -93,7 +97,10 @@ onBeforeMount(() => {
     }
 })
 
-onUnmounted(() => closeAlert())
+onUnmounted(() => {
+    showSuccess.value = false;
+    showError.value = false;
+})
 
 </script>
 
@@ -117,41 +124,43 @@ onUnmounted(() => closeAlert())
             </div>
         </div>
     </transition> -->
-    <transition leave-active-class="duration-300" leave-to-class="opacity-0">
-        <div v-show="showSuccess" class="flex p-4 rounded-md space-x-3 bg-green-100">
-            <div class="shrink-0">
-                <CheckCircleIcon class="w-6 h-6 text-green-500" />
-            </div>
-            <div class="flex-1">
-                <h2 class="font-medium text-green-900">{{ title }}</h2>
-                <div class="text-sm text-green-800">
-                    {{ flash.success }}
+    <div>
+        <transition leave-active-class="duration-300" leave-to-class="opacity-0">
+            <div v-show="showSuccess" class="flex p-4 rounded-md space-x-3 bg-green-100">
+                <div class="shrink-0">
+                    <CheckCircleIcon class="w-6 h-6 text-green-500" />
+                </div>
+                <div class="flex-1">
+                    <h2 class="font-medium text-green-900">{{ title }}</h2>
+                    <div class="text-sm text-green-800">
+                        {{ flash.success }}
+                    </div>
+                </div>
+                <div class="shrink-0">
+                    <button @click="closeAlert" class="p-0.5 rounded-md text-green-900 hover:bg-green-200">
+                        <XMarkIcon class="w-6 h-6" />
+                    </button>
                 </div>
             </div>
-            <div class="shrink-0">
-                <button @click="closeAlert" class="p-0.5 rounded-md text-green-900 hover:bg-green-200">
-                    <XMarkIcon class="w-6 h-6" />
-                </button>
-            </div>
-        </div>
-    </transition>
-
-    <transition leave-active-class="duration-300" leave-to-class="opacity-0">
-        <div v-show="showError" class="flex p-4 rounded-md space-x-3 bg-red-100">
-            <div class="shrink-0">
-                <ExclamationTriangleIcon class="w-6 h-6 text-red-500" />
-            </div>
-            <div class="flex-1">
-                <h2 class="font-medium text-red-900">{{ title }}</h2>
-                <div class="text-sm text-red-800">
-                    {{ flash.error }}
+        </transition>
+    
+        <transition leave-active-class="duration-300" leave-to-class="opacity-0">
+            <div v-show="showError" class="flex p-4 rounded-md space-x-3 bg-red-100">
+                <div class="shrink-0">
+                    <ExclamationTriangleIcon class="w-6 h-6 text-red-500" />
+                </div>
+                <div class="flex-1">
+                    <h2 class="font-medium text-red-900">{{ title }}</h2>
+                    <div class="text-sm text-red-800">
+                        {{ flash.error }}
+                    </div>
+                </div>
+                <div class="shrink-0">
+                    <button @click="closeAlert" class="p-0.5 rounded-md text-red-900 hover:bg-red-200">
+                        <XMarkIcon class="w-6 h-6" />
+                    </button>
                 </div>
             </div>
-            <div class="shrink-0">
-                <button @click="closeAlert" class="p-0.5 rounded-md text-red-900 hover:bg-red-200">
-                    <XMarkIcon class="w-6 h-6" />
-                </button>
-            </div>
-        </div>
-    </transition>
+        </transition>
+    </div>
 </template>

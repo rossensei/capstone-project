@@ -15,8 +15,14 @@ export default {
             // fontFamily: {
             //     sans: ['Figtree', ...defaultTheme.fontFamily.sans],
             // },
+            transitionProperty: {
+                'height': 'height'
+            },
         },
     },
 
-    plugins: [forms],
+    plugins: [
+        forms,
+        require('@headlessui/tailwindcss')
+    ],
 };

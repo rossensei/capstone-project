@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\User;
+use App\Models\Personnel;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,7 +19,7 @@ class TransactionFactory extends Factory
     public function definition(): array
     {
         return [
-            'user_id' => mt_rand(1, User::where('id', '!=', 21)->count()),
+            'personnel_id' => mt_rand(1, 10),
             'date_time' => fake()->dateTime(),
             'remarks' => fake()->sentence(),
         ];

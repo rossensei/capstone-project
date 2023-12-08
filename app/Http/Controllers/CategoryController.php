@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class CategoryController extends Controller
 {
@@ -12,7 +13,11 @@ class CategoryController extends Controller
      */
     public function index()
     {
-        //
+        $categories = Category::withCount('items')->paginate(5)->onEachSide(0);
+
+        return inertia('Category/Index', [
+            'categories' => $categories
+        ]);
     }
 
     /**
@@ -28,7 +33,15 @@ class CategoryController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'cat_name' => ['required', 'string', 'unique:categories']
+        ],[
+            'cat_name.required' => 'The category name field is required.'
+        ]);
+
+        Category::create(['cat_name' => $request->cat_name]);
+
+        return back()->with('success', 'A new category has been created.');
     }
 
     /**
@@ -52,7 +65,15 @@ class CategoryController extends Controller
      */
     public function update(Request $request, Category $category)
     {
-        //
+        $request->validate([
+            'cat_name' => ['required', 'string', Rule::unique(Category::class)->ignore($category->id)]
+        ], [
+            'cat_name.required' => 'The category name field is required.'
+        ]);
+
+        $category->update(['cat_name' => $request->cat_name]);
+
+        return back()->with('success', 'Category has been updated.');
     }
 
     /**
@@ -60,6 +81,12 @@ class CategoryController extends Controller
      */
     public function destroy(Category $category)
     {
-        //
+        if($category->items()->exists()) {
+            return back()->with('error', 'Deletion has failed. This category has existing items.');
+        } else {
+            $category->delete();
+
+            return back()->with('success', 'Category has been deleted.');
+        }
     }
 }

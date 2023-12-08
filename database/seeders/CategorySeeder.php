@@ -17,22 +17,22 @@ class CategorySeeder extends Seeder
 
         $categories = [
             [
-                'cat_name' => 'Elementary Uniforms',
+                'name' => 'Elementary Uniforms',
             ],
             [
-                'cat_name' => 'Senior High School Uniforms',
+                'name' => 'Senior High School Uniforms',
             ],
             [
-                'cat_name' => 'College Uniforms',
+                'name' => 'College Uniforms',
             ],
             [
-                'cat_name' => 'School Supplies',
+                'name' => 'School Supplies',
             ],
             [
-                'cat_name' => 'Equipment',
+                'name' => 'Equipment',
             ],
             [
-                'cat_name' => 'Furniture',
+                'name' => 'Furniture',
             ],
         ];
 

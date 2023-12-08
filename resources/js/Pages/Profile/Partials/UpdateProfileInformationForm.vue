@@ -24,18 +24,14 @@ const form = useForm({
 
 <template>
     <section>
-        <header>
-            <h2 class="text-xl font-semibold text-gray-600">Profile Information</h2>
-        </header>
-
-        <form @submit.prevent="form.patch(route('profile.update'))" class="mt-6 space-y-6">
+        <form @submit.prevent="form.patch(route('profile.update'))" class="space-y-4">
             <div>
                 <InputLabel for="name" value="Name" />
 
                 <TextInput
                     id="name"
                     type="text"
-                    class="mt-1 block w-full"
+                    class="mt-1 block w-full text-sm"
                     v-model="form.name"
                     required
                     autofocus
@@ -51,7 +47,7 @@ const form = useForm({
                 <TextInput
                     id="email"
                     type="email"
-                    class="mt-1 block w-full"
+                    class="mt-1 block w-full text-sm"
                     v-model="form.email"
                     required
                     autocomplete="username"

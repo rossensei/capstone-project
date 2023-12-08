@@ -21,10 +21,9 @@ class PropertyFactory extends Factory
     public function definition(): array
     {
         return [
-            'department_id' => mt_rand(1, Department::count()),
+            'office_id' => mt_rand(1, Department::count()),
             'name' => fake()->word(),
             'description' => fake()->sentence(),
-            // 'tag_no' => IdGenerator::generate(['table' => 'properties', 'length' => 7, 'prefix' => date('y')]),
             'date_acquired' => Carbon::now()->format('Y-m-d')
         ];
     }

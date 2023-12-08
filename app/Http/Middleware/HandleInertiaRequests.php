@@ -37,16 +37,30 @@ class HandleInertiaRequests extends Middleware
                     'user' => $request->user()->username,
                     'name' => $request->user()->name,
                     'email' => $request->user()->email,
+                    'address' => $request->user()->address,
                     'roles' => $request->user()->getRoleNames(),
                     'permissions' => $request->user()->getAllPermissions()->pluck('name'),
                     'profile_photo_url' => $request->user()->profile_photo_url,
                 ] : null,
             ],
-            'flash' => [
-                'error' => $request->session()->get('error'),
-                'success' => $request->session()->get('success'),
-                'message' => $request->session()->get('message'),
-            ],
+            'flash' => function () use ($request) {
+                $flashData = [
+                    'error' => $request->session()->get('error'),
+                    'success' => $request->session()->get('success'),
+                    'message' => $request->session()->get('message'),
+                ];
+
+                // Clear the flash messages after reading them
+                $request->session()->forget(['error', 'success', 'message']);
+
+                return $flashData;
+            },
+            // 'flash' => [
+            //     'error' => $request->session()->get('error'),
+            //     'success' => $request->session()->get('success'),
+            //     'message' => $request->session()->get('message'),
+            // ],
+            
             // 'ziggy' => function () use ($request) {
             //     return array_merge((new Ziggy)->toArray(), [
             //         'location' => $request->url(),

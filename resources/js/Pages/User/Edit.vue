@@ -1,17 +1,19 @@
 <script setup>
 import AuthenticatedLayout from '@/Layouts/AuthenticatedLayout.vue';
 import UpdateUserInformation from './Partials/UpdateUserInformation.vue';
-import ChangePasswordForm from './Partials/ChangePasswordForm.vue';
-import ChangeUserRole from './Partials/ChangeUserRole.vue';
-import UserAccountControl from './Partials/UserAccountControl.vue';
+import UpdateUserLogon from './Partials/UpdateUserLogon.vue';
 import Breadcrumb from '@/Components/Breadcrumb.vue';
-import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
-import { ShieldCheckIcon } from '@heroicons/vue/24/outline'
+import InputLabel from '@/Components/InputLabel.vue';
+import TextInput from '@/Components/TextInput.vue';
+import Alert from '@/Components/Alert.vue';
+import { Disclosure, DisclosureButton, DisclosurePanel } from '@headlessui/vue';
+import { ChevronUpIcon } from '@heroicons/vue/20/solid';
+import { ShieldCheckIcon, InformationCircleIcon, IdentificationIcon, KeyIcon, LockClosedIcon } from '@heroicons/vue/24/outline'
 import { Head, useForm } from '@inertiajs/vue3';
 import { ref } from 'vue';
 
-defineProps({
+const props = defineProps({
     user: Object,
     roles: Array
 })
@@ -24,7 +26,7 @@ const crumbs = [
     },
     {
         name: 'Users',
-        url: '/users',
+        url: '/admin/users',
         active: false,
     },
     {
@@ -32,51 +34,42 @@ const crumbs = [
         url: null,
         active: true,
     },
-]
+];
 
-const showChangePasswordForm = ref(false);
+
 </script>
 
 <template>
     <Head :title="user.name "/>
 
     <AuthenticatedLayout>
-        <div class="py-4">
+        <div class="py-6">
             <div class="w-full sm:px-6 lg:px-8">
                 
-                <h1 class="font-semibold text-2xl text-gray-700 leading-tight mb-4">Editing {{ user.name }}'s Information</h1>
+                <Breadcrumb :crumbs="crumbs" class="mb-4"/>
+                <h1 class="font-semibold text-3xl text-gray-700 leading-tight mb-4">Edit User Information</h1>
+
+                <Alert class="mb-4" />
                 
-                <Breadcrumb :crumbs="crumbs"/>
-
-                <hr class="mt-3 mb-3">
-
-                <div class="flex items-start lg:space-x-4 p-4 flex-wrap">
-
-                    <div class="w-full lg:w-1/2">
-                        <UpdateUserInformation :user="user" class="mb-8 w-full lg:max-w-xl" />
-
-                        <label for="toggle-change-password" class="text-sm">
-                            <input v-model="showChangePasswordForm" type="checkbox" id="toggle-change-password" class="rounded-sm">
-                            Set a new password for this user.
-                        </label>
-                        
-                        <ChangePasswordForm v-if="showChangePasswordForm" :user="user.id" class="mt-3" />
-                    </div>
-
-                    <div class="w-full lg:flex-1 mt-8 lg:mt-0">
-                        <h1 class="text-xl font-semibold text-gray-600 inline-flex items-center">Administrative Actions
-                            <ShieldCheckIcon class="w-5 h-5 ml-2"/>
-                        </h1>
-    
-                        <ChangeUserRole :user="user" :roles="roles" class="mb-4 mt-4" />
-    
-                        <UserAccountControl :user="user" class="max-w-xl" />
-    
-                        
-                    </div>
-
+                <div class="bg-white rounded-lg shadow p-6 mt-5">
+                    <UpdateUserInformation :user="props.user" :roles="props.roles" />
+                </div>
+                <div class="bg-white rounded-lg shadow p-6 mt-5">
+                    <UpdateUserLogon :user="props.user" />
                 </div>
             </div>
         </div>
     </AuthenticatedLayout>
 </template>
+
+<style scoped>
+.fade-from {
+    height: 0px;
+    opacity: 0;
+}
+
+.fade-to {
+    height: auto;
+    opacity: 100;
+}
+</style>

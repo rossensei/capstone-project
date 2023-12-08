@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('transactions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
+            $table->foreignId('personnel_id')->constrained();
             $table->dateTime('date_time');
             $table->string('remarks')->nullable();
             $table->timestamps();

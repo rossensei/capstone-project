@@ -11,7 +11,7 @@ class ItemApiController extends Controller
 {
     public function getUnits()
     {
-        $units = Unit::select('id', 'name')->get();
+        $units = Unit::select('id', 'unit_name')->get();
 
         return response()->json($units);
     }
@@ -40,16 +40,7 @@ class ItemApiController extends Controller
 
     public function getItem(Item $item)
     {
-        // $items = Item::with('unit:id,name')
-        //             ->get()
-        //             ->map(function ($item) {
-        //                 return [
-        //                     'id' => $item->id,
-        //                     'name' => $item->name,
-        //                     'unit' => $item->unit_id,
-        //                 ];
-        //             });
-
-        return response()->json($item);
+        $data = $item->only(['id', 'unit_id', 'category_id', 'item_name', 'init_stocks', 'curr_stocks']);
+        return response()->json($data);
     }
 }

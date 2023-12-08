@@ -1,17 +1,17 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
-import { ChartPieIcon, UserGroupIcon, BuildingOfficeIcon, CubeIcon, Square3Stack3DIcon, ChevronUpIcon, DocumentTextIcon } from '@heroicons/vue/24/solid';
-import {
-    Disclosure,
-    DisclosureButton,
-    DisclosurePanel,
-  } from '@headlessui/vue'
+import { ChartPieIcon, UserGroupIcon, BuildingOfficeIcon, CubeIcon, 
+    Square3Stack3DIcon, ChevronLeftIcon, DocumentTextIcon, UserIcon, 
+    ArrowRightOnRectangleIcon, SquaresPlusIcon, CurrencyPoundIcon, RectangleStackIcon,
+    UserCircleIcon
+} from '@heroicons/vue/24/solid';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
 import GlobalSearchComponent from '@/Components/GlobalSearchComponent.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link, usePage } from '@inertiajs/vue3';
+import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
 
 const showingNavigationDropdown = ref(false);
 
@@ -26,6 +26,7 @@ const collapseSidebar = () => {
     
     isCollapsed.value = !isCollapsed.value;
     localStorage.setItem("isCollapsed", isCollapsed.value);
+
 }
 
 const clearLocalStorage = () => {
@@ -69,14 +70,32 @@ const handlePurchaseDropdown = () => {
     openPurchaseDropdown.value = !openPurchaseDropdown.value;
 }
 
-
+const currentUrl = ref(window.location.pathname);
 </script>
 
 <template>
     <div>
         <div class="flex items-start min-h-screen bg-gray-50">
-            <nav class="hidden sm:block sticky top-0 z-10 bg-[#4e73df] min-h-screen duration-300 lg:w-64 w-16">
-                <div class="relative p-4">
+            <nav class="hidden sm:block sticky top-0 z-10 bg-[#4e73df] min-h-screen duration-300" :class="[ isCollapsed ? 'w-16' : 'w-64']">
+                <div class="relative min-h-screen p-4">
+                    <div id="trigger" 
+                    :class="[isCollapsed ? 'rotate-0' : 'rotate-180']"
+                    class="absolute -right-8 top-1/2 -translate-y-1/2 opacity-[0.25] hover:opacity-[1] transition-transform" @click="collapseSidebar">
+                        <button>
+                            <div class="flex h-[72px] w-8 items-center justify-center ">
+                                <div v-if="!isCollapsed" class="flex flex-col-reverse items-center h-6 w-6">
+                                    <div id="icon-upper-portion" class="-mt-1 h-3 w-1 rounded-full bg-[#343541] ease-in-out duration-200"></div>
+                                    <div id="icon-lower-portion" class="-mb-1 h-3 w-1 rounded-full bg-[#343541] ease-in-out duration-200"></div>
+                                </div>
+                                <div v-else class="flex flex-col-reverse items-center h-6 w-6">
+                                    <div id="icon-upper-portion" class="-mt-1 h-3 w-1 rounded-full bg-[#343541] ease-in-out duration-200"></div>
+                                    <div id="icon-lower-portion" class="-mb-1 h-3 w-1 rounded-full bg-[#343541] ease-in-out duration-200"></div>
+                                </div>
+                            </div>
+                        </button>
+                    </div>
+    
+
                     <div class="flex mb-4" :class="[ !isCollapsed ? 'justify-between items-center' : 'justify-center']">
                         <!-- Logo branding -->
                         <Link :href="route('dashboard')" class="w-full flex items-center space-x-2">
@@ -85,11 +104,7 @@ const handlePurchaseDropdown = () => {
                         </Link>
     
                     </div>
-                    <span class="absolute -right-8 top-5 bg-gray-400 bg-opacity-75 text-gray-50 rounded-lg p-1.5 text-center text-sm cursor-pointer peer" @click="collapseSidebar">
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-[15px] h-[15px] duration-75" :class="[ isCollapsed ? 'rotate-180 peer-hover:translate-x-2' : 'rotate-0 peer-hover:-translate-x-2']">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M18.75 19.5l-7.5-7.5 7.5-7.5m-6 15L5.25 12l7.5-7.5" />
-                          </svg>                     
-                    </span> 
+
     
                     <span class="text-[10px] mb-2 text-gray-200 select-none font-bold uppercase" :class="[ isCollapsed ? 'mt-24 text-center' : '']">Menu</span>
                     <ul class="space-y-2" :class="[ isCollapsed ? 'flex flex-col' : '']">
@@ -99,30 +114,34 @@ const handlePurchaseDropdown = () => {
                                 <span class="ml-2" v-show="!isCollapsed">Dashboard</span>
                             </NavLink>
                         </li>
-                        <!-- <li>
-                            <a href="#" class="flex justify-between w-full px-2 py-2 items-center text-sm leading-5 rounded-md hover:bg-[#7290e8] text-gray-200 transition duration-150 ease-in-out" @click="handlePurchaseDropdown">
-                                <div class="inline-flex items-center">
-                                    <DocumentTextIcon class="w-5 h-5" />
-                                    <span class="flex-1 ml-2" v-show="!isCollapsed">Purchases</span>
-                                </div>
-                                
-                                <ChevronUpIcon class="w-3 h-3" :class="{ 'rotate-180' : openPurchaseDropdown }" />
-                            </a>
-                            <div v-if="openPurchaseDropdown">
-                                <ul class="w-full space-y-2 font-medium">
-                                    <li>
-                                        <NavLink href="/new-purchased-item" :active="isActive('/new-purchased-item')" class="flex items-center pl-10">New Item</NavLink>
-                                    </li>
-                                    <li>
-                                        <NavLink href="/new-purchased-property" :active="isActive('/new-purchased-property')" class="flex items-center pl-10">New Property</NavLink>
-                                    </li>
-                                </ul>
-                            </div>
-                        </li> -->
                         <li>
-                            <NavLink :href="route('department.index')" :active="route().current('department.index')" class="flex items-center">
+                            <NavLink href="/admin/purchases" :active="currentUrl === '/admin/purchases'" class="flex items-center">
+                                <DocumentTextIcon class="w-5 h-5" />    
+                                <span class="ml-2" v-show="!isCollapsed">Purchases</span>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink href="/admin/categories" :active="currentUrl === '/admin/categories'" class="flex items-center">
+                                <SquaresPlusIcon class="w-5 h-5 -rotate-90" />    
+                                <span class="ml-2" v-show="!isCollapsed">Categories</span>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink href="/admin/units" :active="currentUrl === '/admin/units'" class="flex items-center">
+                                <CurrencyPoundIcon class="w-5 h-5" />    
+                                <span class="ml-2" v-show="!isCollapsed">Units</span>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink :href="route('office.index')" :active="route().current('office.index')" class="flex items-center">
                                 <BuildingOfficeIcon class="w-5 h-5" />
-                                <span class="ml-2" v-show="!isCollapsed">Departments</span>
+                                <span class="ml-2" v-show="!isCollapsed">Offices</span>
+                            </NavLink>
+                        </li>
+                        <li>
+                            <NavLink href="/admin/personnels" :active="currentUrl === '/admin/personnels'" class="flex items-center">
+                                <UserCircleIcon class="w-5 h-5" />
+                                <span class="ml-2" v-show="!isCollapsed">Personnels</span>
                             </NavLink>
                         </li>
                         <li>
@@ -138,19 +157,25 @@ const handlePurchaseDropdown = () => {
                             </NavLink>
                         </li>
                         <li>
+                            <NavLink href="/admin/transactions" :active="currentUrl === '/admin/transactions'" class="flex items-center">
+                                <RectangleStackIcon class="w-5 h-5" />    
+                                <span class="ml-2" v-show="!isCollapsed">Transactions</span>
+                            </NavLink>
+                        </li>
+                        <!-- <li>
                             <NavLink :href="route('property.index')" :active="route().current('property.index')" class="flex items-center">
                                 <Square3Stack3DIcon class="w-5 h-5" />
                                 <span class="ml-2" v-show="!isCollapsed">Properties</span>
                             </NavLink>
-                        </li>
+                        </li> -->
                     </ul>
                 </div>
             </nav>
-            <div class="flex-1 min-h-screen overflow-hidden">
+            <div class="relative flex-1 min-h-screen overflow-hidden">
                 <div class="w-full p-4">
-                    <div class="flex justify-between items-center">
+                    <div class="flex justify-end">
                         <!-- Search -->
-                        <GlobalSearchComponent />
+                        <!-- <GlobalSearchComponent /> -->
                         
                         <div class="ml-3 relative">
                             <Dropdown align="right" width="48">
@@ -160,7 +185,7 @@ const handlePurchaseDropdown = () => {
                                             type="button"
                                             class="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 hover:text-gray-700 focus:outline-none transition ease-in-out duration-150"
                                         >
-                                            <!-- {{ $page.props.auth.user.name }} -->
+                                            {{ $page.props.auth.user.name }}
                                             
                                             <img v-if="$page.props.auth.user.profile_photo" :src="$page.props.auth.user.profile_photo_url" class="ml-2 h-7 w-7 rounded-full" alt="">
                                             <img v-else src="../Components/images/user-icon.png" class="ml-2 h-7 w-7 rounded-full" alt="">
@@ -169,9 +194,11 @@ const handlePurchaseDropdown = () => {
                                 </template>
 
                                 <template #content>
-                                    <span class="block w-full px-4 py-2 leading-5 text-sm font-medium border-b text-gray-600 text-center">{{ $page.props.auth.user.name }}</span>
-                                    <DropdownLink :href="route('profile.edit')"> Profile </DropdownLink>
-                                    <DropdownLink :href="route('logout')" method="post" as="button" @click="clearLocalStorage">
+                                    <DropdownLink :href="route('profile.edit')" class="inline-flex items-center"> 
+                                        <UserIcon class="w-4 h-4 mr-2" />  Profile 
+                                    </DropdownLink>
+                                    <DropdownLink :href="route('logout')" method="post" as="button" @click="clearLocalStorage" class="inline-flex items-center">
+                                        <ArrowRightOnRectangleIcon class="w-4 h-4 mr-2" />
                                         Log Out
                                     </DropdownLink>
                                 </template>
@@ -188,3 +215,22 @@ const handlePurchaseDropdown = () => {
         </div>
     </div>
 </template>
+
+<style scoped>
+
+#icon-upper-portion {
+    transform: translateY(0.15rem) rotate(0deg) translateZ(0px);
+}
+
+#trigger:hover #icon-upper-portion {
+    transform: translateY(0.15rem) rotate(15deg) translateZ(0px);
+}
+
+#icon-lower-portion {
+    transform: translateY(-0.15rem) rotate(0deg) translateZ(0px);
+}
+
+#trigger:hover #icon-lower-portion {
+    transform: translateY(-0.15rem) rotate(-15deg) translateZ(0px);
+}
+</style>

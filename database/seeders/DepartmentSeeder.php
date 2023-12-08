@@ -13,6 +13,6 @@ class DepartmentSeeder extends Seeder
      */
     public function run(): void
     {
-        Department::factory(50)->create();
+        Department::factory(100)->create();
     }
 }

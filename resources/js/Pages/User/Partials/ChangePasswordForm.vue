@@ -25,30 +25,16 @@ const updatePassword = () => {
 
 <template>
     <section>
-        <h2 class="text-lg font-semibold text-gray-600 flex items-center">Set a new password </h2>
-        <Transition
-            enter-active-class="transition ease-in-out"
-            enter-from-class="opacity-0"
-            leave-active-class="transition ease-in-out"
-            leave-to-class="opacity-0"
-        >
-            <p v-if="form.recentlySuccessful" class="text-sm text-green-500">A new password has been set for this user.</p>
-        </Transition>
-        <!-- <header>
+        <form @submit.prevent="updatePassword">  
+            <div class="w-full lg:max-w-4xl mb-4">
 
-            <p class="mt-1 text-sm text-gray-600">
-                Set only a new password when it is forgotten.
-            </p>
-        </header> -->
-
-        <form @submit.prevent="updatePassword" class="mt-2">  
-            <div class="w-full lg:max-w-xl">
+                <InputLabel for="password" value="New Password" />
                 <TextInput
                     id="password"
                     ref="passwordInput"
                     v-model="form.password"
                     type="password"
-                    class="mt-3 block w-full text-sm"
+                    class="block w-full text-sm"
                     autocomplete="new-password"
                     placeholder="New Password"
                 />
@@ -56,12 +42,13 @@ const updatePassword = () => {
                 <InputError :message="form.errors.password" class="mt-2" />
             </div>
 
-            <div class="w-full lg:max-w-xl">
+            <div class="w-full lg:max-w-4xl">
+                <InputLabel for="password_confirmation" value="Confirm Password" />
                 <TextInput
                     id="password_confirmation"
                     v-model="form.password_confirmation"
                     type="password"
-                    class="mt-3 block w-full text-sm"
+                    class="block w-full text-sm"
                     autocomplete="new-password"
                     placeholder="Confirm New Password"
                 />

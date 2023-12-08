@@ -48,6 +48,8 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerateToken();
 
+        session(['success' => 'You have been logged out!']);
+
         return redirect('/');
     }
 }

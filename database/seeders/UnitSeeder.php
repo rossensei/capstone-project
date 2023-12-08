@@ -17,17 +17,14 @@ class UnitSeeder extends Seeder
             [
                 'name' => 'pieces',
                 'abbreviation' => 'pcs',
-                'description' => fake()->sentence()
             ],
             [
                 'name' => 'reams',
                 'abbreviation' => 'r',
-                'description' => fake()->sentence()
             ],
             [
                 'name' => 'boxes',
                 'abbreviation' => 'bxs',
-                'description' => fake()->sentence()
             ],
         ];
 

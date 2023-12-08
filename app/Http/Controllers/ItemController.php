@@ -15,54 +15,48 @@ class ItemController extends Controller
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        $items = Item::with([
-            'unit:id,name,abbreviation',
-            'category:id,cat_name',
-        ])->get()->map(function ($item) {
-            return [
+        $search = $request->search;
+        $category = $request->category;
+        $field = $request->field;
+        $direction = $request->direction;
+        $perPage = $request->perPage ?? 5;
+
+        $query = Item::query();
+        
+        $query->with(['category:id,cat_name', 'unit:id,unit_name,abbreviation']);
+
+        if($search) {
+            $query->where('item_name', 'LIKE', "%{$search}%");
+        }
+
+        if($category) {
+            $query->where('category_id', $category);
+        }
+
+        if($field && $direction) {
+            $query->orderBy($field, $direction);
+        }
+
+        $items = $query->paginate($perPage)
+            ->onEachSide(0)
+            ->withQueryString()
+            ->through(fn($item) => [
                 'id' => $item->id,
-                'name' => $item->name,
-                'category' => $item->category->cat_name,
+                'name' => $item->item_name,
                 'init_stocks' => $item->init_stocks,
                 'curr_stocks' => $item->curr_stocks,
-                'used' => $item->transactions->sum('pivot.qty'),
-                'unit' => $item->unit->name,
-                'created_at' => $item->created_at->format('F j, Y'),
-                // 'transactions' => $item->transactions->map(function ($transaction) {
-                //     return [
-                //         'id' => $transaction->id,
-                //         'user' => $transaction->user->name,
-                //         'date_time' => $transaction->date_time,
-                //         'remarks' => $transaction->remarks,
-                //     ];
-                // }),
-            ];
-        });
-        // $items = $data->map(function ($item) {
-        //     return [
-        //         'id' => $item->id,
-        //         'name' => $item->name,
-        //         'category' => $item->category->cat_name,
-        //         'qty_stock' => $item->qty_stock,
-        //         'unit' => $item->unit->name,
-        //         'expiry_date' => $item->expiry_date,
-        //     ];
-        // });
+                'unit_abbreviation' => $item->unit->abbreviation,
+                'category' => $item->category->cat_name,
+                'status' => $item->status,
+            ]);
 
-        // dd($items);
-        // $totalQty = 0;
-        // foreach ($items as $item) {
-        //     $totalQty = $item->transactions->sum('pivot.qty');
-        //     // Now, $totalQty contains the total sum of qty for this item.
-        // }
-        // $items->each(function ($item) {
-        //     $item->used = $item->transactions->sum('pivot.qty');
-        // });
-
+        $categories = Category::select('id', 'cat_name')->get();
         return inertia('Item/Index', [
-            'items' => $items
+            'categories' => $categories,
+            'items' => $items,
+            'filters' => $request->only(['search', 'perPage', 'category', 'field', 'direction'])
         ]);
     }
 
@@ -208,7 +202,7 @@ class ItemController extends Controller
     public function update(Request $request, Item $item)
     {
         $request->validate([
-            'name' => ['string', 'required'],
+            'item_name' => ['string', 'required'],
             'category_id' => ['required'],
             'curr_stocks' => ['required', 'numeric', 'min:0'],
             'unit_id' => ['required'],
@@ -220,7 +214,7 @@ class ItemController extends Controller
         ]);
 
         $attributes = [
-            'name' => $request->name,
+            'item_name' => $request->item_name,
             'category_id' => $request->category_id,
             'init_stocks' => $request->curr_stocks,
             'curr_stocks' => $request->curr_stocks,
@@ -229,7 +223,7 @@ class ItemController extends Controller
 
         $item->update($attributes);
 
-        return redirect('/items')->with('success', 'Item has been updated successfully!');
+        return back()->with('success', 'Item details has been updated.');
 
     }
 

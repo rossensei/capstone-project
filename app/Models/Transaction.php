@@ -12,14 +12,14 @@ class Transaction extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id',
+        'personnel_id',
         'date_time',
         'remarks',
     ];
 
-    public function user()
+    public function personnel()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsTo(Personnel::class);
     }
 
     public function items()

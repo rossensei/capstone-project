@@ -24,6 +24,7 @@ class User extends Authenticatable
         'username',
         'name',
         'email',
+        'address',
         'password',
         'profile_photo_path',
     ];
@@ -67,9 +68,9 @@ class User extends Authenticatable
         return $this->getRoleNames()->first();
     }
 
-    public function department()
+    public function office()
     {
-        return $this->hasOne(Department::class);
+        return $this->hasOne(Office::class);
     }
 
     public function transactions()

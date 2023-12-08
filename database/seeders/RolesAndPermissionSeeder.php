@@ -17,8 +17,7 @@ class RolesAndPermissionSeeder extends Seeder
     {
         $admin = Role::create(['name' => 'Administrator']);
         $custodian = Role::create(['name' => 'Property Custodian']);
-        $dept_head = Role::create(['name' => 'Department Head']);
-        $regular = Role::create(['name' => 'Regular User']);
+        $office_head = Role::create(['name' => 'Office Head']);
 
         Permission::create(['name' => 'create-user']);
         Permission::create(['name' => 'edit-user']);
@@ -34,25 +33,19 @@ class RolesAndPermissionSeeder extends Seeder
 
         $admin->givePermissionTo(Permission::all());
         $custodian->givePermissionTo(['create-inventory', 'edit-inventory', 'delete-inventory']);
-        $dept_head->givePermissionTo(['update-property-status']);
-        $regular->givePermissionTo(['view-transaction-history']);
+        $office_head->givePermissionTo(['update-property-status', 'view-transaction-history']);
 
-        $usersWithoutDept = User::doesntHave('department')->get();
+        // $users = User::all();
 
-        foreach($usersWithoutDept as $user) {
-            $user->assignRole($regular);
-        }
-
-        $usersWithDept = User::has('department')->get();
-
-        foreach($usersWithDept as $user) {
-            $user->assignRole($dept_head);
-        }
+        // foreach($users as $user) {
+        //     $user->assignRole('Department Head');
+        // }
 
         $adminUser = User::create([
             'username' => 'rossensei',
             'name' => 'Rosalino Flores',
             'email' => 'fross0988@gmail.com',
+            'address' => 'Pinayagan Sur, Tubigon, Bohol.',
             'password' => 'admin123',
         ]);
 
@@ -60,6 +53,7 @@ class RolesAndPermissionSeeder extends Seeder
             'username' => 'cymaejosol',
             'name' => 'Cymae Josol',
             'email' => 'temp_xyz@email.com',
+            'address' => 'Pandan, Tubigon, Bohol.',
             'password' => 'password123',
         ]);
 
