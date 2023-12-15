@@ -92,9 +92,9 @@ const submit = () => {
                             </label>
                         </div>
                         <div>
-                            <input v-model="form.role" value="Office Head" type="radio" name="role" id="role-3" class="hidden peer">
+                            <input v-model="form.role" value="Asset Manager" type="radio" name="role" id="role-3" class="hidden peer">
                             <label for="role-3" class="flex items-center px-4 py-2.5 border hover:bg-gray-50 text-sm font-medium select-none cursor-pointer text-gray-600 peer-checked:border-orange-600 peer-checked:text-orange-600 rounded peer-checked:bg-orange-100">
-                                Office Head
+                                Asset Manager
                             </label>
                         </div>
                     </div>

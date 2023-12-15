@@ -4,17 +4,33 @@ namespace App\Http\Controllers;
 
 use App\Models\Property;
 use Illuminate\Http\Request;
+use Illuminate\Validation\Rule;
 
 class PropertyController extends Controller
 {
     /**
      * Display a listing of the resource.
      */
-    public function index()
+    public function index(Request $request)
     {
-        // return inertia('Property/Index', [
-        //     'properties' => Property::
-        // ])
+
+        $search = $request->search;
+        $query = Property::with('venue:id,venue_name');
+
+        if($search) {
+            $query->where('name', 'LIKE', "%{$search}%")
+                ->orWhere('tag_no', 'LIKE', "%{$search}%")
+                ->orWhere('brand', 'LIKE', "%{$search}%")
+                ->orWhere('description', 'LIKE', "%{$search}%");
+        }
+
+        $properties = $query->paginate(10)->onEachSide(0)
+                        ->withQueryString();
+
+        return inertia('Property/Index', [
+            'properties' => $properties,
+            'filters' => $request->only(['search']),
+        ]);
     }
 
     /**
@@ -30,7 +46,16 @@ class PropertyController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'venue_id' => ['required'],
+            'name' => ['required', 'string'],
+            'tag_no' => ['required', 'string', 'unique:properties'],
+            'status' => ['required', 'string'],
+        ]);
+
+        Property::create($request->all());
+
+        return back()->with('success', 'Property has been added.');
     }
 
     /**
@@ -54,7 +79,18 @@ class PropertyController extends Controller
      */
     public function update(Request $request, Property $property)
     {
-        //
+
+        // dd($property);
+        $request->validate([
+            'venue_id' => ['required'],
+            'name' => ['required', 'string'],
+            'tag_no' => ['required', 'string', Rule::unique(Property::class)->ignore($property->id)],
+            'status' => ['required', 'string'],
+        ]);
+
+        $property->update($request->all());
+
+        return back()->with('success', 'Property details has been updated.');
     }
 
     /**
@@ -62,6 +98,10 @@ class PropertyController extends Controller
      */
     public function destroy(Property $property)
     {
-        //
+        // dd($property);
+
+        $property->delete();
+
+        return back()->with('success', 'Property has been deleted.');
     }
 }

@@ -4,25 +4,18 @@ namespace App\Models;
 
 use App\Models\User;
 use App\Models\Property;
-use App\Models\Personnel;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Department extends Model
+class Venue extends Model
 {
     use HasFactory;
-    
+
     protected $fillable = [
-        'name',
         'user_id',
-        'date_added',
+        'venue_name',
+        'building',
     ];
-
-    // public function getRouteKeyName()
-    // {
-    //     return 'name';
-    // }
-
 
     public function user()
     {
@@ -32,10 +25,5 @@ class Department extends Model
     public function properties()
     {
         return $this->hasMany(Property::class);
-    }
-
-    public function personnels()
-    {
-        return $this->hasMany(Personnel::class);
     }
 }

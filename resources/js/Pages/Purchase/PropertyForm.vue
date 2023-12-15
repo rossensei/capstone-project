@@ -17,46 +17,24 @@ import {
 import { CheckIcon, ChevronUpDownIcon, XMarkIcon } from '@heroicons/vue/20/solid'
 
 const props = defineProps({
-    offices: Array,
+    venues: Array,
 });
 
 const form = useForm({
     name: '',
-    office_id: '',
+    brand: '',
+    venue_id: '',
     description: '',
-    date_acquired: null,
-    qty: null,
+    tag_no: null,
 });
 
 const submit = () => {
-
-    if(!form.office_id || form.office_id === '') {
-        form.office_id = selected.value.id;
-
-        form.post('/admin/purchases/store-property', {
-        onSuccess: () => {
-            form.reset();
-        }
-    });
+  form.post('/purchases/store-property', {
+    onSuccess: () => {
+        form.reset();
     }
-
+  });
 }
-
-
-let selected = ref({})
-let query = ref('')
-
-let filteredOffices = computed(() =>
-  query.value === ''
-    ? props.offices
-    : props.offices.filter((office) =>
-        office.office_name
-          .toLowerCase()
-          .replace(/\s+/g, '')
-          .includes(query.value.toLowerCase().replace(/\s+/g, ''))
-    )
-)
-
 </script>
 
 <template>
@@ -65,103 +43,44 @@ let filteredOffices = computed(() =>
         <div class="py-2">
             <form @submit.prevent="submit">
                 <div class="mb-4">
-                    <label for="item_name" class="block font-medium text-sm text-gray-700">Property name</label>
-                    <input v-model="form.name" type="text" id="item_name" 
+                    <label for="name" class="block font-medium text-sm text-gray-700">Name</label>
+                    <input v-model="form.name" type="text" id="name" 
                     class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
                     :class="{'border-red-600' : form.errors.name}">
                     <InputError :message="form.errors.name" />
                 </div>
                 <div class="mb-4">
-                    <label for="description" class="block font-medium text-sm text-gray-700">Description</label>
+                    <label for="brand" class="block font-medium text-sm text-gray-700">Brand</label>
+                    <input v-model="form.brand" type="text" id="brand" 
+                    class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
+                    :class="{'border-red-600' : form.errors.brand}">
+                    <InputError :message="form.errors.brand" />
+                </div>
+                <div class="mb-4">
+                    <label for="description" class="block font-medium text-sm text-gray-700">Add more details</label>
                     <textarea v-model="form.description" name="description" id="description" :class="{'border-red-600' : form.errors.description}" class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm" placeholder="(Optional)"></textarea>
                     <InputError :message="form.errors.description" />
                 </div>
-                <div class="mb-4">
+                <!-- <div class="mb-4">
                     <label for="date_acquired" class="block font-medium text-sm text-gray-700">Acquisition Date</label>
                     <input v-model="form.date_acquired" type="date" id="date_acquired" :class="{'border-red-600' : form.errors.date_acquired}" class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm">
                     <InputError :message="form.errors.date_acquired" />
-                </div>
+                </div> -->
                 <div class="mb-4">
-                    <label for="qty" class="block font-medium text-sm text-gray-700">Quantity</label>
-                    <input v-model="form.qty" type="number" id="qty" :class="{'border-red-600' : form.errors.qty}" class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm">
-                    <InputError :message="form.errors.qty" />
+                    <label for="tag_no" class="block font-medium text-sm text-gray-700">Tag Number</label>
+                    <input v-model="form.tag_no" type="text" id="tag_no" :class="{'border-red-600' : form.errors.tag_no}" class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm">
+                    <InputError :message="form.errors.tag_no" />
                 </div>
 
                 <div class="mb-4">
-                    <!-- <label for="qty" class="block font-medium text-sm text-gray-700">Quantity</label>
-                    <input v-model="form.qty" type="number" id="qty" :class="{'border-red-600' : form.errors.qty}" class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm">
-                    <InputError :message="form.errors.qty" /> -->
-                    <p class="block font-medium text-sm text-gray-700">Assign to</p>
-                    <Combobox v-model="selected">
-                        <div class="relative">
-                          <div
-                            class="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm border border-gray-300"
-                          >
-                            <ComboboxInput
-                              class="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
-                              :displayValue="(office) => office.office_name"
-                              @change="query = $event.target.value"
-                              placeholder="Select office"
-                              autocomplete="off"
-                            />
-                            <ComboboxButton
-                              class="absolute inset-y-0 right-0 flex items-center pr-2"
-                            >
-                              <ChevronUpDownIcon
-                                class="h-5 w-5 text-gray-400"
-                                aria-hidden="true"
-                              />
-                            </ComboboxButton>
-                          </div>
-                          <TransitionRoot
-                            leave="transition ease-in duration-100"
-                            leaveFrom="opacity-100"
-                            leaveTo="opacity-0"
-                            @after-leave="query = ''"
-                          >
-                            <ComboboxOptions
-                              class="absolute mt-1 max-h-60 w-full rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm"
-                            >
-                              <div
-                                v-if="filteredOffices.length === 0 && query !== ''"
-                                class="relative cursor-default select-none px-4 py-2 text-gray-700"
-                              >
-                                Nothing found.
-                              </div>
-                  
-                              <ComboboxOption
-                                v-for="office in filteredOffices"
-                                as="template"
-                                :key="office.id"
-                                :value="office"
-                                v-slot="{ selected, active }"
-                              >
-                                <li
-                                  class="relative cursor-default select-none py-2 pl-10 pr-4"
-                                  :class="{
-                                    'bg-[#4e73df] text-white': active,
-                                    'text-gray-900': !active,
-                                  }"
-                                >
-                                  <span
-                                    class="block truncate"
-                                    :class="{ 'font-medium': selected, 'font-normal': !selected }"
-                                  >
-                                    {{ office.office_name }}
-                                  </span>
-                                  <span
-                                    v-if="selected"
-                                    class="absolute inset-y-0 left-0 flex items-center pl-3"
-                                    :class="{ 'text-white': active, 'text-blue-600': !active }"
-                                  >
-                                    <CheckIcon class="h-5 w-5" aria-hidden="true" />
-                                  </span>
-                                </li>
-                              </ComboboxOption>
-                            </ComboboxOptions>
-                          </TransitionRoot>
-                        </div>
-                      </Combobox>
+                    <label for="venue_id" class="block font-medium text-sm text-gray-700">Assign To</label>
+                    <!-- <input v-model="form.venue_id" type="number" id="venue_id" :class="{'border-red-600' : form.errors.venue_id}" class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"> -->
+                    <select v-model="form.venue_id" id="venue_id" :class="{'border-red-600' : form.errors.venue_id}" class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm">
+                      <option value="">Select venue</option>
+                      <option v-for="venue in venues" :key="venue.id" :value="venue.id">{{ venue.venue_name }} - {{ venue.building }}</option>
+                    </select>
+                    <InputError :message="form.errors.venue_id" />
+                    
                 </div>
 
                 <div class="flex items-center space-x-2">

@@ -1,14 +1,13 @@
 <script setup>
 import { ref, onMounted, onBeforeUnmount, watch } from 'vue';
 import { ChartPieIcon, UserGroupIcon, BuildingOfficeIcon, CubeIcon, 
-    Square3Stack3DIcon, ChevronLeftIcon, DocumentTextIcon, UserIcon, 
+    PresentationChartLineIcon, ChevronLeftIcon, DocumentTextIcon, UserIcon, 
     ArrowRightOnRectangleIcon, SquaresPlusIcon, CurrencyPoundIcon, RectangleStackIcon,
-    UserCircleIcon
+    UserCircleIcon, MagnifyingGlassCircleIcon, MapIcon, ClipboardDocumentListIcon
 } from '@heroicons/vue/24/solid';
 import Dropdown from '@/Components/Dropdown.vue';
 import DropdownLink from '@/Components/DropdownLink.vue';
 import NavLink from '@/Components/NavLink.vue';
-import GlobalSearchComponent from '@/Components/GlobalSearchComponent.vue';
 import ResponsiveNavLink from '@/Components/ResponsiveNavLink.vue';
 import { Link, usePage } from '@inertiajs/vue3';
 import { Menu, MenuButton, MenuItems, MenuItem } from '@headlessui/vue'
@@ -29,46 +28,40 @@ const collapseSidebar = () => {
 
 }
 
-const clearLocalStorage = () => {
-    localStorage.clear();
-}
+// const clearLocalStorage = () => {
+//     localStorage.clear();
+// }
 
-const getScreenWidth = () => {
-    return window.innerWidth;
-}
+// const getScreenWidth = () => {
+//     return window.innerWidth;
+// }
 
-const screenWidth = ref(getScreenWidth())
+// const screenWidth = ref(getScreenWidth())
 
-const handleResize = () => {
-    screenWidth.value = getScreenWidth();
+// const handleResize = () => {
+//     screenWidth.value = getScreenWidth();
 
-    if(screenWidth.value <= 768) {
-        isCollapsed.value = true;
-    }
-    else {
-        isCollapsed.value = false;
-    }
-}
+//     if(screenWidth.value <= 768) {
+//         isCollapsed.value = true;
+//     }
+//     else {
+//         isCollapsed.value = false;
+//     }
+// }
 
-onMounted(() => {
-    window.addEventListener('resize', handleResize)
-})
+// onMounted(() => {
+//     window.addEventListener('resize', handleResize)
+// })
 
-onBeforeUnmount(() => {
-    window.removeEventListener('resize', handleResize);
-})
+// onBeforeUnmount(() => {
+//     window.removeEventListener('resize', handleResize);
+// })
 
 const currentRoute = ref(window.location.pathname);
 
 const isActive = (route) => {
     return currentRoute.value === route;
 };
-
-const openPurchaseDropdown = ref(false);
-
-const handlePurchaseDropdown = () => {
-    openPurchaseDropdown.value = !openPurchaseDropdown.value;
-}
 
 const currentUrl = ref(window.location.pathname);
 </script>
@@ -114,60 +107,80 @@ const currentUrl = ref(window.location.pathname);
                                 <span class="ml-2" v-show="!isCollapsed">Dashboard</span>
                             </NavLink>
                         </li>
-                        <li>
-                            <NavLink href="/admin/purchases" :active="currentUrl === '/admin/purchases'" class="flex items-center">
+                        <li v-if="$page.props.auth.user.roles.includes('Property Custodian') || $page.props.auth.user.roles.includes('Administrator')">
+                            <NavLink href="/purchases" :active="currentUrl === '/purchases'" class="flex items-center">
                                 <DocumentTextIcon class="w-5 h-5" />    
                                 <span class="ml-2" v-show="!isCollapsed">Purchases</span>
                             </NavLink>
                         </li>
-                        <li>
-                            <NavLink href="/admin/categories" :active="currentUrl === '/admin/categories'" class="flex items-center">
+                        <li v-if="$page.props.auth.user.roles.includes('Property Custodian') || $page.props.auth.user.roles.includes('Administrator')">
+                            <NavLink href="/categories" :active="currentUrl === '/categories'" class="flex items-center">
                                 <SquaresPlusIcon class="w-5 h-5 -rotate-90" />    
                                 <span class="ml-2" v-show="!isCollapsed">Categories</span>
                             </NavLink>
                         </li>
-                        <li>
-                            <NavLink href="/admin/units" :active="currentUrl === '/admin/units'" class="flex items-center">
+                        <li v-if="$page.props.auth.user.roles.includes('Property Custodian') || $page.props.auth.user.roles.includes('Administrator')">
+                            <NavLink href="/units" :active="currentUrl === '/units'" class="flex items-center">
                                 <CurrencyPoundIcon class="w-5 h-5" />    
                                 <span class="ml-2" v-show="!isCollapsed">Units</span>
                             </NavLink>
                         </li>
-                        <li>
+                        <li v-if="$page.props.auth.user.roles.includes('Property Custodian') || $page.props.auth.user.roles.includes('Administrator')">
                             <NavLink :href="route('office.index')" :active="route().current('office.index')" class="flex items-center">
                                 <BuildingOfficeIcon class="w-5 h-5" />
                                 <span class="ml-2" v-show="!isCollapsed">Offices</span>
                             </NavLink>
                         </li>
-                        <li>
-                            <NavLink href="/admin/personnels" :active="currentUrl === '/admin/personnels'" class="flex items-center">
+                        <li v-if="$page.props.auth.user.roles.includes('Property Custodian') || $page.props.auth.user.roles.includes('Administrator')">
+                            <NavLink href="/personnels" :active="currentUrl === '/personnels'" class="flex items-center">
                                 <UserCircleIcon class="w-5 h-5" />
                                 <span class="ml-2" v-show="!isCollapsed">Personnels</span>
                             </NavLink>
                         </li>
-                        <li>
+                        <li v-if="$page.props.auth.user.roles.includes('Administrator')">
                             <NavLink :href="route('users.index')" :active="route().current('users.index')" class="inline-flex items-center">
                                 <UserGroupIcon class="w-5 h-5" />
                                 <span class="ml-2" v-show="!isCollapsed">Users</span>
                             </NavLink>
                         </li>
-                        <li>
+                        <li v-if="$page.props.auth.user.roles.includes('Property Custodian') || $page.props.auth.user.roles.includes('Administrator')">
                             <NavLink :href="route('item.index')" :active="route().current('item.index')" class="flex items-center">
                                 <CubeIcon class="w-5 h-5" />
                                 <span class="ml-2" v-show="!isCollapsed">Items</span>
                             </NavLink>
                         </li>
-                        <li>
-                            <NavLink href="/admin/transactions" :active="currentUrl === '/admin/transactions'" class="flex items-center">
+                        <li v-if="$page.props.auth.user.roles.includes('Property Custodian') || $page.props.auth.user.roles.includes('Administrator')">
+                            <NavLink href="/transactions" :active="currentUrl === '/transactions'" class="flex items-center">
                                 <RectangleStackIcon class="w-5 h-5" />    
                                 <span class="ml-2" v-show="!isCollapsed">Transactions</span>
                             </NavLink>
                         </li>
-                        <!-- <li>
-                            <NavLink :href="route('property.index')" :active="route().current('property.index')" class="flex items-center">
-                                <Square3Stack3DIcon class="w-5 h-5" />
-                                <span class="ml-2" v-show="!isCollapsed">Properties</span>
+                        <li v-if="$page.props.auth.user.roles.includes('Property Custodian') || $page.props.auth.user.roles.includes('Administrator')">
+                            <NavLink :href="route('venue.index')" class="flex items-center">
+                                <MapIcon class="w-5 h-5" />    
+                                <span class="ml-2" v-show="!isCollapsed">Venues</span>
                             </NavLink>
-                        </li> -->
+                        </li>
+                        <li v-if="$page.props.auth.user.roles.includes('Property Custodian') || $page.props.auth.user.roles.includes('Administrator')">
+                            <NavLink :href="route('property.index')" class="flex items-center">
+                                <ClipboardDocumentListIcon class="w-5 h-5" />    
+                                <span class="ml-2" v-show="!isCollapsed">All Properties</span>
+                            </NavLink>
+                        </li>
+                        <li v-if="$page.props.auth.user.roles.includes('Property Custodian') || $page.props.auth.user.roles.includes('Administrator')">
+                            <NavLink :href="route('sale.index')" class="flex items-center">
+                                <PresentationChartLineIcon class="w-5 h-5" />    
+                                <span class="ml-2" v-show="!isCollapsed">Sales</span>
+                            </NavLink>
+                        </li>
+
+
+                        <li v-if="$page.props.auth.user.roles.includes('Asset Manager')">
+                            <NavLink href="/asset-manager-access/my-venue" class="flex items-center">
+                                <PresentationChartLineIcon class="w-5 h-5" />    
+                                <span class="ml-2" v-show="!isCollapsed">My Venue</span>
+                            </NavLink>
+                        </li>
                     </ul>
                 </div>
             </nav>
@@ -175,7 +188,6 @@ const currentUrl = ref(window.location.pathname);
                 <div class="w-full p-4">
                     <div class="flex justify-end">
                         <!-- Search -->
-                        <!-- <GlobalSearchComponent /> -->
                         
                         <div class="ml-3 relative">
                             <Dropdown align="right" width="48">

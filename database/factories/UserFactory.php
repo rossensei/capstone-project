@@ -21,6 +21,7 @@ class UserFactory extends Factory
             'username' => $this->faker->firstName,
             'name' => $this->faker->name,
             'email' => $this->faker->unique()->safeEmail(),
+            'address' => $this->faker->streetAddress(),
             'email_verified_at' => now(),
             'password' => 'password123', // password
             'profile_photo_path' => null,

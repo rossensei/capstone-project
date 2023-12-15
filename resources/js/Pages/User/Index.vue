@@ -91,12 +91,12 @@ const clearAllFilters = () => {
     <Head title="Users" />
 
     <AuthenticatedLayout>
-        <div class="py-6">
-            <div class="w-full sm:px-6 lg:px-8">
+        <div class="sm:p-4 xl:p-6">
+            <div>
                 
                 <div class="flex items-center justify-between mb-4">
                     <h1 class="font-semibold text-3xl text-gray-700 leading-tight">Manage Users</h1>
-                    <Link href="/users/create" class="flex items-center px-3 py-2 rounded-lg bg-[#4e73df] hover:bg-[#4e72dfc0] text-white font-medium">
+                    <Link href="/admin/users/create" class="flex items-center px-3 py-2 rounded-lg bg-[#4e73df] hover:bg-[#4e72dfc0] text-white font-medium">
                         <UserPlusIcon class="w-4 h-4" />
                         <span class="text-sm ml-1">Add User</span>
                     </Link>
@@ -135,13 +135,13 @@ const clearAllFilters = () => {
                                 >
                                     <option value="" :selected="params.status == undefined">All</option>
                                     <option value="active" :selected="params.status == 'active'">Active</option>
-                                    <option value="inactive" :selected="params.status == 'inactive'">Inactive</option>
+                                    <option value="deactivated" :selected="params.status == 'deactivated'">Deactivated</option>
                                 </select>
                             </div>
                         </div>
                     </div>
                         
-                    <div class="overflow-x-auto rounded-lg bg-white shadow sm:p-4 2xl:p-6">
+                    <div class="overflow-x-auto rounded-lg bg-white shadow sm:py-4 2xl:py-6">
 
                         <table class="w-full text-sm text-left text-gray-500">
                             <thead class="text-xs text-gray-700 uppercase bg-gray-100">
@@ -188,20 +188,10 @@ const clearAllFilters = () => {
                                         </div>
                                     </td>
                                     <td class="px-6 py-3 text-center">
-                                        {{ new Date(user.created_at).toLocaleString() }}
+                                        {{ new Date(user.created_at).toDateString() }}
                                     </td>
                                     <td class="px-6 py-3 text-center">
-                                        <div>
-                                            <span 
-                                                v-html="user.role" 
-                                                class="px-2 py-1.5 text-xs font-medium rounded-full tracking-wide"
-                                                :class="{
-                                                    'text-indigo-600 bg-indigo-100' : user.role == 'Administrator',
-                                                    'text-rose-600 bg-rose-100' : user.role == 'Property Custodian',
-                                                    'text-orange-600 bg-orange-100' : user.role == 'Office Head',
-                                                }"
-                                            ></span>
-                                        </div>
+                                        {{ user.role }}
                                     </td>
                                     <td class="px-6 py-3">
                                         <div class="flex items-center justify-center space-x-2">

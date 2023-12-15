@@ -20,7 +20,6 @@ const isLoaded = ref(false);
 
 const form = useForm({
     office_name: null,
-    user_id: null,
 });
 
 onMounted(() => {
@@ -28,18 +27,12 @@ onMounted(() => {
         .then((response) => {
             form.office_name = response.data.office_name;
             form.user_id = response.data.user_id;
+            isLoaded.value = true;
         })
-
-    axios.get('http://127.0.0.1:8000/api/users')
-    .then((response) => {
-        users.value = response.data;
-    }).then(() => {
-        isLoaded.value = true;
-    })
 })
 
 const submit = () => {
-    form.patch('/admin/offices/' + prop.office, {
+    form.patch('/offices/update-details/' + prop.office, {
         onSuccess: () => emits('close-modal')
     })
 }
@@ -70,21 +63,6 @@ const submit = () => {
                 id="office_name" />
 
                 <InputError :message="form.errors.office_name" />
-            </div>
-
-            <div class="max-w-2xl mb-4">
-                <InputLabel for="office-head" class="text-sm" value="Office Head" />
-
-                <select
-                v-model="form.user_id"
-                class="w-full text-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
-                name=""
-                id="office-head">
-                    <option value="">Select user</option>
-                    <option v-for="user in users" :key="user.id" :value="user.id">{{ user.name }}</option>
-                </select>
-
-                <InputError :message="form.errors.user_id" />
             </div>
 
             <div class="flex justify-end items-center space-x-2">

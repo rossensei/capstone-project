@@ -2,8 +2,9 @@
 
 namespace App\Models;
 
-use Illuminate\Database\Eloquent\Factories\HasFactory;
+use App\Models\Personnel;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Office extends Model
 {
@@ -11,19 +12,8 @@ class Office extends Model
 
     protected $fillable = [
         'office_name',
-        'user_id',
         'date_added',
     ];
-
-    public function user()
-    {
-        return $this->belongsTo(User::class);
-    }
-
-    public function properties()
-    {
-        return $this->hasMany(Property::class);
-    }
 
     public function personnels()
     {

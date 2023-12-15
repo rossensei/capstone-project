@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Transaction;
+use App\Models\TransactionItem;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
@@ -13,9 +14,10 @@ class Item extends Model
     protected $fillable = [
         'category_id',
         'item_name',
-        'init_stocks',
-        'curr_stocks',
-        'status',
+        'brand',
+        'color',
+        'size',
+        'qty_stock',
         'unit_id',
     ];
 
@@ -29,14 +31,13 @@ class Item extends Model
         return $this->belongsTo('App\Models\Category');
     }
 
-    public function transactions()
+    public function transactionItem()
     {
-        return $this->belongsToMany(Transaction::class)
-            ->withPivot('qty');
+        return $this->hasMany(TransactionItem::class);
     }
 
-    public function getTotalQuantity()
-    {
-        return $this->transactions->sum('pivot.qty');
-    }
+    // public function getTotalQuantity()
+    // {
+    //     return $this->transactions->sum('pivot.qty');
+    // }
 }

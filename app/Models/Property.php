@@ -3,9 +3,9 @@
 namespace App\Models;
 
 use DB;
+use App\Models\Venue;
 use App\Models\Category;
 use Illuminate\Database\Eloquent\Model;
-use Haruncpi\LaravelIdGenerator\IdGenerator;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
 class Property extends Model
@@ -17,17 +17,18 @@ class Property extends Model
     ];
 
     protected $fillable = [
-        'office_id',
+        'venue_id',
         'name',
+        'brand',
         'description',
         'tag_no',
         'date_acquired',
         'status',
     ];
 
-    public function office()
+    public function venue()
     {
-        return $this->belongsTo(Office::class);
+        return $this->belongsTo(Venue::class);
     }
 
     public function category()
@@ -35,31 +36,31 @@ class Property extends Model
         return $this->belongsTo(Category::class);
     }
 
-    protected static function boot()
-    {
-        parent::boot();
+    // protected static function boot()
+    // {
+    //     parent::boot();
 
-        static::creating(function ($property) {
-            $property->tag_no = self::generateTagNumber();
-        });
-    }
+    //     static::creating(function ($property) {
+    //         $property->tag_no = self::generateTagNumber();
+    //     });
+    // }
 
-    public static function generateTagNumber()
-    {
-        $lastTagNumber = self::latest('id')->value('tag_no'); //retrieves the latest record from the database
+    // public static function generateTagNumber()
+    // {
+    //     $lastTagNumber = self::latest('id')->value('tag_no'); //retrieves the latest record from the database
 
-        if(!$lastTagNumber) {
-            $newTagNumber = date('ym') . '00001';
+    //     if(!$lastTagNumber) {
+    //         $newTagNumber = date('ym') . '00001';
 
-            return $newTagNumber;
-        }
+    //         return $newTagNumber;
+    //     }
 
-        substr($lastTagNumber, 0, 4); //removes the first four digits of the tag number
+    //     substr($lastTagNumber, 0, 4); //removes the first four digits of the tag number
 
-        $remainingNumbers = intval(substr($lastTagNumber, 4, 5)) + 1; //converts the remaining numbers to integer and increments it
+    //     $remainingNumbers = intval(substr($lastTagNumber, 4, 5)) + 1; //converts the remaining numbers to integer and increments it
 
-        $newTagNumber = date('ym') . sprintf('%05d', $remainingNumbers);
+    //     $newTagNumber = date('ym') . sprintf('%05d', $remainingNumbers);
 
-        return $newTagNumber;
-    }
+    //     return $newTagNumber;
+    // }
 }

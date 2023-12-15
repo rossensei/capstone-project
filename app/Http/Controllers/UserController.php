@@ -36,7 +36,7 @@ class UserController extends Controller
 
         if($status && $status == 'active') {
             $userQuery->where('active', true);
-        } else if($status && $status == 'inactive') {
+        } else if($status && $status == 'deactivated') {
             $userQuery->where('active', false);
         }
         

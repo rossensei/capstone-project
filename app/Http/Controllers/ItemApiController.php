@@ -25,22 +25,15 @@ class ItemApiController extends Controller
 
     public function getItems()
     {
-        $items = Item::with('unit:id,name')
-                    ->get()
-                    ->map(function ($item) {
-                        return [
-                            'id' => $item->id,
-                            'name' => $item->name,
-                            'unit' => $item->unit_id,
-                        ];
-                    });
+        $items = Item::with('unit:id,unit_name')
+                    ->get();
                     
         return response()->json($items);
     }
 
     public function getItem(Item $item)
     {
-        $data = $item->only(['id', 'unit_id', 'category_id', 'item_name', 'init_stocks', 'curr_stocks']);
+        $data = $item;
         return response()->json($data);
     }
 }

@@ -44,12 +44,13 @@ class ItemController extends Controller
             ->withQueryString()
             ->through(fn($item) => [
                 'id' => $item->id,
-                'name' => $item->item_name,
-                'init_stocks' => $item->init_stocks,
-                'curr_stocks' => $item->curr_stocks,
+                'item_name' => $item->item_name,
+                'brand' => $item->brand,
+                'color' => $item->color,
+                'size' => $item->size,
+                'qty_stock' => $item->qty_stock,
                 'unit_abbreviation' => $item->unit->abbreviation,
                 'category' => $item->category->cat_name,
-                'status' => $item->status,
             ]);
 
         $categories = Category::select('id', 'cat_name')->get();
@@ -117,16 +118,6 @@ class ItemController extends Controller
         ]);  
     }
 
-    public function storeToExisting(Item $item, Request $request) {
-        // dd($item, $request->all());
-        $request->validate([
-            'qty' => ['required', 'numeric', 'min:0']
-        ], [
-            'qty.required' => 'The quantity field is required.',
-            'qty.min' => 'The quantity field must not contain a negative number.'
-        ]);
-    }
-
     /**
      * Store a newly created resource in storage.
      */
@@ -134,26 +125,18 @@ class ItemController extends Controller
     {
         // dd($request->all());
         $request->validate([
-            'name' => ['required'],
+            'item_name' => ['required'],
             'category_id' => ['required'],
-            'curr_stocks' => ['required', 'numeric', 'min:0'],
+            'qty_stock' => ['required', 'numeric', 'min:0'],
             'unit_id' => ['required'],
         ],[
             'category_id.required' => 'The category field is required.',
             'unit_id.required' => 'The unit field is required.',
-            'curr_stocks.required' => 'The quantity stocks field is required.',
-            'curr_stocks.min' => 'The quantity stocks field must not contain a negative number.',
+            'qty_stock.required' => 'The quantity stocks field is required.',
+            'qty_stock.min' => 'The quantity stocks field must not contain a negative number.',
         ]);
-
-        $attributes = [
-            'name' => $request->name,
-            'category_id' => $request->category_id,
-            'init_stocks' => $request->curr_stocks,
-            'curr_stocks' => $request->curr_stocks,
-            'unit_id' => $request->unit_id,
-        ];
         
-        Item::create($attributes);
+        Item::create($request->all());
 
         return redirect('/items')->with('success', 'A new item has been added to the inventory.');
     }
@@ -202,26 +185,18 @@ class ItemController extends Controller
     public function update(Request $request, Item $item)
     {
         $request->validate([
-            'item_name' => ['string', 'required'],
+            'item_name' => ['required'],
             'category_id' => ['required'],
-            'curr_stocks' => ['required', 'numeric', 'min:0'],
+            'qty_stock' => ['required', 'numeric', 'min:0'],
             'unit_id' => ['required'],
         ],[
             'category_id.required' => 'The category field is required.',
             'unit_id.required' => 'The unit field is required.',
-            'curr_stocks.required' => 'The quantity stocks field is required.',
-            'curr_stocks.min' => 'The quantity stocks field must not contain a negative number.',
+            'qty_stock.required' => 'The quantity stocks field is required.',
+            'qty_stock.min' => 'The quantity stocks field must not contain a negative number.',
         ]);
 
-        $attributes = [
-            'item_name' => $request->item_name,
-            'category_id' => $request->category_id,
-            'init_stocks' => $request->curr_stocks,
-            'curr_stocks' => $request->curr_stocks,
-            'unit_id' => $request->unit_id,
-        ];
-
-        $item->update($attributes);
+        $item->update($request->all());
 
         return back()->with('success', 'Item details has been updated.');
 
@@ -232,28 +207,12 @@ class ItemController extends Controller
      */
     public function destroy(Item $item)
     {
-        // dd($item->transactions()->exists());
-
-        if($item->transactions()->exists())
+        if($item->transactionItem()->exists())
         {
             return back()->with('error', 'You cannot delete this item because it has existing transactions.');
         }
         $item->delete();
 
         return back()->with('success', 'Item has been removed from the inventory.');
-    }
-
-    public function bulkDelete(Request $request)
-    {
-        
-        $ids = $request->input('ids');
-
-        if($ids) {
-            Item::whereIn('id', $ids)->delete();
-            return back()->with('success', 'Items has been deleted.');
-        }else {
-            return back()->with('error', 'There was a problem processing your request.');
-        }
-
     }
 }

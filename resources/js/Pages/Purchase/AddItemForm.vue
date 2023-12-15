@@ -12,13 +12,16 @@ const props = defineProps({
 
 const form = useForm({
     item_name: '',
+    brand: '',
+    color: '',
+    size: '',
     category_id: '',
-    init_stocks: null,
+    qty_stock: null,
     unit_id: '',
 });
 
 const submit = () => {
-    form.post('/admin/purchases/store-item', {
+    form.post('/purchases/store-item', {
         onSuccess: () => {
             form.reset();
         }
@@ -39,6 +42,27 @@ const submit = () => {
                     :class="{'border-red-600' : form.errors.item_name}">
                     <InputError :message="form.errors.item_name" />
                 </div>
+                <div class="mb-4">
+                    <label for="brand" class="block font-medium text-sm text-gray-700">Brand</label>
+                    <input v-model="form.brand" type="text" id="brand" 
+                    class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
+                    :class="{'border-red-600' : form.errors.brand}">
+                    <InputError :message="form.errors.brand" />
+                </div>
+                <div class="mb-4">
+                    <label for="color" class="block font-medium text-sm text-gray-700">Color</label>
+                    <input v-model="form.color" type="text" id="color" 
+                    class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
+                    :class="{'border-red-600' : form.errors.color}">
+                    <InputError :message="form.errors.color" />
+                </div>
+                <div class="mb-4">
+                    <label for="size" class="block font-medium text-sm text-gray-700">Size</label>
+                    <input v-model="form.size" type="text" id="size" 
+                    class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
+                    :class="{'border-red-600' : form.errors.size}">
+                    <InputError :message="form.errors.size" />
+                </div>
 
                 <div class="mb-4">
                     <label for="category" class="block font-medium text-sm text-gray-700">Category</label>
@@ -55,11 +79,11 @@ const submit = () => {
                     <div class="flex items-center justify-between w-full">
 
                         <div class="w-1/2">
-                            <label for="init_stocks" class="block font-medium text-sm text-gray-700">Quantity Stock</label>
-                            <input v-model="form.init_stocks" type="number" id="init_stocks" placeholder="0"
-                            :class="{'border-red-600' : form.errors.init_stocks}"
+                            <label for="qty_stock" class="block font-medium text-sm text-gray-700">Quantity Stock</label>
+                            <input v-model="form.qty_stock" type="number" id="qty_stock" placeholder="0"
+                            :class="{'border-red-600' : form.errors.qty_stock}"
                             class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm">
-                            <InputError :message="form.errors.init_stocks" />
+                            <InputError :message="form.errors.qty_stock" />
                         </div>
 
                         <div class="w-1/2 ml-2">

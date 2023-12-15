@@ -116,7 +116,7 @@ defineProps({
                             </DisclosurePanel>
                         </transition>
                     </Disclosure>
-                    <Disclosure as="div" class="mt-2" v-slot="{ open }">
+                    <!-- <Disclosure as="div" class="mt-2" v-slot="{ open }">
                         <DisclosureButton
                         class="flex w-full justify-between p-4 focus:border-transparent focus:outline-none focus:ring-4 focus:ring-gray-200 bg-white hover:bg-gray-100"
                         >
@@ -142,7 +142,7 @@ defineProps({
                             </DisclosurePanel>
                         </transition>
 
-                    </Disclosure>
+                    </Disclosure> -->
                 </div>
             </div>
         </div>

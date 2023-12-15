@@ -10,14 +10,6 @@ import debounce from 'lodash/debounce';
 import { PencilIcon, TrashIcon, MagnifyingGlassIcon, ArrowPathIcon } from '@heroicons/vue/24/outline';
 import { Head, router } from '@inertiajs/vue3';
 import { ref, watch, computed } from 'vue';
-import {
-  Combobox,
-  ComboboxInput,
-  ComboboxButton,
-  ComboboxOptions,
-  ComboboxOption,
-  TransitionRoot,
-} from '@headlessui/vue'
 import { CheckIcon, ChevronUpDownIcon, XMarkIcon } from '@heroicons/vue/20/solid'
 
 const props = defineProps({
@@ -43,7 +35,7 @@ watch(() => params, debounce(() => {
         }
     });
 
-    router.get('/admin/personnels', newParams, { preserveState: true, replace: true});
+    router.get('/personnels', newParams, { preserveState: true, replace: true});
 
 }, 300), {
     deep: true
@@ -102,37 +94,38 @@ const deletePersonnel = (personnel) => {
                     <button type="button" class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-lg bg-[#4e73df] hover:bg-[#4e72dfc0] text-white" @click="createPersonnel">New Personnel</button>
                 </div>
 
-                <div class="p-4 bg-white rounded-lg flex justify-between items-center mb-4 shadow">
-                    <div class="relative">
-                        <MagnifyingGlassIcon class="absolute left-2 top-2 w-5 h-5 text-gray-400" />
-                        <input 
-                            v-model="params.search"
-                            type="search" 
-                            id="table-search-personnels" 
-                            class="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-                            placeholder="Search for personnels"
-                        >
-                    </div>
-
-                    <div class="flex items-center space-x-2">
-                        <label for="status-filter" class="text-sm text-gray-600 font-medium">Filter by Office</label>
-                        <select @change="addOfficeFilter($event)" id="status-filter"
-                        class="block p-2 pr-8 text-sm text-gray-900 border border-gray-300 rounded-md bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
-                        >
-                            <option value="" :selected="params.office == undefined">All</option>
-                            <option v-for="office in props.offices" :key="office.id" :value="office.id" :selected="office.id == params.office">{{ office.office_name }}</option>
-                        </select>
-                    </div>
-                </div>
-
                 <Alert class="mb-4" />
 
-                <div class="flex-1 min-w-[768x] bg-white rounded-lg shadow p-4 lg:p-6">
+                <div class="w-full bg-white rounded-lg shadow py-4 lg:py-6">
+
+                    <div class="px-4 bg-white rounded-lg flex justify-between items-center mb-4">
+                        <div class="relative">
+                            <MagnifyingGlassIcon class="absolute left-2 top-2 w-5 h-5 text-gray-400" />
+                            <input 
+                                v-model="params.search"
+                                type="search" 
+                                id="table-search-personnels" 
+                                class="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                                placeholder="Search for personnels"
+                            >
+                        </div>
+    
+                        <div class="flex items-center space-x-2">
+                            <label for="status-filter" class="text-sm text-gray-600 font-medium">Filter by Office</label>
+                            <select @change="addOfficeFilter($event)" id="status-filter"
+                            class="block p-2 pr-8 text-sm text-gray-900 border border-gray-300 rounded-md bg-gray-50 focus:ring-blue-500 focus:border-blue-500"
+                            >
+                                <option value="" :selected="params.office == undefined">All</option>
+                                <option v-for="office in props.offices" :key="office.id" :value="office.id" :selected="office.id == params.office">{{ office.office_name }}</option>
+                            </select>
+                        </div>
+                    </div>
+
                     <table class="w-full text-sm text-left text-gray-500">
                         <thead class="text-xs text-gray-700 uppercase bg-gray-100">
-                            <th scope="col" class="px-6 py-3">
+                            <!-- <th scope="col" class="px-6 py-3">
                                 ID
-                            </th>
+                            </th> -->
                             <th scope="col" class="px-6 py-3">
                                 Personnel Name
                             </th>
@@ -148,9 +141,9 @@ const deletePersonnel = (personnel) => {
                         </thead>
                         <tbody>
                             <tr class="bg-white border-b border-t" v-for="personnel in props.personnels.data" :key="personnel.id">
-                                <td class="px-6 py-3">
+                                <!-- <td class="px-6 py-3">
                                     {{ personnel.id }}
-                                </td>
+                                </td> -->
                                 <td class="px-6 py-3 text-gray-700 font-medium">
                                     {{ personnel.name }}
                                 </td>

@@ -13,11 +13,12 @@ return new class extends Migration
     {
         Schema::create('properties', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('office_id')->constrained();
+            $table->foreignId('venue_id')->constrained();
             $table->string('name');
+            $table->string('brand')->nullable();
             $table->string('description')->nullable();
             $table->string('tag_no')->unique();
-            $table->date('date_acquired');
+            $table->date('date_acquired')->nullable();
             $table->string('status')->default('Good');
             $table->timestamps();
         });

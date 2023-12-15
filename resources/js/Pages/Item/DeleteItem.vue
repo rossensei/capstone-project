@@ -9,7 +9,7 @@ const props = defineProps({
 const emit = defineEmits(['close-modal'])
 
 const confirm = () => {
-    router.delete('/admin/items/delete-item/' + props.item.id, {
+    router.delete('/items/delete-item/' + props.item.id, {
         onFinish: () => emit('close-modal')
     })
 }
@@ -25,7 +25,7 @@ const confirm = () => {
             <div class="flex-1">
                 <h1 class="text-lg font-semibold text-red-600">Delete Confirmation</h1>
                 <div class="text-sm text-gray-800">
-                    Are you sure you want to delete "{{ props.item.name }}"?
+                    Are you sure you want to delete "{{ props.item.item_name }}"?
                     You cannot undo this action.
                 </div>
             </div>

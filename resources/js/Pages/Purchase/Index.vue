@@ -12,7 +12,7 @@ const props = defineProps({
     items: Array,
     categories: Array,
     units: Array,
-    offices: Array,
+    venues: Array,
 })
 </script>
 
@@ -34,14 +34,14 @@ const props = defineProps({
                                 <AddItemForm :units="units" :categories="categories" />
                             </div>
                         </Tab>
-                        <Tab title="Add To Existing Item">
+                        <Tab title="Replenish Item">
                             <div class="px-8">
                                 <AddToExistingForm :items="props.items" />
                             </div>
                         </Tab>
                         <Tab title="Add New Property">
                             <div class="px-8">
-                                <PropertyForm :offices="props.offices" />
+                                <PropertyForm :venues="props.venues" />
                             </div>
                         </Tab>
                     </TabWrapper>

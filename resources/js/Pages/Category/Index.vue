@@ -37,7 +37,7 @@ const form = useForm({
 })
 
 const submit = () => {
-    form.post('/admin/categories/add-new-category', {
+    form.post('/categories/add-new-category', {
         onSuccess: () => form.reset()
     });
 }

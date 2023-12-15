@@ -16,9 +16,10 @@ return new class extends Migration
             $table->foreignId('unit_id')->constrained();
             $table->foreignId('category_id')->constrained();
             $table->string('item_name');
-            $table->integer('init_stocks');
-            $table->integer('curr_stocks');
-            $table->string('status')->default('High Stock');
+            $table->string('brand')->nullable();
+            $table->string('color')->nullable();
+            $table->string('size')->nullable();
+            $table->integer('qty_stock');
             $table->timestamps();
         });
     }

@@ -22,7 +22,7 @@ const form = useForm({
 })
 
 const submit = () => {
-    form.post('/users')
+    form.post('/admin/users')
 }
 
 const crumbs = [
@@ -156,9 +156,9 @@ const crumbs = [
                                         </label>
                                     </div>
                                     <div>
-                                        <input v-model="form.role" value="Office Head" type="radio" name="role" id="role-3" class="hidden peer">
+                                        <input v-model="form.role" value="Asset Manager" type="radio" name="role" id="role-3" class="hidden peer">
                                         <label for="role-3" class="flex items-center px-4 py-2.5 border hover:bg-gray-50 text-sm font-medium select-none cursor-pointer text-gray-600 peer-checked:border-orange-600 peer-checked:text-orange-600 rounded peer-checked:bg-orange-100">
-                                            Office Head
+                                            Asset Manager
                                         </label>
                                     </div>
                                 </div>
@@ -166,10 +166,6 @@ const crumbs = [
                             </div>
     
                             <div class="max-w-3xl flex items-center mt-5">
-                                <!-- <Link href="/users" class="inline-flex items-center px-4 py-1.5 rounded-md text-sm text-white bg-gray-500 hover:bg-gray-400 shadow-md mr-2">
-                                    <ArrowLeftIcon class="w-4 h-4 mr-1"/>
-                                    Back
-                                </Link> -->
                                 <button type="submit" class="inline-flex items-center px-4 py-2 text-sm font-medium rounded-md bg-[#4e73df] hover:bg-[#4e72dfc0] text-white" :disabled="form.processing">
                                     <span v-if="form.processing" class="inline-flex items-center">
                                         <svg aria-hidden="true" class="inline w-4 h-4 text-gray-200 animate-spin fill-blue-600 me-2" viewBox="0 0 100 101" fill="none" xmlns="http://www.w3.org/2000/svg">

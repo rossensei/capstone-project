@@ -3,6 +3,7 @@
 namespace App\Models;
 
 // use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Models\Venue;
 use App\Models\Transaction;
 use Laravel\Sanctum\HasApiTokens;
 use Illuminate\Support\Facades\Hash;
@@ -68,13 +69,8 @@ class User extends Authenticatable
         return $this->getRoleNames()->first();
     }
 
-    public function office()
+    public function venues()
     {
-        return $this->hasOne(Office::class);
-    }
-
-    public function transactions()
-    {
-        return $this->hasMany(Transaction::class);
+        return $this->hasMany(Venue::class);
     }
 }

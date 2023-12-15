@@ -13,7 +13,6 @@ return new class extends Migration
     {
         Schema::create('offices', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
             $table->string('office_name');
             $table->date('date_added');
             $table->timestamps();

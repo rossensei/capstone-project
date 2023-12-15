@@ -6,9 +6,9 @@ import Alert from '@/Components/Alert.vue';
 import Paginator from '@/Components/Paginator.vue';
 import PaginationWithPerPage from '@/Components/PaginationWithPerPage.vue';
 import Modal from '@/Components/Modal.vue';
-import CreateDepartmentForm from './Create.vue';
-import EditDepartmentForm from './Edit.vue';
-import DeleteDepartment from './Delete.vue';
+import CreateOffice from './Create.vue';
+import EditOffice from './Edit.vue';
+import DeleteOffice from './Delete.vue';
 import { Head, Link, router, usePage } from '@inertiajs/vue3';
 import debounce from 'lodash/debounce';
 import { ref, watch, computed, onMounted } from 'vue';
@@ -38,7 +38,7 @@ watch(() => params, debounce(() => {
         }
     });
 
-    router.get('/admin/offices', newParams, { preserveState: true, replace: true});
+    router.get('/offices', newParams, { preserveState: true, replace: true});
 
 }, 300), {
     deep: true
@@ -52,11 +52,6 @@ const updatePerPage = (newPerPage) => {
 const resetOrder = () => {
     params.value.direction = undefined;
 }
-
-// const sort = (field) => {
-//     params.value.field = field;
-//     params.value.direction = params.value.direction === 'asc' ? 'desc' : 'asc';
-// }
 
 const updateFieldFilter = (ev) => {
     params.value.field = ev.target.value;
@@ -116,47 +111,43 @@ const createOffice = () => {
 
                 <Alert class="mb-4" />
 
-                <div class="p-4 bg-white rounded-lg flex justify-between items-center mb-4 shadow">
-                    <div class="relative">
-                        <MagnifyingGlassIcon class="absolute left-2 top-2 w-5 h-5 text-gray-400" />
-                        <input 
-                            v-model="params.search"
-                            type="search" 
-                            id="table-search-users" 
-                            class="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
-                            placeholder="Search for offices"
-                        >
+                <div class="relative overflow-x-auto bg-white rounded-lg shadow py-6">
+
+                    <div class="px-4 flex justify-between items-center mb-4">
+                        <div class="relative">
+                            <MagnifyingGlassIcon class="absolute left-2 top-2 w-5 h-5 text-gray-400" />
+                            <input 
+                                v-model="params.search"
+                                type="search" 
+                                id="table-search-users" 
+                                class="block p-2 pl-10 text-sm text-gray-900 border border-gray-300 rounded-lg w-80 bg-white focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500" 
+                                placeholder="Search for offices"
+                            >
+                        </div>
+    
+                        <!-- <div class="flex items-center space-x-2">
+                            <span class="text-sm text-gray-600 font-medium">Sort by</span>
+    
+                            <select @change="updateFieldFilter($event)" id="field" class="text-sm text-gray-600 bg-white border border-gray-300 rounded-md">
+                                <option value="" :selected="params.field == undefined">Select Field</option>
+                                <option value="office_name" :selected="params.field ==='office_name'">Office Name</option>
+                                <option value="head" :selected="params.field ==='head'">Office Head</option>
+                                <option value="date_added" :selected="params.field ==='date_added'">Date Added</option>
+                            </select>
+    
+                            <select v-model="params.direction" id="direction" class="text-sm text-gray-600 bg-white border border-gray-300 rounded-md" :disabled="!params.field">
+                                <option value="undefined">Select Order</option>
+                                <option value="asc">Ascending</option>
+                                <option value="desc">Descending</option>
+                            </select>
+                        </div> -->
                     </div>
 
-                    <div class="flex items-center space-x-2">
-                        <span class="text-sm text-gray-600 font-medium">Sort by</span>
 
-                        <select @change="updateFieldFilter($event)" id="field" class="text-sm text-gray-600 bg-white border border-gray-300 rounded-md">
-                            <option value="" :selected="params.field == undefined">Select Field</option>
-                            <option value="office_name" :selected="params.field ==='office_name'">Office Name</option>
-                            <option value="head" :selected="params.field ==='head'">Office Head</option>
-                            <option value="date_added" :selected="params.field ==='date_added'">Date Added</option>
-                        </select>
-
-                        <select v-model="params.direction" id="direction" class="text-sm text-gray-600 bg-white border border-gray-300 rounded-md" :disabled="!params.field">
-                            <option value="undefined">Select Order</option>
-                            <option value="asc">Ascending</option>
-                            <option value="desc">Descending</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="relative overflow-x-auto bg-white rounded-lg shadow p-6">
                         <table class="w-full text-sm text-left text-gray-500">
                         <thead class="text-xs text-gray-700 bg-gray-100 uppercase">
-                                <th scope="col" class="w-12 text-center px-6 py-3">
-                                    #
-                                </th>
-                                <th scope="col" class="w-[26rem] px-6 py-3">
-                                    Office Name
-                                </th>
                                 <th scope="col" class="px-6 py-3">
-                                    Head
+                                    Office Name
                                 </th>
                                 <th scope="col" class="px-6 py-3">
                                     Date Added
@@ -167,21 +158,12 @@ const createOffice = () => {
                         </thead>
                         <TransitionGroup name="rows" tag="tbody">
                             <tr v-for="(office, index) in offices.data" :key="index" class="border-b border-t">
-                                <td class="px-6 py-3 text-gray-700">{{ office.id }}</td>
-                                
-                                <td class="px-6 py-3 w-92">
-                                    <Link :href="'/admin/offices/' + office.id + '/inventory'" 
-                                    class="text-blue-600 text-sm underline">
-                                    {{ office.office_name }}
-                                </Link>
-                                </td>
                                 <td class="px-6 py-3">
-                                    <span class="text-gray-700 font-medium">
-                                        {{ office.head }}
-                                    </span>
+                                    <Link :href="'/offices/view-transactions/' + office.id" class="text-blue-600 underline">{{ office.office_name }}</Link>
                                 </td>
+
                                 <td class="px-6 py-3">
-                                    {{ new Date(office.date_added).toLocaleDateString('en-US', {year: 'numeric', month: 'long', day: 'numeric'}) }}
+                                    {{ new Date(office.date_added).toDateString() }}
                                 </td>
                                 <td class="px-6 py-3 text-center">
                                     <div class="flex items-center justify-center space-x-1">
@@ -223,9 +205,9 @@ const createOffice = () => {
         </div>
 
         <Modal :show="showModal" @close="closeModal" maxWidth="xl">
-            <CreateDepartmentForm v-if="actionType === 'create'" @close-modal="closeModal" />
-            <EditDepartmentForm v-else-if="actionType === 'edit'" @close-modal="closeModal" :office="selectedOfficeForEdit" />
-            <DeleteDepartment v-else @close-modal="closeModal" :office="selectedOfficeForDelete" />
+            <CreateOffice v-if="actionType === 'create'" @close-modal="closeModal" />
+            <EditOffice v-else-if="actionType === 'edit'" @close-modal="closeModal" :office="selectedOfficeForEdit" />
+            <DeleteOffice v-else @close-modal="closeModal" :office="selectedOfficeForDelete" />
         </Modal>
     </AuthenticatedLayout>
 </template>

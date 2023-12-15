@@ -16,7 +16,7 @@ const form = useForm({
 const emits = defineEmits(['close-modal']);
 
 const submit = () => {
-    form.patch('/admin/units/update-details/' + props.unit.id, {
+    form.patch('/units/update-details/' + props.unit.id, {
         onSuccess: () => emits('close-modal')
     })
 }

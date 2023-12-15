@@ -9,14 +9,6 @@ class PropertyApiController extends Controller
 {
     public function getProperty(Property $property)
     {
-        $data = [
-            'id' => $property->id,
-            'name' => $property->name,
-            'description' => $property->description,
-            'date_acquired' => $property->date_acquired->format('Y-m-d')
-        ];
-
-        return response()->json($data);
-        // dd($property);
+        return response()->json($property);
     }
 }

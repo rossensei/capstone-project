@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Carbon\Carbon;
 use App\Models\Office;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
@@ -21,10 +22,8 @@ class OfficeController extends Controller
 
         $query = Office::query();
 
-        $query->with('user');
-
         if($search) {
-            $query->where('office_name', 'like', "%{$search}%");
+            $query->where('office_name', 'LIKE', "%{$search}%");
         }
 
         if($dateFrom && $dateTo) {
@@ -32,14 +31,7 @@ class OfficeController extends Controller
         }
 
         if($request->field && $request->direction) {
-            if($request->field === 'head') {
-                $query->join('users', 'offices.user_id', '=', 'users.id')
-                ->select('offices.*', 'users.name as head_name') // Alias the 'name' column
-                ->orderBy('head_name', $request->direction);
-            } else {
-                $query->orderBy($request->field, $request->direction);
-            }
-            
+            $query->orderBy($request->field, $request->direction);
         }
 
         $offices = $query->paginate($perPage)
@@ -48,7 +40,6 @@ class OfficeController extends Controller
             ->through(fn($office) => [
                 'id' => $office->id,
                 'office_name' => $office->office_name,
-                'head' => $office->user->name,
                 'date_added' => $office->date_added,
             ]);
         
@@ -72,14 +63,10 @@ class OfficeController extends Controller
     public function store(Request $request)
     {
         $fields = $request->validate([
-            'office_name' => ['required', 'string', 'unique:offices'],
-            'user_id' => ['required']
-        ],[
-            'user_id.required' => 'The office head must not be empty.',
-            'office_name.unique' => 'Office name already exist.'
+            'office_name' => ['required', 'string'],
         ]);
 
-        $fields['date_added'] = Carbon::now()->toDateString();
+        $fields['date_added'] = Carbon::now()->format('Y-m-d');
 
         Office::create($fields);
 
@@ -91,7 +78,34 @@ class OfficeController extends Controller
      */
     public function show(Office $office)
     {
-        //
+        $personnelIds = $office->personnels->pluck('id');
+        $officeTransactions = Transaction::whereIn('personnel_id', $personnelIds)
+            ->with([
+                'personnel:id,name,office_id',
+                'personnel.office:id,office_name',
+                ])
+            ->withCount('transactionItems')
+            ->get();
+
+        return inertia('Office/Show', [
+            'officeTransactions' => $officeTransactions,
+            'office' => $office,
+        ]);
+    }
+
+    public function transactionDetails(Office $office, Transaction $transaction)
+    {
+        // dd($office, $transaction);
+        $transactionWithItems = $transaction->load([
+            'personnel:id,name',
+            'transactionItems:id,item_id,transaction_id,qty',
+            'transactionItems.item:id,item_name,brand,color,size,qty_stock'
+        ]);
+
+        return inertia('Office/TransactionDetails', [
+            'transaction' =>  $transactionWithItems,
+            'office' => $office
+        ]);
     }
 
     /**
@@ -108,11 +122,7 @@ class OfficeController extends Controller
     public function update(Request $request, Office $office)
     {
         $fields = $request->validate([
-            'office_name' => ['required', 'string', Rule::unique(Office::class)->ignore($office->id)],
-            'user_id' => ['required']
-        ],[
-            'user_id.required' => 'The office head must not be empty.',
-            'office_name.unique' => 'Office name already exist.'
+            'office_name' => ['required', 'string'],
         ]);
 
         $office_name = $office->office_name;
@@ -127,8 +137,8 @@ class OfficeController extends Controller
      */
     public function destroy(Office $office)
     {
-        if($office->properties()->exists()) {
-            return back()->with('error', 'Delete request failed. This office has existing properties.');
+        if($office->personnels()->exists()) {
+            return back()->with('error', 'Delete request failed. This office has existing personnels.');
         } else {
             $office->delete();
 

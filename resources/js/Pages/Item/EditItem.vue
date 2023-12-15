@@ -15,8 +15,11 @@ const isLoaded = ref(false);
 
 const form = useForm({
     item_name: '',
+    brand: '',
+    color: '',
+    size: '',
     category_id: null,
-    curr_stocks: null,
+    qty_stock: null,
     unit_id: null,
 });
 
@@ -24,8 +27,11 @@ onMounted(() => {
     axios.get('http://127.0.0.1:8000/api/items/'+ props.itemId)
         .then((response) => {
             form.item_name = response.data.item_name;
+            form.brand = response.data.brand;
+            form.color = response.data.color;
+            form.size = response.data.size;
             form.category_id = response.data.category_id;
-            form.curr_stocks = response.data.curr_stocks;
+            form.qty_stock = response.data.qty_stock;
             form.unit_id = response.data.unit_id;
         });
 
@@ -47,15 +53,10 @@ onMounted(() => {
 
 const emit = defineEmits(['close-modal']);
 
-const errors = ref([]);
-
 const submit = () => {
-    form.put('/admin/items/' + props.itemId, {
+    form.put('/items/' + props.itemId, {
         onSuccess: () => {
            emit('close-modal');
-        },
-        onError: (err) => {
-            errors.value = Object.values(err)
         }
     })
 }
@@ -66,6 +67,10 @@ const submit = () => {
     <div v-if="!isLoaded" class="w-full p-6 animate-pulse">
         <div class="h-4 w-[120px] bg-gray-300 rounded-full mb-4"></div>
 
+        <div class="mb-4 bg-gray-200 rounded-full h-7 w-full"></div>
+        <div class="mb-4 bg-gray-200 rounded-full h-7 w-full"></div>
+        <div class="mb-4 bg-gray-200 rounded-full h-7 w-full"></div>
+        <div class="mb-4 bg-gray-200 rounded-full h-7 w-full"></div>
         <div class="mb-4 bg-gray-200 rounded-full h-7 w-full"></div>
         <div class="mb-4 bg-gray-200 rounded-full h-7 w-full"></div>
         <div class="mb-4 bg-gray-200 rounded-full h-7 w-full"></div>
@@ -97,6 +102,30 @@ const submit = () => {
             </div>
 
             <div class="mb-4">
+                <label for="brand" class="block font-medium text-sm text-gray-700">Brand</label>
+                <input v-model="form.brand" type="text" id="brand" 
+                class="w-full text-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                :class="{'border-red-600' : form.errors.brand}">
+                <InputError :message="form.errors.brand" />
+            </div>
+
+            <div class="mb-4">
+                <label for="color" class="block font-medium text-sm text-gray-700">Color</label>
+                <input v-model="form.color" type="text" id="color" 
+                class="w-full text-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                :class="{'border-red-600' : form.errors.color}">
+                <InputError :message="form.errors.color" />
+            </div>
+
+            <div class="mb-4">
+                <label for="size" class="block font-medium text-sm text-gray-700">Size</label>
+                <input v-model="form.size" type="text" id="size" 
+                class="w-full text-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm"
+                :class="{'border-red-600' : form.errors.size}">
+                <InputError :message="form.errors.size" />
+            </div>
+
+            <div class="mb-4">
                 <label for="category" class="block font-medium text-sm text-gray-700">Category</label>
                 <select v-model="form.category_id" id="category" 
                 :class="{'border-red-600' : form.errors.category_id}"
@@ -109,10 +138,10 @@ const submit = () => {
 
             <div class="mb-4">
                 <label for="qty" class="block font-medium text-sm text-gray-700">Quantity Stock</label>
-                <input v-model="form.curr_stocks" type="number" id="qty" 
-                :class="{'border-red-600' : form.errors.curr_stocks}"
+                <input v-model="form.qty_stock" type="number" id="qty" 
+                :class="{'border-red-600' : form.errors.qty_stock}"
                 class="w-full text-sm border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm">
-                <InputError :message="form.errors.curr_stocks" />
+                <InputError :message="form.errors.qty_stock" />
             </div>
             <div class="mb-4">
                 <label for="unit" class="block font-medium text-sm text-gray-700">Unit</label>

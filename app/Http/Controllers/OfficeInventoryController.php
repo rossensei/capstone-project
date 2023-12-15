@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\Office;
 use App\Models\Property;
+use App\Models\Transaction;
+use App\Models\Personnel;
 use Illuminate\Http\Request;
 
 class OfficeInventoryController extends Controller
@@ -17,7 +19,14 @@ class OfficeInventoryController extends Controller
         $direction = $request->direction;
         $status = $request->status;
 
-        $transactions = $office->personnels()->with(['transactions.items'])->get();
+        // $transactions = $office->personnels()->with(['transactions.items'])->get();
+
+        $officeId = $office->id;
+
+        // dd($transactions);
+
+        // $transactions = $office->with(['personnels.transactions.items'])->get();
+
         //fetches all the properties of an office as a collection
         $query = $office->properties(); 
 
@@ -58,7 +67,8 @@ class OfficeInventoryController extends Controller
             'head' => $ofc->user->name,
         ];
 
-        
+        $transactions = Transaction::whereIn('personnel_id', Personnel::where('office_id', $officeId)->pluck('id'))->with(['items', 'personnel'])->get();
+
         return inertia('Office/Inventory/Index', [
             'office' => $office,
             'properties' => $properties,

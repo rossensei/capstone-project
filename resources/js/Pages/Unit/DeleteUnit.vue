@@ -9,7 +9,7 @@ const props = defineProps({
 const emits = defineEmits(['close-modal']);
 
 const confirm = () => {
-    router.delete('/admin/units/delete-unit/' + props.unit.id, {
+    router.delete('/units/delete-unit/' + props.unit.id, {
         onSuccess: () => emits('close-modal')
     })
 }

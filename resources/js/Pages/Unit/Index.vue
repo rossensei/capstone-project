@@ -22,7 +22,7 @@ const form = useForm({
 });
 
 const submitForm = () => {
-    form.post('/admin/units/add-new-unit', {
+    form.post('/units/add-new-unit', {
         onSuccess: () => form.reset()
     })
 }

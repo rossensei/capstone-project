@@ -4,14 +4,6 @@ import InputLabel from '@/Components/InputLabel.vue';
 import InputError from '@/Components/InputError.vue';
 import { useForm } from '@inertiajs/vue3';
 import { ref, computed } from 'vue';
-import {
-  Combobox,
-  ComboboxInput,
-  ComboboxButton,
-  ComboboxOptions,
-  ComboboxOption,
-  TransitionRoot,
-} from '@headlessui/vue'
 import { CheckIcon, ChevronUpDownIcon, XMarkIcon } from '@heroicons/vue/20/solid'
 
 const props = defineProps({
@@ -20,36 +12,19 @@ const props = defineProps({
 
 const form = useForm({
     name: '',
-    office_id: null,
+    office_id: '',
 });
 
 const emits = defineEmits(['close-modal']);
 
 const submit = () => {
-
-    if(!form.office_id || form.office_id == null) {
-        form.office_id = selected.value.id;
-
-        form.post('/admin/personnels/add-new', {
-            onSuccess: () => emits('close-modal')
-        })
-    }
-
+  form.post('/personnels/add-new', {
+      onSuccess: () => {
+        emits('close-modal');
+        form.reset();
+      }
+  })
 }
-
-let selected = ref({})
-let query = ref('')
-
-let filteredOffices = computed(() =>
-  query.value === ''
-    ? props.offices
-    : props.offices.filter((office) =>
-        office.office_name
-          .toLowerCase()
-          .replace(/\s+/g, '')
-          .includes(query.value.toLowerCase().replace(/\s+/g, ''))
-    )
-)
 </script>
 
 <template>
@@ -64,81 +39,15 @@ let filteredOffices = computed(() =>
             </div>
 
             <div class="mt-3 mb-4">
-                <!-- <InputLabel for="abbreviation" value="Abbreviation" />
-                <TextInput v-model="form.abbreviation" id="abbreviation" class="w-full text-sm" :class="{ 'border-red-600' : form.errors.abbreviation }" placeholder="ex. Pc" />
-                <InputError :message="form.errors.abbreviation" /> -->
-                <span class="text-sm font-medium text-gray-600">Office</span>
-                <Combobox v-model="selected">
-                    <div class="relative">
-                      <div
-                        class="relative w-full cursor-default overflow-hidden rounded-lg bg-white text-left focus:outline-none focus-visible:ring-2 focus-visible:ring-white/75 focus-visible:ring-offset-2 focus-visible:ring-offset-teal-300 sm:text-sm border border-gray-300"
-                      >
-                        <ComboboxInput
-                          class="w-full border-none py-2 pl-3 pr-10 text-sm leading-5 text-gray-900 focus:ring-0"
-                          :displayValue="(office) => office.office_name"
-                          @change="query = $event.target.value"
-                          placeholder="Select office"
-                          autocomplete="off"
-                        />
-                        <ComboboxButton
-                          class="absolute inset-y-0 right-0 flex items-center pr-2"
-                        >
-                          <ChevronUpDownIcon
-                            class="h-5 w-5 text-gray-400"
-                            aria-hidden="true"
-                          />
-                        </ComboboxButton>
-                      </div>
-                      <TransitionRoot
-                        leave="transition ease-in duration-100"
-                        leaveFrom="opacity-100"
-                        leaveTo="opacity-0"
-                        @after-leave="query = ''"
-                      >
-                        <ComboboxOptions
-                          class="absolute overflow-y-auto mt-1 max-h-60 w-full rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black/5 focus:outline-none sm:text-sm"
-                        >
-                          <div
-                            v-if="filteredOffices.length === 0 && query !== ''"
-                            class="relative cursor-default select-none px-4 py-2 text-gray-700"
-                          >
-                            Nothing found.
-                          </div>
-              
-                          <ComboboxOption
-                            v-for="office in filteredOffices"
-                            as="template"
-                            :key="office.id"
-                            :value="office"
-                            v-slot="{ selected, active }"
-                          >
-                            <li
-                              class="relative cursor-default select-none py-2 pl-10 pr-4"
-                              :class="{
-                                'bg-[#4e73df] text-white': active,
-                                'text-gray-900': !active,
-                              }"
-                            >
-                              <span
-                                class="block truncate"
-                                :class="{ 'font-medium': selected, 'font-normal': !selected }"
-                              >
-                                {{ office.office_name }}
-                              </span>
-                              <span
-                                v-if="selected"
-                                class="absolute inset-y-0 left-0 flex items-center pl-3"
-                                :class="{ 'text-white': active, 'text-blue-600': !active }"
-                              >
-                                <CheckIcon class="h-5 w-5" aria-hidden="true" />
-                              </span>
-                            </li>
-                          </ComboboxOption>
-                        </ComboboxOptions>
-                      </TransitionRoot>
-                    </div>
-                  </Combobox>
-                  <InputError :message="form.errors.office_id" />
+                <InputLabel for="office_id" value="Office" />
+                <!-- <TextInput v-model="form.office_id" id="office_id" class="w-full text-sm" :class="{ 'border-red-600' : form.errors.abbreviation }" placeholder="ex. Pc" /> -->
+                <select v-model="form.office_id" id="office_id"
+                :class="{'border-red-600' : form.errors.itemId}" class="w-full border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 rounded-md shadow-sm text-sm"
+                >
+                  <option value="">Select office</option>
+                  <option v-for="office in offices" :key="office.id" :value="office.id">{{ office.office_name }}</option>
+                </select>
+                <InputError :message="form.errors.office_id" />
             </div>
 
             <div class="flex justify-end items-center space-x-2">
